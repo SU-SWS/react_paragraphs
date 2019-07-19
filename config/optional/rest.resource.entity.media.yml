@@ -1,0 +1,17 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - media
+    - serialization
+    - user
+id: entity.media
+plugin_id: 'entity:media'
+granularity: resource
+configuration:
+  methods:
+    - GET
+  formats:
+    - json
+  authentication:
+    - cookie

@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @file
+ * react_paragraphs.module
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function react_paragraphs_theme($existing, $type, $theme, $path) {
+  return [
+    'react_paragraphs' => [
+      'variables' => ['rows' => NULL],
+    ],
+  ];
+}

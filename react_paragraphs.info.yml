@@ -1,0 +1,8 @@
+name: React Paragraphs
+description: 'React based paragraphs fields'
+type: module
+core: 8.x
+package: Paragraphs
+dependencies:
+  - drupal:rest
+  - paragraphs:paragraphs

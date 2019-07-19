@@ -1,0 +1,9 @@
+react_paragraphs.media_library_ui:
+  path: '/react-media-library'
+  defaults:
+    _controller: '\Drupal\react_paragraphs\Controller\ReactMediaLibrary::mediaLibrary'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _access: 'TRUE'
+#    _custom_access: 'media_library.ui_builder:checkAccess'

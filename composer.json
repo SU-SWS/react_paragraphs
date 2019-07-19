@@ -1,0 +1,13 @@
+{
+    "name": "pookmish/react_paragraphs",
+    "type": "drupal-custom-module",
+    "authors": [
+        {
+            "name": "Mike Decker",
+            "email": "pookmish@gmail.com"
+        }
+    ],
+    "require": {
+        
+    }
+}

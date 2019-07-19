@@ -1,0 +1,24 @@
+field_widget:
+  version: VERSION
+  css:
+    component:
+      css/react_paragraphs.field_widget.css: {  }
+  js:
+    js/build/react_paragraphs.app.min.js: {  }
+    js/build/react_paragraphs.vendor.min.js: {  }
+  dependencies:
+    - core/drupalSettings
+    - core/jquery
+    - filter/drupal.filter.admin
+    - editor/drupal.editor
+    - core/drupal.dialog.ajax
+    - media_library/ui
+    - views/views.ajax
+    - dropzonejs/dropzonejs
+    - dropzonejs/integration
+
+field_formatter:
+  version: VERSION
+  css:
+    component:
+      css/react_paragraphs.field_formatter.css: {  }

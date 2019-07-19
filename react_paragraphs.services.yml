@@ -1,0 +1,4 @@
+services:
+  plugin.manager.react_paragraphs_fields:
+    class: Drupal\react_paragraphs\ReactParagraphsFieldsManager
+    parent: default_plugin_manager
