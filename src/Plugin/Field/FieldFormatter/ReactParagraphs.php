@@ -2,6 +2,7 @@
 
 namespace Drupal\react_paragraphs\Plugin\Field\FieldFormatter;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Template\Attribute;
 use Drupal\entity_reference_revisions\Plugin\Field\FieldFormatter\EntityReferenceRevisionsEntityFormatter;
@@ -42,10 +43,11 @@ class ReactParagraphs extends EntityReferenceRevisionsEntityFormatter {
           unset($elements[$key]);
 
           $organized_elements[$settings['row']]['attributes'] = new Attribute(['class' => ['react-paragraphs-row']]);
+          $bundle = $element['#paragraph']->bundle();
           $organized_elements[$settings['row']]['items'][$settings['index']] = [
             'entity' => $element,
             'width' => $settings['width'],
-            'attributes' => new Attribute(['class' => ['react-item'], 'data-react-columns' => $settings['width']]),
+            'attributes' => new Attribute(['class' => ['paragraph-item', Html::cleanCssIdentifier("ptype-$bundle")], 'data-react-columns' => $settings['width']]),
           ];
 
           if (!isset($organized_elements[$settings['row']]['width'])) {
