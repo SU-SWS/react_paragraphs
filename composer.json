@@ -1,13 +1,22 @@
 {
-    "name": "pookmish/react_paragraphs",
+    "name": "su-sws/react_paragraphs",
+    "description": "An advanced UI for editing paragraphs in Drupal.",
     "type": "drupal-custom-module",
+    "license": "GPL-2.0+",
+    "minimum-stability": "dev",
     "authors": [
         {
             "name": "Mike Decker",
             "email": "pookmish@gmail.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        }
+    ],
     "require": {
-        
+      "drupal/paragraphs": "^1.10"
     }
 }
