@@ -17,6 +17,6 @@
         }
     ],
     "require": {
-      "drupal/paragraphs": "^1.10"
+        "drupal/paragraphs": "^1.1"
     }
 }
