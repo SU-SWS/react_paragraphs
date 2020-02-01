@@ -1,5 +1,5 @@
 {
-    "name": "pookmish/react_paragraphs",
+    "name": "su-sws/react_paragraphs",
     "type": "drupal-custom-module",
     "authors": [
         {
@@ -8,6 +8,6 @@
         }
     ],
     "require": {
-        
+        "drupal/paragraphs": "^1.1"
     }
 }
