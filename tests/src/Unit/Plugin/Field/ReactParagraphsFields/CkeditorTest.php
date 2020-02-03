@@ -26,16 +26,7 @@ class CkeditorTest extends ReactParagraphsFieldsTestBase {
    * Test the field plugin.
    */
   public function testPlugin() {
-    $field_config = $this->createMock(FieldConfigInterface::class);
-    $field_config->method('getLabel')->willReturn('Foo Bar');
-    $field_config->method('getDescription')->willReturn('Description');
-    $field_config->method('isRequired')->willReturn(TRUE);
-
-    $field_storage = $this->createMock(FieldStorageConfigInterface::class);
-    $field_config->method('getFieldStorageDefinition')->willReturn($field_storage);
-    $field_storage->method('getCardinality')->willReturn(1);
-
-    $data = $this->plugin->getFieldInfo([], $field_config);
+    $data = $this->plugin->getFieldInfo([], $this->fieldConfig);
 
     $expected = [
       'cardinality' => 1,

@@ -14,7 +14,20 @@ class SelectTest extends ReactParagraphsFieldsTestBase {
    * Test the field plugin.
    */
   public function testPlugin() {
-    $this->assertTrue(TRUE);
+    $data = $this->plugin->getFieldInfo([], $this->fieldConfig);
+
+    $expected = [
+      'cardinality' => 1,
+      'help' => 'Description',
+      'label' => 'Foo Bar',
+      'required' => TRUE,
+      'weight' => 0,
+      'widget_type' => 'foo_bar',
+      'column_key' => 'value',
+      'options' => NULL,
+
+    ];
+    $this->assertArrayEquals($expected, $data);
   }
 
 }
