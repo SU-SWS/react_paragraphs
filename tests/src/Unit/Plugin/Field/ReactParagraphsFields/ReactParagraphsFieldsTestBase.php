@@ -20,6 +20,11 @@ abstract class ReactParagraphsFieldsTestBase extends UnitTestCase {
   protected $plugin;
 
   /**
+   * @var \Drupal\Core\DependencyInjection\ContainerBuilder
+   */
+  protected $container;
+
+  /**
    * {@inheritDoc}
    */
   protected function setUp() {
@@ -30,11 +35,12 @@ abstract class ReactParagraphsFieldsTestBase extends UnitTestCase {
     $coverage_class = preg_grep('/coversDefaultClass.*?$/', explode("\n", $self->getDocComment()));
     $class = reset($coverage_class);
     $class = trim(substr($class, strrpos($class, ' ') + 1));
-    $container = new ContainerBuilder();
-    $container->set('entity_type.manager', $this->createMock(EntityTypeManagerInterface::class));
-    $container->set('current_user', $this->createMock(AccountProxyInterface::class));
+    $this->container = new ContainerBuilder();
+    $this->container->set('entity_type.manager', $this->createMock(EntityTypeManagerInterface::class));
+    $this->container->set('current_user', $this->createMock(AccountProxyInterface::class));
 
-    $this->plugin = $class::create($container, [], 'foo_bar', []);
+    $this->plugin = $class::create($this->container, [], 'foo_bar', []);
+    \Drupal::setContainer($this->container);
   }
 
 }

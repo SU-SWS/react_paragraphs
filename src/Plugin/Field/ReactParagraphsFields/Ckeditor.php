@@ -47,7 +47,7 @@ class Ckeditor extends ReactParagraphsFieldsBase implements ContainerFactoryPlug
   public function getFieldInfo(array $field_element, FieldConfigInterface $field_config) {
     $info = parent::getFieldInfo($field_element, $field_config);
 
-    $info['allowed_formats'] = filter_formats($this->currentUser);
+    $info['allowed_formats'] = $this->getFilterFormats();
     $info['summary'] = $field_config->getSetting('display_summary');
     $info['summary'] = is_null($info['summary']) ? FALSE : TRUE;
 
@@ -60,6 +60,19 @@ class Ckeditor extends ReactParagraphsFieldsBase implements ContainerFactoryPlug
       $info['allowed_formats'] = array_intersect_key($info['allowed_formats'], array_filter($allowed_formats));
     }
     return $info;
+  }
+
+  /**
+   * Get all filter formats allowed for the current user.
+   *
+   * @return \Drupal\filter\FilterFormatInterface[]
+   *   Keyed array of filter formats.
+   *
+   * @codeCoverageIgnore
+   *   Ignore for unit tests since filter_formats is not defined.
+   */
+  protected function getFilterFormats() {
+    return filter_formats($this->currentUser);
   }
 
 }

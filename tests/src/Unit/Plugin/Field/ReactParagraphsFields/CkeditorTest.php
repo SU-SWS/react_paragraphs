@@ -2,6 +2,10 @@
 
 namespace Drupal\Tests\react_paragraphs\Unit\Plugin\Field\ReactParagraphsFields;
 
+use Drupal\field\FieldConfigInterface;
+use Drupal\field\FieldStorageConfigInterface;
+use Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields\Ckeditor;
+
 /**
  * Class BooleanTest
  *
@@ -11,10 +15,53 @@ namespace Drupal\Tests\react_paragraphs\Unit\Plugin\Field\ReactParagraphsFields;
 class CkeditorTest extends ReactParagraphsFieldsTestBase {
 
   /**
+   * {@inheritDoc}
+   */
+  protected function setUp() {
+    parent::setUp();
+    $this->plugin = TestCkeditor::create($this->container, [], 'foo_bar', []);
+  }
+
+  /**
    * Test the field plugin.
    */
   public function testPlugin() {
-    $this->assertTrue(TRUE);
+    $field_config = $this->createMock(FieldConfigInterface::class);
+    $field_config->method('getLabel')->willReturn('Foo Bar');
+    $field_config->method('getDescription')->willReturn('Description');
+    $field_config->method('isRequired')->willReturn(TRUE);
+
+    $field_storage = $this->createMock(FieldStorageConfigInterface::class);
+    $field_config->method('getFieldStorageDefinition')->willReturn($field_storage);
+    $field_storage->method('getCardinality')->willReturn(1);
+
+    $data = $this->plugin->getFieldInfo([], $field_config);
+
+    $expected = [
+      'cardinality' => 1,
+      'help' => 'Description',
+      'label' => 'Foo Bar',
+      'required' => TRUE,
+      'weight' => 0,
+      'widget_type' => 'foo_bar',
+      'allowed_formats' => [],
+      'summary' => FALSE,
+    ];
+    $this->assertArrayEquals($expected, $data);
+  }
+
+}
+
+/**
+ * {@inheritDoc}
+ */
+class TestCkeditor extends Ckeditor {
+
+  /**
+   * {@inheritDoc}
+   */
+  protected function getFilterFormats() {
+    return [];
   }
 
 }
