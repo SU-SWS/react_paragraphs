@@ -18,5 +18,10 @@
     ],
     "require": {
         "drupal/paragraphs": "^1.1"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Drupal\\Tests\\react_paragraphs\\": "./tests/src"
+        }
     }
 }
