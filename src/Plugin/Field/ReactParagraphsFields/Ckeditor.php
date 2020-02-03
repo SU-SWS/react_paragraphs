@@ -5,7 +5,7 @@ namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\field\FieldConfigInterface;
-use Drupal\filter\Entity\FilterFormat;
+use Drupal\filter\FilterFormatInterface;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -51,7 +51,7 @@ class Ckeditor extends ReactParagraphsFieldsBase implements ContainerFactoryPlug
     $info['summary'] = $field_config->getSetting('display_summary');
     $info['summary'] = is_null($info['summary']) ? FALSE : TRUE;
 
-    array_walk($info['allowed_formats'], function (FilterFormat &$format) {
+    array_walk($info['allowed_formats'], function (FilterFormatInterface &$format) {
       $format = $format->label();
     });
 

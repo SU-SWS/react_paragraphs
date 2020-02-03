@@ -29,4 +29,44 @@ class TextTest extends ReactParagraphsFieldsTestBase {
     $this->assertArrayEquals($expected, $data);
   }
 
+  /**
+   * Test the Email Fields.
+   */
+  public function testEmail() {
+    $this->fieldConfig->method('getType')->willReturn('email');
+    $data = $this->plugin->getFieldInfo([], $this->fieldConfig);
+
+    $expected = [
+      'cardinality' => 1,
+      'help' => 'Description',
+      'label' => 'Foo Bar',
+      'required' => TRUE,
+      'weight' => 0,
+      'widget_type' => 'foo_bar',
+      'formatted' => FALSE,
+      'text_type' => 'email',
+    ];
+    $this->assertArrayEquals($expected, $data);
+  }
+
+  /**
+   * Test the long text areas..
+   */
+  public function testTextArea() {
+    $this->fieldConfig->method('getType')->willReturn('string_long');
+    $data = $this->plugin->getFieldInfo([], $this->fieldConfig);
+
+    $expected = [
+      'cardinality' => 1,
+      'help' => 'Description',
+      'label' => 'Foo Bar',
+      'required' => TRUE,
+      'weight' => 0,
+      'widget_type' => 'foo_bar',
+      'formatted' => FALSE,
+      'text_type' => 'textarea',
+    ];
+    $this->assertArrayEquals($expected, $data);
+  }
+
 }

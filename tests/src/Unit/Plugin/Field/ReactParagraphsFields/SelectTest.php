@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\react_paragraphs\Unit\Plugin\Field\ReactParagraphsFields;
 
+use Drupal\Core\Entity\EntityStorageInterface;
+
 /**
  * Class BooleanTest
  *
@@ -29,5 +31,37 @@ class SelectTest extends ReactParagraphsFieldsTestBase {
     ];
     $this->assertArrayEquals($expected, $data);
   }
+
+  /**
+   * Test webform select field.
+   */
+  public function testWebforms() {
+    $this->fieldConfig->method('getType')->willReturn('webform');
+    $data = $this->plugin->getFieldInfo([], $this->fieldConfig);
+
+    $expected = [
+      'cardinality' => 1,
+      'help' => 'Description',
+      'label' => 'Foo Bar',
+      'required' => TRUE,
+      'weight' => 0,
+      'widget_type' => 'foo_bar',
+      'column_key' => 'target_id',
+      'options' => [],
+    ];
+    $this->assertArrayEquals($expected, $data);
+  }
+
+  public function getStorageCallback() {
+    $webform_storage = $this->createMock(TestWebformEntityStorageInterface::class);
+    $webform_storage->method('getOptions')->willReturn([]);
+    return $webform_storage;
+  }
+
+}
+
+interface TestWebformEntityStorageInterface extends EntityStorageInterface {
+
+  public function getOptions();
 
 }

@@ -48,7 +48,12 @@ abstract class ReactParagraphsFieldsTestBase extends UnitTestCase {
     $class = reset($coverage_class);
     $class = trim(substr($class, strrpos($class, ' ') + 1));
     $this->container = new ContainerBuilder();
-    $this->container->set('entity_type.manager', $this->createMock(EntityTypeManagerInterface::class));
+
+    $entity_type_manager = $this->createMock(EntityTypeManagerInterface::class);
+    $entity_type_manager->method('getStorage')
+      ->will($this->returnCallback([$this, 'getStorageCallback']));
+
+    $this->container->set('entity_type.manager', $entity_type_manager);
     $this->container->set('current_user', $this->createMock(AccountProxyInterface::class));
 
     $this->plugin = $class::create($this->container, [], 'foo_bar', []);
