@@ -107,7 +107,7 @@ export const Paragraph = ({item, ...props}) => {
                     justifyContents="left"
                     alignItems="center"
                     style={{
-                      color: "#9e9e9e",
+                      color: "#4d4f53",
                       border: "1px solid #BDBDBD",
                       padding: "20px 50px",
                       lineHeight: "35px",
