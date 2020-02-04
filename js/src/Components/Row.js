@@ -123,6 +123,7 @@ export class Row extends Component {
                                 resizableItems={this.props.resizableItems}
                                 isDraggable={this.props.itemsPerRow > 1}
                                 isDraggingOverRow={snapshot.isDraggingOver}
+                                typeLabel={drupalContext.tools[this.props.items[itemId].entity.type[0].target_id].label}
                               />
                             ))}
 

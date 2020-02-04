@@ -141,7 +141,7 @@ export const Paragraph = ({item, ...props}) => {
               <DrupalModal
                 isOpen={!collapsed}
                 onRequestClose={openCloseModal}
-                contentLabel={`Edit ${item.admin_title}`}
+                contentLabel={`Edit ${props.typeLabel} > "${item.admin_title}"`}
                 wrapperProps={{style: {height: "calc(100% - 109px)"}}}
               >
                 <form onSubmit={e => e.preventDefault()}>
