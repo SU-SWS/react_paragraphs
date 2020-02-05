@@ -23,7 +23,6 @@ export class WidgetManager extends Component {
     paragraphApi: 'entity/paragraph/{entity_id}'
   };
 
-
   constructor(props) {
     super(props);
 

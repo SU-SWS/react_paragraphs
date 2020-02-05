@@ -29,7 +29,7 @@ const Toolwrapper = styled.div`
   font-weight: 600;
   font-size: 15px;
   line-height:23px;
-  color: #8A8D92;
+  color: #4d4f53;
 
   img {
     max-width: 80px
