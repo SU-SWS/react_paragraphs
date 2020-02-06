@@ -5,10 +5,13 @@ namespace Drupal\Tests\react_paragraphs\Kernel\Plugin\Field;
 use Drupal\Core\Datetime\Entity\DateFormat;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Entity\Entity\EntityViewDisplay;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\node\Entity\NodeType;
+use Drupal\user\Entity\Role;
+use Drupal\user\Entity\User;
 
 /**
  * Class ReactParagraphsFieldTestBase
@@ -30,7 +33,7 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
     'node',
     'user',
     'filter',
-    'file'
+    'file',
   ];
 
   /**
@@ -55,7 +58,10 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
     $this->installEntitySchema('entity_view_display');
     $this->installEntitySchema('file');
     $this->installSchema('system', ['sequences']);
-        $this->installSchema('file', ['file_usage']);
+    $this->installSchema('file', ['file_usage']);
+
+    Role::create(['id' => AccountInterface::ANONYMOUS_ROLE])->save();
+    user_role_grant_permissions(AccountInterface::ANONYMOUS_ROLE, ['access content']);
 
     NodeType::create(['type' => 'page', 'name' => 'Page'])->save();
 
@@ -77,12 +83,16 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
     ]);
     $this->fieldConfig->save();
 
-    EntityViewDisplay::create([
+    /** @var \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display */
+    $display = EntityViewDisplay::create([
       'status' => TRUE,
       'targetEntityType' => 'node',
       'bundle' => 'page',
       'mode' => 'default',
-    ])->setComponent('foo')->save();
+    ]);
+    $display->setComponent('foo');
+    $display->removeComponent('created');
+    $display->save();
 
     EntityFormDisplay::create([
       'status' => TRUE,
@@ -95,7 +105,12 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
 
     DateFormat::create([
       'id' => 'short',
-      'label' => 'Llama',
+      'label' => 'short',
+      'pattern' => 'F d, Y',
+    ])->save();
+    DateFormat::create([
+      'id' => 'medium',
+      'label' => 'medium',
       'pattern' => 'F d, Y',
     ])->save();
   }

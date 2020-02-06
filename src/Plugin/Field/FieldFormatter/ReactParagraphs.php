@@ -81,10 +81,12 @@ class ReactParagraphs extends EntityReferenceRevisionsEntityFormatter {
   protected function addSpacers(array &$elements) {
     foreach ($elements as &$row) {
       if ($row['width'] < 12) {
-        $row[] = [
-          '#type' => 'html_tag',
-          '#tag' => 'div',
-          '#attributes' => ['data-react-columns' => 12 - $row['width']],
+        $row['items'][] = [
+          'entity' => [
+            '#type' => 'html_tag',
+            '#tag' => 'div',
+          ],
+          'attributes' => new Attribute(['data-react-columns' => 12 - $row['width']]),
         ];
       }
 

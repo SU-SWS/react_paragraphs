@@ -1,11 +1,12 @@
 <?php
 
-namespace Drupal\Tests\react_paragraphs\Kernel\Plugin\Field;
+namespace Drupal\Tests\react_paragraphs\Kernel\Plugin\Field\FieldWidget;
 
 use Drupal\file\Entity\File;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\paragraphs\Entity\ParagraphsType;
+use Drupal\Tests\react_paragraphs\Kernel\Plugin\Field\ReactParagraphsFieldTestBase;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 
 /**
@@ -13,7 +14,7 @@ use Drupal\Tests\user\Traits\UserCreationTrait;
  *
  * @package Drupal\Tests\react_paragraphs\Kernel\Plugin\Field\FieldWidget
  */
-class ReactParagraphsFieldTest extends ReactParagraphsFieldTestBase {
+class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
 
   use UserCreationTrait;
 
