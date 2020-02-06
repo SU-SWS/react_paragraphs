@@ -87,7 +87,6 @@ class ReactParagraphsFormatterTest extends ReactParagraphsFieldTestBase {
 
     preg_match_all('/data-react-columns="6"/', (string) $display, $rows);
     $this->assertCount(2, $rows[0]);
-
   }
 
 }

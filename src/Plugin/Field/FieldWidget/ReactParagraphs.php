@@ -67,6 +67,13 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
   protected $paragraphTypes;
 
   /**
+   * List of previously load paragraphs.
+   *
+   * @var \Drupal\paragraphs\ParagraphInterface[]
+   */
+  protected $paragraphs = [];
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -315,8 +322,9 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   protected function getEntity(array $item_data) {
-    if (isset($this->paragraphIds[$item_data['id']])) {
-      return $this->paragraphIds[$item_data['id']];
+
+    if (isset($this->paragraphs[$item_data['id']])) {
+      return $this->paragraphs[$item_data['id']];
     }
 
     if (!empty($item_data['target_id'])) {
@@ -333,8 +341,8 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
       $entity->save();
     }
 
-    $this->paragraphIds[$item_data['id']] = $entity;
-    return $this->paragraphIds[$item_data['id']];
+    $this->paragraphs[$item_data['id']] = $entity;
+    return $this->paragraphs[$item_data['id']];
   }
 
 }

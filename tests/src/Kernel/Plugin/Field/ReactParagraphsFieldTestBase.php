@@ -11,7 +11,6 @@ use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\node\Entity\NodeType;
 use Drupal\user\Entity\Role;
-use Drupal\user\Entity\User;
 
 /**
  * Class ReactParagraphsFieldTestBase
@@ -34,6 +33,7 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
     'user',
     'filter',
     'file',
+    'text'
   ];
 
   /**
