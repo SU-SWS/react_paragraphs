@@ -3,7 +3,6 @@
 namespace Drupal\Tests\react_paragraphs\Kernel\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Entity\Entity\EntityViewDisplay;
-use Drupal\file\Entity\File;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\paragraphs\Entity\ParagraphsType;
@@ -11,9 +10,10 @@ use Drupal\Tests\react_paragraphs\Kernel\Plugin\Field\ReactParagraphsFieldTestBa
 use Drupal\Tests\user\Traits\UserCreationTrait;
 
 /**
- * Class ReactParagraphsFieldTestBase
+ * Class ReactParagraphsFieldTestBase.
  *
- * @package Drupal\Tests\react_paragraphs\Kernel\Plugin\Field\FieldWidget
+ * @group react_paragraphs
+ * @coversDefaultClass \Drupal\react_paragraphs\Plugin\Field\FieldFormatter\ReactParagraphs
  */
 class ReactParagraphsFormatterTest extends ReactParagraphsFieldTestBase {
 
@@ -73,6 +73,9 @@ class ReactParagraphsFormatterTest extends ReactParagraphsFieldTestBase {
     $this->node->save();
   }
 
+  /**
+   * Field formatter should output the correct markup.
+   */
   public function testReactFieldFormatter() {
     $view_builder = \Drupal::entityTypeManager()->getViewBuilder('node');
     $this->node = \Drupal::entityTypeManager()->getStorage('node')->load($this->node->id());

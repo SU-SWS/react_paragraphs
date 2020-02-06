@@ -11,12 +11,14 @@ use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\paragraphs\Entity\ParagraphsType;
 use Drupal\react_paragraphs\Plugin\Field\FieldWidget\ReactParagraphs;
 use Drupal\Tests\react_paragraphs\Kernel\Plugin\Field\ReactParagraphsFieldTestBase;
+use Drupal\react_paragraphs\Plugin\Field\FieldType\ReactParagraphs as ReactFieldType;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 
 /**
- * Class ReactParagraphsFieldTestBase
+ * Class ReactParagraphsFieldTestBase.
  *
- * @package Drupal\Tests\react_paragraphs\Kernel\Plugin\Field\FieldWidget
+ * @group react_paragraphs
+ * @coversDefaultClass \Drupal\react_paragraphs\Plugin\Field\FieldWidget\ReactParagraphs
  */
 class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
 
@@ -83,6 +85,9 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
     $this->node->save();
   }
 
+  /**
+   * Test the widget is going to output expected settings.
+   */
   public function testReactFieldWidget() {
     /** @var \Drupal\Core\Entity\EntityFormBuilderInterface $form_builder */
     $form_builder = \Drupal::service('entity.form_builder');
@@ -212,6 +217,42 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
         ],
       ],
     ];
+  }
+
+  /**
+   * Test the field type methods.
+   */
+  public function testFieldType() {
+    /** @var \Drupal\react_paragraphs\Plugin\Field\FieldType\ReactParagraphs $field_type */
+    $field_type = $this->node->get('foo')->get(0);
+    $form = [];
+    $form_state = new FormState();
+    $storage_form = $field_type->storageSettingsForm($form, $form_state, FALSE);
+    $this->assertCount(1, $storage_form['target_type']['#options']);
+
+    $field_type = new TestReactParagraphsType();
+    $this->assertNull($field_type->preSave());
+  }
+
+}
+
+/**
+ * {@inheritDoc}
+ */
+class TestReactParagraphsType extends ReactFieldType {
+
+  /**
+   * {@inheritDoc}
+   */
+  public function __construct() {
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function hasNewEntity() {
+    throw new \Exception('This broke');
   }
 
 }
