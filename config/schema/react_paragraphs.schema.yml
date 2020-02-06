@@ -26,3 +26,11 @@ field.formatter.settings.react_paragraphs:
     link:
       type: boolean
       label: 'Show links'
+
+field.widget.settings.react_paragraphs:
+  type: mapping
+  mapping:
+    items_per_row:
+      type: integer
+    resizable:
+      type: boolean

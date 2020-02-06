@@ -155,7 +155,6 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
       if (is_array($item['settings'])) {
         continue;
       }
-
       // In the circumstance that the items don't have settings data, just put
       // them into a single column.
       $admin_title = $this->t('Item @delta', ['@delta' => $delta])->render();
@@ -187,8 +186,7 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
       '#type' => 'hidden',
       '#attached' => $attachments,
       '#attributes' => ['id' => $input_id],
-    ];
-
+    ];;
     $element['#attached']['library'][] = 'react_paragraphs/field_widget';
     return $element;
   }
@@ -209,10 +207,8 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
     if (empty($this->paragraphTypes)) {
       $this->paragraphTypes = $this->entityTypeManager->getStorage('paragraphs_type')->loadMultiple();
     }
-    if ($paragraph = $this->entityTypeManager->getStorage('paragraph')->load($entity_id)) {
-      return $this->paragraphTypes[$paragraph->bundle()]->label();
-    }
-    return (string) $entity_id;
+    $paragraph = $this->entityTypeManager->getStorage('paragraph')->load($entity_id);
+    return $this->paragraphTypes[$paragraph->bundle()]->label();
   }
 
   /**
