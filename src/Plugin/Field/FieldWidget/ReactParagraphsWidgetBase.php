@@ -2,20 +2,13 @@
 
 namespace Drupal\react_paragraphs\Plugin\Field\FieldWidget;
 
-use Drupal\Component\Utility\Html;
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\editor\Plugin\EditorManager;
-use Drupal\field\FieldConfigInterface;
-use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\paragraphs\Plugin\EntityReferenceSelection\ParagraphSelection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class ReactParagraphsWidgetBase extends WidgetBase implements ContainerFactoryPluginInterface {
