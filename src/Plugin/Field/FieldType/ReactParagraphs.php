@@ -67,6 +67,9 @@ class ReactParagraphs extends EntityReferenceRevisionsItem {
     return $schema;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function preSave() {
     try {
       parent::preSave();

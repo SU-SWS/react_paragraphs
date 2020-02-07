@@ -26,16 +26,22 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class ReactParagraphsResource extends ResourceBase {
 
   /**
+   * Entity Type manager service.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
+   * Form builder service.
+   *
    * @var \Drupal\Core\Entity\EntityFormBuilderInterface
    */
   protected $formBuilder;
 
   /**
+   * React field plugin manager service.
+   *
    * @var \Drupal\react_paragraphs\ReactParagraphsFieldsManager
    */
   protected $reactFieldsPluginManager;
@@ -73,6 +79,21 @@ class ReactParagraphsResource extends ResourceBase {
     return [];
   }
 
+  /**
+   * $_GET response to return data for an entity bundle form.
+   *
+   * @param string $entity_type_id
+   *   Entity type id.
+   * @param string $bundle
+   *   Entity bundle id.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   Json data structured for the react widget.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
   public function get($entity_type_id, $bundle) {
     $data = [];
     $entity_type_definition = $this->entityTypeManager->getDefinition($entity_type_id);
@@ -80,17 +101,21 @@ class ReactParagraphsResource extends ResourceBase {
     $empty_entity = $this->entityTypeManager->getStorage($entity_type_id)
       ->create([$bundle_key => $bundle]);
 
+    // Verify the user has access to edit an entity of this type.
     if (!$empty_entity->access('edit')) {
       return new JsonResponse('Permission denied.', 401);
     }
     $form = $this->formBuilder->getForm($empty_entity);
 
+    // Loop through the various fields on the form to build the json data.
     $field_config_storage = $this->entityTypeManager->getStorage('field_config');
     foreach (Element::children($form) as $field_name) {
       if (!isset($form[$field_name]['widget'])) {
         continue;
       }
 
+      // Find the plugin for the current field in the form and get the data
+      // that can be used by the react widget.
       $field_config = $field_config_storage->load("$entity_type_id.$bundle.$field_name");
       if ($field_config && ($plugin = $this->getReactFieldsPlugin($field_config))) {
         $data[$field_name] = $plugin->getFieldInfo($form[$field_name], $field_config);
@@ -105,9 +130,14 @@ class ReactParagraphsResource extends ResourceBase {
   }
 
   /**
+   * Find an applicable react field plugin that matches the field config.
+   *
    * @param \Drupal\field\FieldConfigInterface $field_config
+   *   Field config entity.
    *
    * @return \Drupal\react_paragraphs\ReactParagraphsFieldsInterface|null
+   *   The plugin that is for the field.
+   *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
   protected function getReactFieldsPlugin(FieldConfigInterface $field_config) {

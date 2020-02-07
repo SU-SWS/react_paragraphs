@@ -9,7 +9,7 @@ use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class Text
+ * Select field plugin.
  *
  * @ReactParagraphsFields(
  *   id = "select",

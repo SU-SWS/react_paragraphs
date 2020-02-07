@@ -5,7 +5,7 @@ namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 
 /**
- * Class Text
+ * Telephone field plugin.
  *
  * @ReactParagraphsFields(
  *   id = "telephone",

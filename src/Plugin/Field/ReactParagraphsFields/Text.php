@@ -6,7 +6,7 @@ use Drupal\field\FieldConfigInterface;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 
 /**
- * Class Text
+ * Text field plugin.
  *
  * @ReactParagraphsFields(
  *   id = "text",

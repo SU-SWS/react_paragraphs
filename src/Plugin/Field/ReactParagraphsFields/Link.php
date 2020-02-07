@@ -9,7 +9,7 @@ use Drupal\field\FieldConfigInterface;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 
 /**
- * Class Text
+ * Link field plugin.
  *
  * @ReactParagraphsFields(
  *   id = "link",

@@ -5,7 +5,7 @@ namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 
 /**
- * Class Text
+ * Font awesome field plugin.
  *
  * @ReactParagraphsFields(
  *   id = "fontawesome",

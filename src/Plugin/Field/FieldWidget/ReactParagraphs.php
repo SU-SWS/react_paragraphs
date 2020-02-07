@@ -3,19 +3,13 @@
 namespace Drupal\react_paragraphs\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Session\AccountProxyInterface;
-use Drupal\editor\Plugin\EditorManager;
 use Drupal\field\FieldConfigInterface;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\paragraphs\Plugin\EntityReferenceSelection\ParagraphSelection;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation of the 'react_paragraphs' widget.
@@ -29,35 +23,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   multiple_values = true
  * )
  */
-class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterface {
-
-  /**
-   * Selection plugin manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface
-   */
-  protected $selectionManager;
-
-  /**
-   * Entity type manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
-   * Editor manager service.
-   *
-   * @var \Drupal\editor\Plugin\EditorManager
-   */
-  protected $editorManager;
-
-  /**
-   * Current account object.
-   *
-   * @var \Drupal\Core\Session\AccountProxyInterface
-   */
-  protected $currentUser;
+class ReactParagraphs extends ReactParagraphsWidgetBase {
 
   /**
    * List of paragraph types.
@@ -72,34 +38,6 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
    * @var \Drupal\paragraphs\ParagraphInterface[]
    */
   protected $paragraphs = [];
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $plugin_id,
-      $plugin_definition,
-      $configuration['field_definition'],
-      $configuration['settings'],
-      $configuration['third_party_settings'],
-      $container->get('plugin.manager.entity_reference_selection'),
-      $container->get('entity_type.manager'),
-      $container->get('plugin.manager.editor'),
-      $container->get('current_user')
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, SelectionPluginManagerInterface $selection_manager, EntityTypeManagerInterface $entity_type_manager, EditorManager $editor_manager, AccountProxyInterface $current_user) {
-    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
-    $this->selectionManager = $selection_manager;
-    $this->entityTypeManager = $entity_type_manager;
-    $this->editorManager = $editor_manager;
-    $this->currentUser = $current_user;
-  }
 
   /**
    * {@inheritdoc}
@@ -155,6 +93,9 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
       '#type' => 'fieldset',
     ];
 
+    /** @var \Drupal\paragraphs\ParagraphInterface[] $referenced_entities */
+    $referenced_entities = $items->referencedEntities();
+
     $item_values = array_filter($items->getValue());
     foreach ($item_values as $delta => &$item) {
 
@@ -164,20 +105,23 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
       }
       // In the circumstance that the items don't have settings data, just put
       // them into a single column.
-      $admin_title = $this->t('Item @delta', ['@delta' => $delta])->render();
       $item['settings'] = [
         'row' => $delta,
         'index' => 0,
         'width' => 12,
-        'admin_title' => $this->getItemLabel($item['target_id']),
+        'admin_title' => $this->getItemLabel($referenced_entities[$delta]),
       ];
     }
 
+    // Find unique elements for the widget react container and input field.
     $element_id = Html::getUniqueId('react-' . $this->fieldDefinition->getName());
     $input_id = Html::getUniqueId($element_id . '-input');
 
+    // Get all the attachments for any CKEditor fields that could exist.
     $attachments = $this->editorManager->getAttachments(array_keys(filter_formats($this->currentUser)));
     $attachments['library'][] = 'react_paragraphs/field_widget';
+
+    // Set the javascript settings to be picked up by react.
     $attachments['drupalSettings']['reactParagraphs'][] = [
       'fieldId' => $element_id,
       'inputId' => $input_id,
@@ -187,6 +131,7 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
       'resizableItems' => (bool) $this->getSetting('resizable'),
     ];
 
+    // The hidden input with a empty container nearby for react to attach to.
     $element['container']['value'] = $element;
     $element['container']['value'] += [
       '#prefix' => '<div id="' . $element_id . '"></div>',
@@ -201,8 +146,8 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
   /**
    * Get the paragraph type bundle name from the entity id to use as the label.
    *
-   * @param int $entity_id
-   *   Paragraph entity id.
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   Paragraph entity.
    *
    * @return string
    *   Bundle name or the entity id.
@@ -210,12 +155,12 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  protected function getItemLabel($entity_id) {
+  protected function getItemLabel(ContentEntityInterface $entity) {
     if (empty($this->paragraphTypes)) {
       $this->paragraphTypes = $this->entityTypeManager->getStorage('paragraphs_type')->loadMultiple();
     }
-    $paragraph = $this->entityTypeManager->getStorage('paragraph')->load($entity_id);
-    return $this->paragraphTypes[$paragraph->bundle()]->label();
+    // Get the paragraph type bundle label to be used in the widget.
+    return $this->paragraphTypes[$entity->bundle()]->label();
   }
 
   /**
@@ -233,20 +178,26 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
   protected function getTools(FieldDefinitionInterface $field_definition) {
     $return_bundles = [];
     $handler = $this->selectionManager->getSelectionHandler($field_definition ?: $this->fieldDefinition);
+
+    // Get a list of paragraph types that are allowed in the current field.
     if ($handler instanceof ParagraphSelection) {
       $return_bundles = $handler->getSortedAllowedTypes();
     }
 
+    // Load the paragraph types to check for icons.
     $bundle_entities = $this->entityTypeManager->getStorage('paragraphs_type')
       ->loadMultiple(array_keys($return_bundles));
 
     /** @var \Drupal\paragraphs\ParagraphsTypeInterface $paragraph_type */
     foreach ($bundle_entities as $id => $paragraph_type) {
+      // Always use a default value.
       $return_bundles[$id]['icon'] = NULL;
 
       if ($icon_uuid = $paragraph_type->get('icon_uuid')) {
         $file = $this->entityTypeManager->getStorage('file')
           ->loadByProperties(['uuid' => $icon_uuid]);
+
+        // An icon file exists. Add the file url for the react data to use.
         if (!empty($file)) {
           /** @var \Drupal\file\Entity\File $file */
           $file = is_array($file) ? reset($file) : $file;
@@ -263,17 +214,21 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
     $react_data = json_decode(urldecode($values['container']['value']), TRUE);
-
     $return_data = [];
 
-    if (!isset($react_data['rowOrder'])) {
+    // Nothing was added to the rows so there's nothing to do.
+    if (empty($react_data['rowOrder'])) {
       return $return_data;
     }
 
+    // Loop through each row from react, then loop through the items in each
+    // row, build the entity, and store the row/order data into the settings.
     foreach ($react_data['rowOrder'] as $row_number => $row_id) {
       foreach ($react_data['rows'][$row_id]['itemsOrder'] as $item_number => $item_id) {
         $item = $react_data['rows'][$row_id]['items'][$item_id];
 
+        // In case there was any incorrect data passed to the entity, we can
+        // still save all the other paragraphs.
         try {
           $entity = $this->getEntity($item);
         }
@@ -292,6 +247,7 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
           continue;
         }
 
+        // Settings column blob data.
         $settings = [
           'row' => $row_number,
           'index' => $item_number,
@@ -318,17 +274,19 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
    *
    * @return \Drupal\paragraphs\ParagraphInterface
    *   Paragraph entity.
-   *
-   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   protected function getEntity(array $item_data) {
 
+    // The paragraph was already created/loaded. We can return that.
     if (isset($this->paragraphs[$item_data['id']])) {
       return $this->paragraphs[$item_data['id']];
     }
 
+    // An existing paragraph was edited. Load that paragraph and set all the
+    // field values to the data passed in.
     if (!empty($item_data['target_id'])) {
       $entity = Paragraph::load($item_data['target_id']);
+
       /** @var \Drupal\Core\Field\FieldDefinitionInterface $field_definition */
       foreach ($entity->getFieldDefinitions() as $field_definition) {
         if (isset($item_data['entity'][$field_definition->getName()]) && $field_definition instanceof FieldConfigInterface) {
@@ -337,8 +295,8 @@ class ReactParagraphs extends WidgetBase implements ContainerFactoryPluginInterf
       }
     }
     else {
+      // Create a new paragraph entity. We don't need to save at this point.
       $entity = Paragraph::create($item_data['entity']);
-      $entity->save();
     }
 
     $this->paragraphs[$item_data['id']] = $entity;
