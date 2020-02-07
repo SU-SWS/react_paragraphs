@@ -146,6 +146,7 @@ class ReactParagraphsResource extends ResourceBase {
         return $this->reactFieldsPluginManager->createInstance($plugin_definition['id']);
       }
     }
+    return $this->reactFieldsPluginManager->createInstance('default');
   }
 
 }
