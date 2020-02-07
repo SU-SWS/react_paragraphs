@@ -5,15 +5,13 @@ namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 
 /**
- * Telephone field plugin.
+ * Boolean field plugin.
  *
  * @ReactParagraphsFields(
- *   id = "telephone",
- *   field_types = {
- *     "telephone"
- *   }
+ *   id = "default",
+ *   field_types = {}
  * )
  */
-class Telephone extends ReactParagraphsFieldsBase {
+class DefaultPlugin extends ReactParagraphsFieldsBase {
 
 }

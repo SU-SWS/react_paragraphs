@@ -23,7 +23,7 @@ class ReactParagraphsFieldsManagerTest extends KernelTestBase {
   public function testPluginManager() {
     /** @var \Drupal\react_paragraphs\ReactParagraphsFieldsManager $plugin_manager */
     $plugin_manager = \Drupal::service('plugin.manager.react_paragraphs_fields');
-    $this->assertCount(12, $plugin_manager->getDefinitions());
+    $this->assertCount(9, $plugin_manager->getDefinitions());
   }
 
 }
