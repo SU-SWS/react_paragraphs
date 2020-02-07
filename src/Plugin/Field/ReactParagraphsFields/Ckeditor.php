@@ -2,7 +2,6 @@
 
 namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\field\FieldConfigInterface;
 use Drupal\filter\FilterFormatInterface;
@@ -20,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
-class Ckeditor extends ReactParagraphsFieldsBase implements ContainerFactoryPluginInterface {
+class Ckeditor extends ReactParagraphsFieldsBase {
 
   /**
    * Current user object.

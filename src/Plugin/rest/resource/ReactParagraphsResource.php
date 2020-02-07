@@ -80,7 +80,7 @@ class ReactParagraphsResource extends ResourceBase {
   }
 
   /**
-   * $_GET response to return data for an entity bundle form.
+   * The $_GET response to return data for an entity bundle form.
    *
    * @param string $entity_type_id
    *   Entity type id.

@@ -11,6 +11,11 @@ use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\editor\Plugin\EditorManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class ReactParagraphsWidgetBase for the field widget.
+ *
+ * @package Drupal\react_paragraphs\Plugin\Field\FieldWidget
+ */
 abstract class ReactParagraphsWidgetBase extends WidgetBase implements ContainerFactoryPluginInterface {
 
   /**
