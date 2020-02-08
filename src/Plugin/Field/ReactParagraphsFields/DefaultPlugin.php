@@ -5,7 +5,7 @@ namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 
 /**
- * Boolean field plugin.
+ * Default field plugin.
  *
  * @ReactParagraphsFields(
  *   id = "default",
