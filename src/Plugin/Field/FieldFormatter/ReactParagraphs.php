@@ -28,7 +28,13 @@ class ReactParagraphs extends EntityReferenceRevisionsEntityFormatter {
 
     $organized_elements = [];
 
+    // The elements are a single column list of paragraph entities provided by
+    // entity_reference_revisions. We want to organize them into row groups
+    // and put them in the correct order.
     foreach ($items->getValue() as $delta => $item) {
+
+      // In an unusual case that the settings is not valid data, we'll populate
+      // it with some basic values.
       if (empty($item['settings'])) {
         $item['settings'] = json_encode([
           'width' => 12,
@@ -38,36 +44,39 @@ class ReactParagraphs extends EntityReferenceRevisionsEntityFormatter {
       }
       $settings = json_decode($item['settings'], TRUE);
 
-      foreach ($elements as $key => $element) {
-        if ($item['target_id'] == $element['#paragraph']->id()) {
-          unset($elements[$key]);
+      // Always add attributes to the existing row.
+      $organized_elements[$settings['row']]['attributes'] = new Attribute(['class' => ['react-paragraphs-row']]);
 
-          $organized_elements[$settings['row']]['attributes'] = new Attribute(['class' => ['react-paragraphs-row']]);
-          $bundle = $element['#paragraph']->bundle();
-          $organized_elements[$settings['row']]['items'][$settings['index']] = [
-            'entity' => $element,
-            'width' => $settings['width'],
-            'attributes' => new Attribute(['class' => ['paragraph-item', Html::cleanCssIdentifier("ptype-$bundle")], 'data-react-columns' => $settings['width']]),
-          ];
+      $bundle = $elements[$delta]['#paragraph']->bundle();
 
-          if (!isset($organized_elements[$settings['row']]['width'])) {
-            $organized_elements[$settings['row']]['width'] = 0;
-          }
-          $organized_elements[$settings['row']]['width'] += $settings['width'];
-        }
+      // Add the paragraph render array to the list of items in the correct row.
+      $organized_elements[$settings['row']]['items'][$settings['index']] = [
+        'entity' => $elements[$delta],
+        'width' => $settings['width'],
+        'attributes' => new Attribute(['class' => ['paragraph-item', Html::cleanCssIdentifier("ptype-$bundle")], 'data-react-columns' => $settings['width']]),
+      ];
+
+      // Add up the width of all elements with each row to provide a spacer in
+      // the later steps.
+      if (!isset($organized_elements[$settings['row']]['width'])) {
+        $organized_elements[$settings['row']]['width'] = 0;
       }
+      $organized_elements[$settings['row']]['width'] += $settings['width'];
     }
 
+    // Ensure we have all the rows and items sorted correctly based on their row
+    // and item indexes.
     ksort($organized_elements);
     array_walk($organized_elements, 'ksort');
 
+    // Add any spacers to the end of the rows.
     $this->addSpacers($organized_elements);
 
+    // Return a field render array. Set `#is_multiple` to false to reduce
+    // unnecessary markup since the included template handles the multiple.
     return [
-      [
-        '#theme' => 'react_paragraphs',
-        '#rows' => $organized_elements,
-      ],
+      ['#theme' => 'react_paragraphs', '#rows' => $organized_elements],
+      '#is_multiple' => FALSE,
       '#attached' => ['library' => ['react_paragraphs/field_formatter']],
     ];
   }
@@ -80,14 +89,18 @@ class ReactParagraphs extends EntityReferenceRevisionsEntityFormatter {
    */
   protected function addSpacers(array &$elements) {
     foreach ($elements as &$row) {
+      // When the rows aren't 12 columns wide, add a last element with the
+      // remaining columns.
       if ($row['width'] < 12) {
-        $row[] = [
-          '#type' => 'html_tag',
-          '#tag' => 'div',
-          '#attributes' => ['data-react-columns' => 12 - $row['width']],
+        $row['items'][] = [
+          'entity' => [
+            '#type' => 'html_tag',
+            '#tag' => 'div',
+          ],
+          'attributes' => new Attribute(['data-react-columns' => 12 - $row['width']]),
         ];
       }
-
+      // Cleanup the row.
       unset($row['width']);
     }
   }

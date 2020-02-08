@@ -18,8 +18,7 @@ use Drupal\entity_reference_revisions\Plugin\Field\FieldType\EntityReferenceRevi
  *   default_widget = "react_paragraphs",
  *   default_formatter = "react_paragraphs",
  *   cardinality = -1,
- *   list_class =
- *   "\Drupal\entity_reference_revisions\EntityReferenceRevisionsFieldItemList"
+ *   list_class = "\Drupal\entity_reference_revisions\EntityReferenceRevisionsFieldItemList"
  * )
  */
 class ReactParagraphs extends EntityReferenceRevisionsItem {
@@ -68,6 +67,9 @@ class ReactParagraphs extends EntityReferenceRevisionsItem {
     return $schema;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function preSave() {
     try {
       parent::preSave();

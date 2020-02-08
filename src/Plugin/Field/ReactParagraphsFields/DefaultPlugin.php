@@ -5,15 +5,13 @@ namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 
 /**
- * Class Text
+ * Default field plugin.
  *
  * @ReactParagraphsFields(
- *   id = "color",
- *   field_types = {
- *     "color_field_type"
- *   }
+ *   id = "default",
+ *   field_types = {}
  * )
  */
-class Color extends ReactParagraphsFieldsBase {
+class DefaultPlugin extends ReactParagraphsFieldsBase {
 
 }

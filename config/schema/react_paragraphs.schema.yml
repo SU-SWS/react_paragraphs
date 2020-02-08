@@ -1,0 +1,36 @@
+field.storage_settings.react_paragraphs:
+  type: mapping
+  label: 'Entity reference field storage settings'
+  mapping:
+    target_type:
+      type: string
+      label: 'Type of item to reference'
+field.field_settings.react_paragraphs:
+  type: mapping
+  label: 'Entity reference field settings'
+  mapping:
+    handler:
+      type: string
+      label: 'Reference method'
+    handler_settings:
+      type: entity_reference_selection.[%parent.handler]
+      label: 'Entity reference selection plugin settings'
+
+field.formatter.settings.react_paragraphs:
+  type: mapping
+  label: 'Entity reference rendered entity display format settings'
+  mapping:
+    view_mode:
+      type: string
+      label: 'View mode'
+    link:
+      type: boolean
+      label: 'Show links'
+
+field.widget.settings.react_paragraphs:
+  type: mapping
+  mapping:
+    items_per_row:
+      type: integer
+    resizable:
+      type: boolean
