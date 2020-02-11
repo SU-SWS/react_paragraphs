@@ -193,16 +193,8 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       // Always use a default value.
       $return_bundles[$id]['icon'] = NULL;
 
-      if ($icon_uuid = $paragraph_type->get('icon_uuid')) {
-        $file = $this->entityTypeManager->getStorage('file')
-          ->loadByProperties(['uuid' => $icon_uuid]);
-
-        // An icon file exists. Add the file url for the react data to use.
-        if (!empty($file)) {
-          /** @var \Drupal\file\Entity\File $file */
-          $file = is_array($file) ? reset($file) : $file;
-          $return_bundles[$id]['icon'] = file_create_url($file->getFileUri());
-        }
+      if ($icon = $paragraph_type->getIconUrl()) {
+        $return_bundles[$id]['icon'] = $icon;
       }
     }
 
