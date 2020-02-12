@@ -211,7 +211,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       return $type->getIconUrl() ?: NULL;
     }
     catch (\Exception $e) {
-      \Drupal::logger('react_paragraphs')->error(t('Unable to get paragraph icon for %type'), ['%type' => $type]);
+      \Drupal::logger('react_paragraphs')->error('Unable to get paragraph icon for %type', ['%type' => $type]);
     }
   }
 
