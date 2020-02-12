@@ -9,6 +9,7 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\field\FieldConfigInterface;
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\paragraphs\ParagraphsTypeInterface;
 use Drupal\paragraphs\Plugin\EntityReferenceSelection\ParagraphSelection;
 
 /**
@@ -190,15 +191,28 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
 
     /** @var \Drupal\paragraphs\ParagraphsTypeInterface $paragraph_type */
     foreach ($bundle_entities as $id => $paragraph_type) {
-      // Always use a default value.
-      $return_bundles[$id]['icon'] = NULL;
-
-      if ($icon = $paragraph_type->getIconUrl()) {
-        $return_bundles[$id]['icon'] = $icon;
-      }
+      $return_bundles[$id]['icon'] = self::getParagraphTypeIcon($paragraph_type);
     }
 
     return $return_bundles;
+  }
+
+  /**
+   * Get the url of the paragraph types icon if it exists.
+   *
+   * @param \Drupal\paragraphs\ParagraphsTypeInterface $type
+   *   Paragraphs type entity.
+   *
+   * @return string|null
+   *   Path to icon or null if non exists..
+   */
+  protected static function getParagraphTypeIcon(ParagraphsTypeInterface $type) {
+    try {
+      return $type->getIconUrl() ?: NULL;
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('react_paragraphs')->error('Unable to get paragraph icon for %type', ['%type' => $type]);
+    }
   }
 
   /**
