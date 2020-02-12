@@ -1,6 +1,10 @@
 # [React Paragraphs](https://github.com/SU-SWS/react_paragraphs)
 ##### Version: 8.x
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/9e90958f537c6d756e13/maintainability)](https://codeclimate.com/github/SU-SWS/react_paragraphs/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/9e90958f537c6d756e13/test_coverage)](https://codeclimate.com/github/SU-SWS/react_paragraphs/test_coverage)
+[![CircleCI](https://circleci.com/gh/SU-SWS/react_paragraphs.svg?style=svg)](https://circleci.com/gh/SU-SWS/react_paragraphs)
+
 Maintainers: [Mike Decker](https://github.com/pookmish)
 
 Changelog: [Changelog.md](CHANGELOG.md)
@@ -29,7 +33,13 @@ If you are experiencing issues with this module try reverting the feature first.
 Developer
 ---
 
-TBD
+For React development, change directories into the `js` directory and run either
+`yarn` or `npm install`. This will install all dependencies for webpack and
+React. For faster development with the React framework, you can run `yarn dev`
+or `npm run dev` which will create a live reloading url with the react widget.
+To compile the css & js for use in a Drupal site, use `yarn build` or `npm run
+build`. These commands will re-compile the appropriate files. Then ensure to
+clear javascript and browser caches on the Drupal site being used.
 
 
 Contribution / Collaboration

@@ -6,7 +6,7 @@ use Drupal\field\FieldConfigInterface;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 
 /**
- * Class Text
+ * Number field plugin.
  *
  * @ReactParagraphsFields(
  *   id = "number",
@@ -28,7 +28,6 @@ class Number extends ReactParagraphsFieldsBase {
     $info['scale'] = $field_config->getFieldStorageDefinition()->getSetting('scale');
     $info['min'] = $field_config->getSetting('min');
     $info['max'] = $field_config->getSetting('max');
-//    dpm($field_config);
     return $info;
   }
 

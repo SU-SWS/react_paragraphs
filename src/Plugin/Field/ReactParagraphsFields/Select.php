@@ -3,13 +3,12 @@
 namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\field\FieldConfigInterface;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class Text
+ * Select field plugin.
  *
  * @ReactParagraphsFields(
  *   id = "select",
@@ -21,7 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
-class Select extends ReactParagraphsFieldsBase implements ContainerFactoryPluginInterface {
+class Select extends ReactParagraphsFieldsBase {
 
   /**
    * Entity Type manager service.
