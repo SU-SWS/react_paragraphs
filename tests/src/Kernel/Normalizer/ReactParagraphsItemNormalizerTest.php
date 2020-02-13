@@ -87,6 +87,7 @@ class ReactParagraphsItemNormalizerTest extends KernelTestBase {
       ],
     ]);
     $this->node->save();
+    $this->node = Node::load($this->node->id());
   }
 
   public function testNormalizer() {
@@ -94,8 +95,8 @@ class ReactParagraphsItemNormalizerTest extends KernelTestBase {
 
     /** @var \Symfony\Component\Serializer\SerializerInterface $serializer */
     $serializer = \Drupal::service('serializer');
-    $output = $serializer->serialize($this->node, 'hal_json', ['json_encode_options' => JSON_PRETTY_PRINT]);
-    $position = strpos($output, '"settings": "{\"foo\":\"bar\"}"');
+    $output = $serializer->serialize($this->node, 'hal_json');
+    $position = strpos($output, '"settings":{"foo":"bar"}}]},');
     $this->assertTrue($position > 1);
 
     $node_class = \Drupal::entityTypeManager()->getDefinition('node')->getClass();
