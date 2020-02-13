@@ -2,3 +2,8 @@ services:
   plugin.manager.react_paragraphs_fields:
     class: Drupal\react_paragraphs\ReactParagraphsFieldsManager
     parent: default_plugin_manager
+  react_paragraphs.normalizer.react_paragraphs_item.hal:
+    class: Drupal\react_paragraphs\Normalizer\ReactParagraphsItemNormalizer
+    arguments: ['@hal.link_manager', '@serializer.entity_resolver', '@entity_type.manager']
+    tags:
+    - { name: normalizer, priority: 20 }

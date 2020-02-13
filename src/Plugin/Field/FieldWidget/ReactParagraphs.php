@@ -99,9 +99,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
 
     $item_values = array_filter($items->getValue());
     foreach ($item_values as $delta => &$item) {
-
-      $item['settings'] = json_decode($item['settings'], TRUE);
-      if (is_array($item['settings'])) {
+      if (!empty($item['settings'])) {
         continue;
       }
       // In the circumstance that the items don't have settings data, just put
