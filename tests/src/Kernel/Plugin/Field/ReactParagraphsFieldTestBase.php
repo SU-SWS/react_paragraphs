@@ -33,7 +33,9 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
     'user',
     'filter',
     'file',
-    'text'
+    'text',
+    'hal',
+    'serialization',
   ];
 
   /**
