@@ -24,7 +24,7 @@ class ReactParagraphsItemNormalizer extends EntityReferenceRevisionItemNormalize
    */
   protected function constructValue($data, $context) {
     $value = parent::constructValue($data, $context);
-    if ($value) {
+    if ($value && isset($value['settings'])) {
       $value['settings'] = json_encode($value['settings']);
     }
     return $value;
