@@ -39,6 +39,7 @@ class ReactParagraphsItemNormalizer extends EntityReferenceRevisionItemNormalize
     $entity = $field_item->getEntity();
     $field_uri = $this->linkManager->getRelationUri($entity->getEntityTypeId(), $entity->bundle(), $field_name, $context);
     $data['_embedded'][$field_uri][0]['settings'] = $field_item->settings;
+
     return $data;
   }
 

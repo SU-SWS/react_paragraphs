@@ -91,7 +91,7 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
   public function testReactFieldWidget() {
     /** @var \Drupal\Core\Entity\EntityFormBuilderInterface $form_builder */
     $form_builder = \Drupal::service('entity.form_builder');
-    $form = $form_builder->getForm($this->node);
+    $form = $form_builder->getForm(Node::load($this->node->id()));
     $attachments = $form['foo']['widget']['container']['value']['#attached']['drupalSettings']['reactParagraphs'];
 
     $expected = [
@@ -107,23 +107,23 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
         'items' => [
           0 => [
             'target_id' => '1',
+            'target_revision_id' => '1',
             'settings' => [
               'row' => 0,
               'index' => 0,
               'width' => 12,
               'admin_title' => 'Card',
             ],
-            'target_revision_id' => '1',
           ],
           1 => [
             'target_id' => '2',
+            'target_revision_id' => '2',
             'settings' => [
               'row' => 1,
               'index' => 0,
               'width' => 12,
               'admin_title' => '',
             ],
-            'target_revision_id' => '2',
           ],
         ],
         'itemsPerRow' => 1,
