@@ -52,7 +52,13 @@ class ReactParagraphs extends EntityReferenceRevisionsEntityFormatter {
       $organized_elements[$item['settings']['row']]['items'][$item['settings']['index']] = [
         'entity' => $elements[$delta],
         'width' => $item['settings']['width'],
-        'attributes' => new Attribute(['class' => ['paragraph-item', Html::cleanCssIdentifier("ptype-$bundle")], 'data-react-columns' => $item['settings']['width']]),
+        'attributes' => new Attribute([
+          'class' => [
+            'paragraph-item',
+            Html::cleanCssIdentifier("ptype-$bundle"),
+          ],
+          'data-react-columns' => $item['settings']['width'],
+        ]),
       ];
 
       // Add up the width of all elements with each row to provide a spacer in
