@@ -141,6 +141,7 @@ export class WidgetManager extends Component {
         rowOrder: this.state.rowOrder,
       };
       formItemsField.value = encodeURI(JSON.stringify(returnValue));
+      jQuery(formItemsField).closest('.form-item').trigger('formUpdated');
     }
   }
 
@@ -198,7 +199,7 @@ export class WidgetManager extends Component {
       this.moveNewItemIntoRow(simulated_drag);
     }
 
-    function moveItem(){
+    function moveItem() {
 
     }
   };

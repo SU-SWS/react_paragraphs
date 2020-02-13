@@ -123,3 +123,5 @@ exclude_patterns:
 - "**.min.*"
 - "spec/"
 - "postcss.config.js"
+- "**.map"
+- "js/build"
