@@ -18,7 +18,7 @@ export const FieldWidget = ({inputId, fieldName, items, tools, itemsPerRow, resi
         <DrupalContext.Consumer>
           {drupalContext => (
             <DragDropContext onDragEnd={drupalContext.onDragEnd}>
-              <div style={{width:'calc(100% - 200px)', minHeight:'300px'}}>
+              <div style={{width:'calc(100% - 200px)', minHeight:'300px', marginTop: '20px'}}>
                 <Droppable
                   droppableId="rows"
                   type="row"

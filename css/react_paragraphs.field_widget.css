@@ -10,5 +10,10 @@ fieldset:not(.fieldgroup)[class*="MuiOutlinedInput"] {
 }
 
 legend.MuiFormLabel-root {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.react-paragraphs-fieldset legend {
+  text-transform: none;
+  letter-spacing: 0;
 }
