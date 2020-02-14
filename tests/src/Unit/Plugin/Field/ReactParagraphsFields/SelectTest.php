@@ -27,7 +27,7 @@ class SelectTest extends ReactParagraphsFieldsTestBase {
       'widget_type' => 'foo_bar',
       'column_key' => 'value',
       'options' => NULL,
-
+      'default_value' => NULL,
     ];
     $this->assertArrayEquals($expected, $data);
   }
@@ -37,7 +37,8 @@ class SelectTest extends ReactParagraphsFieldsTestBase {
    */
   public function testWebforms() {
     $this->fieldConfig->method('getType')->willReturn('webform');
-    $data = $this->plugin->getFieldInfo([], $this->fieldConfig);
+    $field_element['widget']['#default_value'] = ['foo'];
+    $data = $this->plugin->getFieldInfo($field_element, $this->fieldConfig);
 
     $expected = [
       'cardinality' => 1,
@@ -48,6 +49,7 @@ class SelectTest extends ReactParagraphsFieldsTestBase {
       'widget_type' => 'foo_bar',
       'column_key' => 'target_id',
       'options' => [],
+      'default_value' => ['foo'],
     ];
     $this->assertArrayEquals($expected, $data);
   }
