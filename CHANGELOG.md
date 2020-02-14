@@ -1,7 +1,8 @@
 # React Paragprahs
 
-8.x-1.0-dev
+8.x-1.0
 --------------------------------------------------------------------------------
-_Release Date: 2020-XX-XX_
+_Release Date: 2020-02-14_
 
-- It's the future!
+- Happy Valentines Day!
+- Initial Release.
