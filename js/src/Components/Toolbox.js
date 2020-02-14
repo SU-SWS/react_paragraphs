@@ -18,7 +18,7 @@ const ToolboxWrapper = styled.div`
 `;
 
 const Toolwrapper = styled.div`
-  background: #F9F9F9;
+  background: #fff;
   margin: 10px;
   padding: 10px;
   border: 1px solid #ccc;
