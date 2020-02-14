@@ -93,9 +93,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     $element['container'] += [
       '#type' => 'fieldset',
       '#attributes' => [
-        'class' => [
-          'react-paragraphs-fieldset',
-        ],
+        'class' => ['react-paragraphs-fieldset'],
       ],
     ];
 
