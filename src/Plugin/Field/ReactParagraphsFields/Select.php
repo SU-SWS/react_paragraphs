@@ -51,6 +51,7 @@ class Select extends ReactParagraphsFieldsBase {
     $info = parent::getFieldInfo($field_element, $field_config);
 
     $info['widget_type'] = $field_element['widget']['#type'] ?? $info['widget_type'] ;
+    $info['default_value'] = $field_element['widget']['#default_value'];
 
     $options = $field_config->getFieldStorageDefinition()
       ->getSetting('allowed_values');

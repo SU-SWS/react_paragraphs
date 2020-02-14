@@ -7,7 +7,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 export const SelectWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
 
-  let defaultFieldValue = settings.cardinality === 1 ? '' : [];
+  let defaultFieldValue = settings.default_value;
   if (defaultValue && defaultValue.length >= 1) {
     defaultFieldValue = settings.cardinality === 1 ? defaultValue[0][settings.column_key] : defaultValue.map(item => item[settings.column_key]);
   }

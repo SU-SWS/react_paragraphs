@@ -13,7 +13,7 @@ import {CkeditorWidget} from "./Widgets/CkeditorWidget";
 import {MediaLibrary} from "./Widgets/MediaLibrary";
 
 const FieldContainer = styled.div`
-  margin: 10px 0;
+  margin: 40px 0 0;
 `;
 
 export class ParagraphForm extends Component {

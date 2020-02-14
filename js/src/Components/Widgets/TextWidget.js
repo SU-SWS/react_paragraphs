@@ -17,6 +17,7 @@ export const TextWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
         required={settings.required}
         type={settings.text_type}
         onChange={e => onFieldChange([{value: e.target.value}])}
+        inputProps={{maxLength: settings.text_type !== 'textarea' ? 254 : null}}
         fullWidth
       />
     </FormGroup>
