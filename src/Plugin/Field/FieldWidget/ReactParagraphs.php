@@ -92,7 +92,11 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     $element['container'] = $element;
     $element['container'] += [
       '#type' => 'fieldset',
-      '#attributes' => ['class' => ['react-paragraphs-fieldset']]
+      '#attributes' => [
+        'class' => [
+          'react-paragraphs-fieldset',
+        ],
+      ],
     ];
 
     /** @var \Drupal\paragraphs\ParagraphInterface[] $referenced_entities */
