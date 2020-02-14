@@ -24,6 +24,13 @@ use Drupal\entity_reference_revisions\Plugin\Field\FieldType\EntityReferenceRevi
 class ReactParagraphs extends EntityReferenceRevisionsItem {
 
   /**
+   * Flag when the field data is being saved.
+   *
+   * @var bool
+   */
+  protected $duringSave = FALSE;
+
+  /**
    * {@inheritdoc}
    */
   public static function defaultStorageSettings() {
@@ -71,6 +78,9 @@ class ReactParagraphs extends EntityReferenceRevisionsItem {
    * {@inheritdoc}
    */
   public function preSave() {
+    $this->duringSave = TRUE;
+    $this->writePropertyValue('settings', json_encode($this->settings));
+
     try {
       parent::preSave();
     }
@@ -80,6 +90,18 @@ class ReactParagraphs extends EntityReferenceRevisionsItem {
       \Drupal::logger('react_paragraphs')
         ->error($this->t('Unable to create entity: %message'), ['%message' => $e->getMessage()]);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function onChange($property_name, $notify = TRUE) {
+    parent::onChange($property_name, $notify);
+    if (!$this->duringSave && !is_array($this->settings)) {
+      $settings = json_decode($this->settings, TRUE) ?: [];
+      $this->writePropertyValue('settings', $settings);
+    }
+    $this->duringSave = FALSE;
   }
 
 }

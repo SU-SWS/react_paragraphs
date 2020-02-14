@@ -36,32 +36,37 @@ class ReactParagraphs extends EntityReferenceRevisionsEntityFormatter {
       // In an unusual case that the settings is not valid data, we'll populate
       // it with some basic values.
       if (empty($item['settings'])) {
-        $item['settings'] = json_encode([
+        $item['settings'] = [
           'width' => 12,
           'row' => $delta,
           'index' => 0,
-        ]);
+        ];
       }
-      $settings = json_decode($item['settings'], TRUE);
 
       // Always add attributes to the existing row.
-      $organized_elements[$settings['row']]['attributes'] = new Attribute(['class' => ['react-paragraphs-row']]);
+      $organized_elements[$item['settings']['row']]['attributes'] = new Attribute(['class' => ['react-paragraphs-row']]);
 
       $bundle = $elements[$delta]['#paragraph']->bundle();
 
       // Add the paragraph render array to the list of items in the correct row.
-      $organized_elements[$settings['row']]['items'][$settings['index']] = [
+      $organized_elements[$item['settings']['row']]['items'][$item['settings']['index']] = [
         'entity' => $elements[$delta],
-        'width' => $settings['width'],
-        'attributes' => new Attribute(['class' => ['paragraph-item', Html::cleanCssIdentifier("ptype-$bundle")], 'data-react-columns' => $settings['width']]),
+        'width' => $item['settings']['width'],
+        'attributes' => new Attribute([
+          'class' => [
+            'paragraph-item',
+            Html::cleanCssIdentifier("ptype-$bundle"),
+          ],
+          'data-react-columns' => $item['settings']['width'],
+        ]),
       ];
 
       // Add up the width of all elements with each row to provide a spacer in
       // the later steps.
-      if (!isset($organized_elements[$settings['row']]['width'])) {
-        $organized_elements[$settings['row']]['width'] = 0;
+      if (!isset($organized_elements[$item['settings']['row']]['width'])) {
+        $organized_elements[$item['settings']['row']]['width'] = 0;
       }
-      $organized_elements[$settings['row']]['width'] += $settings['width'];
+      $organized_elements[$item['settings']['row']]['width'] += $item['settings']['width'];
     }
 
     // Ensure we have all the rows and items sorted correctly based on their row
