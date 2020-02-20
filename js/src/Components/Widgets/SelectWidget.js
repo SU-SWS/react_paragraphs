@@ -42,6 +42,7 @@ export const SelectWidget = ({fieldId, defaultValue, onFieldChange, settings}) =
         onChange={e => valueChanged(e.target.value)}
         variant="outlined"
         required={settings.required}
+        style={{maxWidth: "400px", marginTop: "10px"}}
       >
         {settings.required === false && settings.cardinality === 1 &&
         <MenuItem value="">
@@ -55,12 +56,12 @@ export const SelectWidget = ({fieldId, defaultValue, onFieldChange, settings}) =
           </MenuItem>
         )}
 
-        {settings.help.length &&
-        <FormHelperText>
-          {settings.help}
-        </FormHelperText>
-        }
       </Select>
+      {settings.help.length &&
+      <FormHelperText>
+        {settings.help}
+      </FormHelperText>
+      }
     </FormGroup>
   )
 };

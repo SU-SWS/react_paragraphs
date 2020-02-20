@@ -18,7 +18,7 @@ const ItemsContainer = styled.div`
 
 const RowWrapper = styled.div`
   display: flex;
-  background: ${props => props.isDragging ? 'lightgreen' : '#fff'};
+  background: ${props => props.isDragging ? '#dafcdf' : '#fff'};
 
   .move-row-handle {
     background: url(${moveIcon}) no-repeat center;

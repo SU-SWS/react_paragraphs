@@ -8,9 +8,9 @@ const ModalHeader = styled.div`
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   background: #6b6b6b;
- 
+
   position: relative;
-  
+
   span {
     margin: 0;
     color: #fff;
@@ -32,9 +32,9 @@ export const DrupalModal = (props) => {
   const modalStyles = {
     content: {
       top: "10%",
-      left: "10%",
+      left: "20%",
       overflow: "auto",
-      width: "80%",
+      width: "60%",
       height: "80%",
       padding: "0",
       display: "flex",
