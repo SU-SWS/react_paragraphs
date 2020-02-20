@@ -146,6 +146,7 @@ export class CkeditorWidget extends Component {
                 data-editor-for={`${this.props.fieldId}-text-area`}
                 defaultValue={this.state.format}
                 onChange={this.onFormatChange}
+                style={{marginLeft: '10px'}}
               >
                 {Object.keys(this.props.settings.allowed_formats).map(formatId =>
                   <option

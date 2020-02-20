@@ -9,9 +9,7 @@ import {FlexDiv} from "./Atoms/FlexDiv";
 import {DrupalModal} from "./Atoms/DrupalModal";
 import {DrupalModalFooter} from "./Atoms/DrupalModalFooter";
 
-const ParagraphWrapper = styled.div`
-  background: ${props => props.isDragging ? 'lightgreen' : '#fff'};
-`;
+const ParagraphWrapper = styled.div``;
 
 const ResizehandleWrapper = styled.div`
   width: 5px;

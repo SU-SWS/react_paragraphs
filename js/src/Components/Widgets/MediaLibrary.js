@@ -117,6 +117,7 @@ export class MediaLibrary extends Component {
           className="button"
           onClick={this.openMediaLibrary}
           value="Add media"
+          style={{margin: "10px 0"}}
         />
         }
 
