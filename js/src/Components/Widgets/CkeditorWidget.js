@@ -29,30 +29,40 @@ export class CkeditorWidget extends Component {
     this.showHideSummary = this.showHideSummary.bind(this);
     this.unlockSnapshot = this.unlockSnapshot.bind(this);
     this.getSummaryInput = this.getSummaryInput.bind(this);
+    this.addListeners = this.addListeners.bind(this);
   }
 
   componentDidMount() {
     try {
+      CKEDITOR.on('instanceReady', this.addListeners);
       Drupal.behaviors.editor.attach(this.widgetRef.current, window.drupalSettings);
 
       Object.keys(Drupal.editors).map(editorId => {
         Drupal.editors[editorId].onChange(this.textareaRef, this.onEditorChange.bind(undefined, this.textareaRef));
-        CKEDITOR.instances[`${this.props.fieldId}-text-area`].on('unlockSnapshot', this.unlockSnapshot.bind(undefined, this.textareaRef));
       })
     }
     catch (error) {
     }
   }
 
+  addListeners() {
+    CKEDITOR.instances[`${this.props.fieldId}-text-area`].on('unlockSnapshot', this.unlockSnapshot.bind(undefined, this.textareaRef));
+    CKEDITOR.instances[`${this.props.fieldId}-text-area`].on("key", this.unlockSnapshot.bind(undefined, this.textareaRef));
+  }
+
   unlockSnapshot(element, snapshot) {
-    if (snapshot.editor.getData().length >= 1) {
-      this.onEditorChange(element, snapshot.editor.getData());
-    }
+    // Timeout to let the keyed in value to be added to the data.
+    setTimeout(() => {
+      if (this.state.value != snapshot.editor.getData()) {
+        this.onEditorChange(element, snapshot.editor.getData());
+      }
+    }, 250);
   }
 
   componentWillUnmount() {
     try {
       Drupal.behaviors.editor.detach(this.widgetRef.current, window.drupalSettings, 'destroy');
+      CKEDITOR.removeListener('instanceReady', this.addListeners);
     }
     catch (error) {
     }
@@ -137,6 +147,8 @@ export class CkeditorWidget extends Component {
             id={`${this.props.fieldId}-text-area`}
             defaultValue={this.state.value}
             onChange={this.onTextAreaChange}
+            rows="8"
+            style={{width: "100%"}}
           />
           <div className="filter-wrapper">
             <div className="form-item">
