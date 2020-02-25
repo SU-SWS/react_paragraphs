@@ -11,6 +11,7 @@ import {CheckboxesWidget} from "./Widgets/CheckboxesWidget";
 import {RadiosWidget} from "./Widgets/RadiosWidget";
 import {CkeditorWidget} from "./Widgets/CkeditorWidget";
 import {MediaLibrary} from "./Widgets/MediaLibrary";
+import {ViewFieldWidget} from "./Widgets/ViewFieldWidget";
 
 const FieldContainer = styled.div`
   margin: 40px 0 0;
@@ -29,6 +30,7 @@ export class ParagraphForm extends Component {
     radios: RadiosWidget,
     ckeditor: CkeditorWidget,
     media_library: MediaLibrary,
+    viewfield: ViewFieldWidget
   };
 
   constructor(props) {
