@@ -114,37 +114,53 @@ export class ViewFieldWidget extends Component {
             )}
           </Select>
 
-          <InputWrapper>
-            <TextField
-              id={this.props.fieldId + '-arguments'}
-              label="Arguments"
-              variant="outlined"
-              defaultValue={this.state.arguments}
-              required={this.props.settings.required}
-              onChange={e => this.valueChanged('arguments', e.target.value)}
-              inputProps={{maxLength: 254}}
-              fullWidth
-            />
-          </InputWrapper>
-          <InputWrapper>
-            <TextField
-              id={this.props.fieldId + '-num-items'}
-              label="Number of items"
-              inputProps={{
-                min: 0,
-                step: 1
-              }}
-              defaultValue={this.state.items_to_display}
-              onChange={e => this.valueChanged('items_to_display', e.target.value)}
-              type='number'
-            />
-          </InputWrapper>
+
+          <AdvancedOptions>
+            <a href="#"
+               onClick={() => this.setState({advancedOpen: !this.state.advancedOpen})}>Advanced
+              Options</a>
+            <InputWrapper
+              style={{display: this.state.advancedOpen ? 'block' : 'none'}}>
+              <InputWrapper>
+                <TextField
+                  id={this.props.fieldId + '-arguments'}
+                  label="Arguments"
+                  helperText={`Separate contextual filters with a "/". Each filter may use "+" or "," for multi-value arguments. This field supports tokens.`}
+                  variant="outlined"
+                  defaultValue={this.state.arguments}
+                  required={this.props.settings.required}
+                  onChange={e => this.valueChanged('arguments', e.target.value)}
+                  inputProps={{maxLength: 254}}
+                  fullWidth
+                />
+              </InputWrapper>
+              <InputWrapper>
+                <TextField
+                  id={this.props.fieldId + '-num-items'}
+                  label="Number of items"
+                  helperText="Override the number of items to display. This also disables the pager if one is configured. Leave empty for default limit."
+                  inputProps={{
+                    min: 0,
+                    step: 1
+                  }}
+                  defaultValue={this.state.items_to_display}
+                  onChange={e => this.valueChanged('items_to_display', e.target.value)}
+                  type='number'
+                />
+              </InputWrapper>
+            </InputWrapper>
+          </AdvancedOptions>
         </InputWrapper>
       </FormGroup>
     )
   }
 
 }
+
+const AdvancedOptions = styled.div`
+  border: 1px solid #ccc;
+  padding: 20px;
+`;
 
 const InputWrapper = styled.div`
   margin-top: 10px;
