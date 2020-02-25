@@ -12,8 +12,8 @@ export class ViewFieldWidget extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      target_id: this.getDefaultValue('target_id'),
-      display_id: this.getDefaultValue('display_id'),
+      target_id: this.getDefaultValue('target_id') ? this.getDefaultValue('target_id') : '_none',
+      display_id: this.getDefaultValue('display_id') ? this.getDefaultValue('display_id') : '_none',
       arguments: this.getDefaultValue('arguments'),
       items_to_display: this.getDefaultValue('items_to_display')
     }
@@ -46,7 +46,7 @@ export class ViewFieldWidget extends Component {
   }
 
   getDisplayOptions(viewId) {
-    if (viewId) {
+    if (viewId !== '_none') {
       return this.props.settings.displays[viewId];
     }
     return [];
@@ -65,7 +65,7 @@ export class ViewFieldWidget extends Component {
 
         <Select
           id={this.props.fieldId + '-target-id'}
-          value={this.state.target_id ? this.state.target_id : '_none'}
+          value={this.state.target_id}
           multiple={this.props.settings.cardinality !== 1}
           onChange={e => this.valueChanged('target_id', e.target.value)}
           variant="outlined"
@@ -86,7 +86,7 @@ export class ViewFieldWidget extends Component {
         </Select>
 
         <InputWrapper
-          style={{display: this.state.target_id ? 'block' : 'none'}}>
+          style={{display: this.state.target_id !== '_none' ? 'block' : 'none'}}>
 
           <InputLabel htmlFor={this.props.fieldId + '-display-id'}>
             Display
@@ -94,7 +94,7 @@ export class ViewFieldWidget extends Component {
 
           <Select
             id={this.props.fieldId + '-display-id'}
-            value={this.state.display_id ? this.state.display_id : '_none'}
+            value={this.state.display_id}
             multiple={this.props.settings.cardinality !== 1}
             onChange={e => this.valueChanged('display_id', e.target.value)}
             variant="outlined"
