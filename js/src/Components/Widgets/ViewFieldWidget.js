@@ -18,7 +18,7 @@ export class ViewFieldWidget extends Component {
     }
   }
 
-  getDefaultValue(column){
+  getDefaultValue(column) {
     return this.props.defaultValue && this.props.defaultValue[0] ? this.props.defaultValue[0][column] : '';
   }
 
@@ -26,7 +26,7 @@ export class ViewFieldWidget extends Component {
     const newState = {...this.state};
     newState[column] = newValue;
 
-    if(column === 'target_id' && !newValue){
+    if (column === 'target_id' && !newValue) {
       newState['display_id'] = newValue;
       newState['arguments'] = newValue;
       newState['items_to_display'] = newValue;
@@ -35,7 +35,7 @@ export class ViewFieldWidget extends Component {
     this.setState(newState);
 
     // Don't change the field value if the view or the display are not selected.
-    if (newState.target_id && newState.display_id) {
+    if (newState.target_id !== '_none' && newState.display_id !== '_none') {
       this.props.onFieldChange([newState]);
     }
     else {
@@ -53,7 +53,7 @@ export class ViewFieldWidget extends Component {
   render() {
     return (
       <FormGroup>
-        <InputLabel>
+        <InputLabel htmlFor={this.props.fieldId + '-target-id'}>
           {this.props.settings.label}
         </InputLabel>
 
@@ -63,7 +63,7 @@ export class ViewFieldWidget extends Component {
 
         <Select
           id={this.props.fieldId + '-target-id'}
-          value={this.state.target_id}
+          value={this.state.target_id ? this.state.target_id : '_none'}
           multiple={this.props.settings.cardinality !== 1}
           onChange={e => this.valueChanged('target_id', e.target.value)}
           variant="outlined"
@@ -71,8 +71,8 @@ export class ViewFieldWidget extends Component {
           style={{maxWidth: "400px", marginTop: "10px"}}
         >
           {this.props.settings.required === false && this.props.settings.cardinality === 1 &&
-          <MenuItem value="">
-            -- None --
+          <MenuItem value="_none">
+            -- Choose a view --
           </MenuItem>
           }
 
@@ -81,64 +81,59 @@ export class ViewFieldWidget extends Component {
               {view.label}
             </MenuItem>
           )}
-
         </Select>
 
-        <Select
-          id={this.props.fieldId + '-display-id'}
-          value={this.state.display_id}
-          multiple={this.props.settings.cardinality !== 1}
-          onChange={e => this.valueChanged('display_id', e.target.value)}
-          variant="outlined"
-          required={this.props.settings.required}
-          style={{
-            maxWidth: "400px",
-            marginTop: "10px",
-            display: this.state.target_id ? 'block' : 'none'
-          }}
-        >
-          {this.props.settings.required === false && this.props.settings.cardinality === 1 &&
-          <MenuItem value="">
-            -- None --
-          </MenuItem>
-          }
+        <div style={{display: this.state.target_id ? 'block' : 'none'}}>
 
-          {this.getDisplayOptions(this.state.target_id).map(display =>
-            <MenuItem value={display.value} key={'display-' + display.value}>
-              {display.label}
+          <InputLabel htmlFor={this.props.fieldId + '-display-id'}>
+            Display
+          </InputLabel>
+
+          <Select
+            id={this.props.fieldId + '-display-id'}
+            value={this.state.display_id ? this.state.display_id : '_none'}
+            multiple={this.props.settings.cardinality !== 1}
+            onChange={e => this.valueChanged('display_id', e.target.value)}
+            variant="outlined"
+            required={this.props.settings.required}
+            style={{maxWidth: "400px", marginTop: "10px"}}
+          >
+            {this.props.settings.required === false && this.props.settings.cardinality === 1 &&
+            <MenuItem value="_none">
+              -- Choose a display --
             </MenuItem>
-          )}
-        </Select>
+            }
 
-        <TextField
-          id={this.props.fieldId + '-arguments'}
-          label="Arguments"
-          variant="outlined"
-          defaultValue={this.state.arguments}
-          required={this.props.settings.required}
-          onChange={e => this.valueChanged('arguments', e.target.value)}
-          inputProps={{maxLength: 254}}
-          fullWidth
-          style={{
-            display: this.state.target_id ? 'block' : 'none'
-          }}
-        />
+            {this.getDisplayOptions(this.state.target_id).map(display =>
+              <MenuItem value={display.value} key={'display-' + display.value}>
+                {display.label}
+              </MenuItem>
+            )}
+          </Select>
 
-        <TextField
-          id={this.props.fieldId + '-num-items'}
-          label="Number of items"
-          inputProps={{
-            min: 0,
-            step: 1
-          }}
-          defaultValue={this.state.items_to_display}
-          onChange={e => this.valueChanged('items_to_display', e.target.value)}
-          type='number'
-          style={{
-            display: this.state.target_id ? 'block' : 'none'
-          }}
-        />
+          <TextField
+            id={this.props.fieldId + '-arguments'}
+            label="Arguments"
+            variant="outlined"
+            defaultValue={this.state.arguments}
+            required={this.props.settings.required}
+            onChange={e => this.valueChanged('arguments', e.target.value)}
+            inputProps={{maxLength: 254}}
+            fullWidth
+          />
 
+          <TextField
+            id={this.props.fieldId + '-num-items'}
+            label="Number of items"
+            inputProps={{
+              min: 0,
+              step: 1
+            }}
+            defaultValue={this.state.items_to_display}
+            onChange={e => this.valueChanged('items_to_display', e.target.value)}
+            type='number'
+          />
+        </div>
       </FormGroup>
     )
   }
