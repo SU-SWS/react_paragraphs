@@ -28,9 +28,10 @@ export class ViewFieldWidget extends Component {
     newState[column] = newValue;
 
     if (column === 'target_id' && newValue === '_none') {
-      newState['display_id'] = newValue;
-      newState['arguments'] = newValue;
-      newState['items_to_display'] = newValue;
+      newState['target_id'] = '_none';
+      newState['display_id'] = '_none';
+      newState['arguments'] = '';
+      newState['items_to_display'] = '';
     }
 
     this.setState(newState);
@@ -84,7 +85,8 @@ export class ViewFieldWidget extends Component {
           )}
         </Select>
 
-        <InputWrapper style={{display: this.state.target_id ? 'block' : 'none'}}>
+        <InputWrapper
+          style={{display: this.state.target_id ? 'block' : 'none'}}>
 
           <InputLabel htmlFor={this.props.fieldId + '-display-id'}>
             Display
