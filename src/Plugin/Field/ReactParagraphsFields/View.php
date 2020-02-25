@@ -19,8 +19,16 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class View extends ReactParagraphsFieldsBase {
 
+  /**
+   * Entity type manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
   protected $entityTypeManager;
 
+  /**
+   * {@inheritDoc}
+   */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
       $configuration,
@@ -30,6 +38,9 @@ class View extends ReactParagraphsFieldsBase {
     );
   }
 
+  /**
+   * {@inheritDoc}
+   */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
