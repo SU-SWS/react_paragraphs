@@ -11,27 +11,15 @@ export class ViewFieldWidget extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      target_id: this.getTargetId(),
-      display_id: this.getDisplayId(),
-      arguments: this.getArguments(),
-      items_to_display: this.getNumItems()
+      target_id: this.getDefaultValue('target_id'),
+      display_id: this.getDefaultValue('display_id'),
+      arguments: this.getDefaultValue('arguments'),
+      items_to_display: this.getDefaultValue('items_to_display')
     }
   }
 
-  getTargetId() {
-    return this.props.defaultValue && this.props.defaultValue[0] ? this.props.defaultValue[0].target_id : '';
-  }
-
-  getDisplayId() {
-    return this.props.defaultValue && this.props.defaultValue[0] ? this.props.defaultValue[0].display_id : '';
-  }
-
-  getArguments() {
-    return this.props.defaultValue && this.props.defaultValue[0] ? this.props.defaultValue[0].arguments : '';
-  }
-
-  getNumItems() {
-    return this.props.defaultValue && this.props.defaultValue[0] ? this.props.defaultValue[0].items_to_display : '';
+  getDefaultValue(column){
+    return this.props.defaultValue && this.props.defaultValue[0] ? this.props.defaultValue[0][column] : '';
   }
 
   valueChanged(column, newValue) {
