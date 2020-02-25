@@ -8,6 +8,16 @@ import TextField from "@material-ui/core/TextField";
 
 export class ViewFieldWidget extends Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      target_id: this.getTargetId(),
+      display_id: this.getDisplayId(),
+      arguments: this.getArguments(),
+      items_to_display: this.getNumItems()
+    }
+  }
+
   getTargetId() {
     return this.props.defaultValue && this.props.defaultValue[0] ? this.props.defaultValue[0].target_id : '';
   }
@@ -25,14 +35,24 @@ export class ViewFieldWidget extends Component {
   }
 
   valueChanged(column, newValue) {
-    const newFieldValue = {
-      target_id: this.getTargetId(),
-      display_id: this.getDisplayId(),
-      arguments: this.getArguments(),
-      items_to_display: this.getNumItems()
-    };
-    newFieldValue[column] = newValue;
-    this.props.onFieldChange([newFieldValue]);
+    const newState = {...this.state};
+    newState[column] = newValue;
+
+    if(column === 'target_id' && !newValue){
+      newState['display_id'] = newValue;
+      newState['arguments'] = newValue;
+      newState['items_to_display'] = newValue;
+    }
+
+    this.setState(newState);
+
+    // Don't change the field value if the view or the display are not selected.
+    if (newState.target_id && newState.display_id) {
+      this.props.onFieldChange([newState]);
+    }
+    else {
+      this.props.onFieldChange([]);
+    }
   }
 
   getDisplayOptions(viewId) {
@@ -43,11 +63,6 @@ export class ViewFieldWidget extends Component {
   }
 
   render() {
-    const target_id = this.getTargetId();
-    const display_id = this.getDisplayId();
-    const display_arguments = this.getArguments();
-    const items_to_display = this.getNumItems();
-
     return (
       <FormGroup>
         <InputLabel>
@@ -60,7 +75,7 @@ export class ViewFieldWidget extends Component {
 
         <Select
           id={this.props.fieldId + '-target-id'}
-          value={target_id}
+          value={this.state.target_id}
           multiple={this.props.settings.cardinality !== 1}
           onChange={e => this.valueChanged('target_id', e.target.value)}
           variant="outlined"
@@ -83,7 +98,7 @@ export class ViewFieldWidget extends Component {
 
         <Select
           id={this.props.fieldId + '-display-id'}
-          value={display_id}
+          value={this.state.display_id}
           multiple={this.props.settings.cardinality !== 1}
           onChange={e => this.valueChanged('display_id', e.target.value)}
           variant="outlined"
@@ -91,7 +106,7 @@ export class ViewFieldWidget extends Component {
           style={{
             maxWidth: "400px",
             marginTop: "10px",
-            display: target_id ? 'block' : 'none'
+            display: this.state.target_id ? 'block' : 'none'
           }}
         >
           {this.props.settings.required === false && this.props.settings.cardinality === 1 &&
@@ -100,7 +115,7 @@ export class ViewFieldWidget extends Component {
           </MenuItem>
           }
 
-          {this.getDisplayOptions(target_id).map(display =>
+          {this.getDisplayOptions(this.state.target_id).map(display =>
             <MenuItem value={display.value} key={'display-' + display.value}>
               {display.label}
             </MenuItem>
@@ -111,13 +126,13 @@ export class ViewFieldWidget extends Component {
           id={this.props.fieldId + '-arguments'}
           label="Arguments"
           variant="outlined"
-          defaultValue={display_arguments}
+          defaultValue={this.state.arguments}
           required={this.props.settings.required}
           onChange={e => this.valueChanged('arguments', e.target.value)}
           inputProps={{maxLength: 254}}
           fullWidth
           style={{
-            display: target_id ? 'block' : 'none'
+            display: this.state.target_id ? 'block' : 'none'
           }}
         />
 
@@ -128,11 +143,11 @@ export class ViewFieldWidget extends Component {
             min: 0,
             step: 1
           }}
-          defaultValue={items_to_display}
+          defaultValue={this.state.items_to_display}
           onChange={e => this.valueChanged('items_to_display', e.target.value)}
           type='number'
           style={{
-            display: target_id ? 'block' : 'none'
+            display: this.state.target_id ? 'block' : 'none'
           }}
         />
 
