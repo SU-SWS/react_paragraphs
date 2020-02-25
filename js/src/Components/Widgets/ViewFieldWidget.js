@@ -15,8 +15,9 @@ export class ViewFieldWidget extends Component {
       target_id: this.getDefaultValue('target_id') ? this.getDefaultValue('target_id') : '_none',
       display_id: this.getDefaultValue('display_id') ? this.getDefaultValue('display_id') : '_none',
       arguments: this.getDefaultValue('arguments'),
-      items_to_display: this.getDefaultValue('items_to_display')
-    }
+      items_to_display: this.getDefaultValue('items_to_display'),
+      advancedOpen: false
+    };
   }
 
   getDefaultValue(column) {
