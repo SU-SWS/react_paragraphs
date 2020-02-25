@@ -27,7 +27,7 @@ export class ViewFieldWidget extends Component {
     const newState = {...this.state};
     newState[column] = newValue;
 
-    if (column === 'target_id' && !newValue) {
+    if (column === 'target_id' && newValue === '_none') {
       newState['display_id'] = newValue;
       newState['arguments'] = newValue;
       newState['items_to_display'] = newValue;
