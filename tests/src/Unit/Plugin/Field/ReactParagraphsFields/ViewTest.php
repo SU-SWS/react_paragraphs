@@ -13,10 +13,16 @@ use Drupal\views\ViewEntityInterface;
  */
 class ViewTest extends ReactParagraphsFieldsTestBase {
 
+  protected function setUp() {
+    parent::setUp();
+    $this->fieldConfig->method('getSetting')->willReturn(['block' => 'block', 'master' => 0]);
+  }
+
   /**
    * Test the field plugin.
    */
   public function testPlugin() {
+
     $field_element['widget'][0]['target_id']['#options'] = ['foo' => 'Foo'];
     $data = $this->plugin->getFieldInfo($field_element, $this->fieldConfig);
 

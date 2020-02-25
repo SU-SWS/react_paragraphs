@@ -56,13 +56,17 @@ class View extends ReactParagraphsFieldsBase {
 
     $view_storage = $this->entityTypeManager->getStorage('view');
     $view_options = $field_element['widget'][0]['target_id']['#options'];
+    $allowed_displays = array_filter($field_config->getSetting('allowed_display_types'));
 
     /** @var \Drupal\views\ViewEntityInterface $view */
     foreach ($view_storage->loadMultiple(array_keys($view_options)) as $view) {
       $displays = $view->get('display');
       $valid_displays = FALSE;
+
       foreach ($displays as $display_id => $display) {
-        if ($display['display_plugin'] != 'block') {
+        // The field only allows certain display modes. Don't allow those
+        // displays from being available to the user.
+        if ($allowed_displays && !in_array($display['display_plugin'], $allowed_displays)) {
           continue;
         }
 
