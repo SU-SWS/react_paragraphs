@@ -5,6 +5,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Select from '@material-ui/core/Select';
 import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
+import styled from 'styled-components';
 
 export class ViewFieldWidget extends Component {
 
@@ -83,7 +84,7 @@ export class ViewFieldWidget extends Component {
           )}
         </Select>
 
-        <div style={{display: this.state.target_id ? 'block' : 'none'}}>
+        <InputWrapper style={{display: this.state.target_id ? 'block' : 'none'}}>
 
           <InputLabel htmlFor={this.props.fieldId + '-display-id'}>
             Display
@@ -111,31 +112,38 @@ export class ViewFieldWidget extends Component {
             )}
           </Select>
 
-          <TextField
-            id={this.props.fieldId + '-arguments'}
-            label="Arguments"
-            variant="outlined"
-            defaultValue={this.state.arguments}
-            required={this.props.settings.required}
-            onChange={e => this.valueChanged('arguments', e.target.value)}
-            inputProps={{maxLength: 254}}
-            fullWidth
-          />
-
-          <TextField
-            id={this.props.fieldId + '-num-items'}
-            label="Number of items"
-            inputProps={{
-              min: 0,
-              step: 1
-            }}
-            defaultValue={this.state.items_to_display}
-            onChange={e => this.valueChanged('items_to_display', e.target.value)}
-            type='number'
-          />
-        </div>
+          <InputWrapper>
+            <TextField
+              id={this.props.fieldId + '-arguments'}
+              label="Arguments"
+              variant="outlined"
+              defaultValue={this.state.arguments}
+              required={this.props.settings.required}
+              onChange={e => this.valueChanged('arguments', e.target.value)}
+              inputProps={{maxLength: 254}}
+              fullWidth
+            />
+          </InputWrapper>
+          <InputWrapper>
+            <TextField
+              id={this.props.fieldId + '-num-items'}
+              label="Number of items"
+              inputProps={{
+                min: 0,
+                step: 1
+              }}
+              defaultValue={this.state.items_to_display}
+              onChange={e => this.valueChanged('items_to_display', e.target.value)}
+              type='number'
+            />
+          </InputWrapper>
+        </InputWrapper>
       </FormGroup>
     )
   }
 
 }
+
+const InputWrapper = styled.div`
+  margin-top: 10px;
+`;
