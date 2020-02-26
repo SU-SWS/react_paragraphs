@@ -8,7 +8,6 @@ const ModalHeader = styled.div`
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   background: #6b6b6b;
-
   position: relative;
 
   span {
@@ -20,7 +19,7 @@ const ModalHeader = styled.div`
 `;
 
 const ModalContents = styled.div`
-  overflow-y: scroll
+  overflow-y: scroll;
   height: 100%;
 `;
 
