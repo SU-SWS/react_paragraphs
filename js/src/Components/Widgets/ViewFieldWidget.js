@@ -128,7 +128,7 @@ export class ViewFieldWidget extends Component {
                   label="Arguments"
                   helperText={`Separate contextual filters with a "/". Each filter may use "+" or "," for multi-value arguments. This field supports tokens.`}
                   variant="outlined"
-                  defaultValue={this.state.arguments}
+                  defaultValue={this.state['arguments']}
                   required={this.props.settings.required}
                   onChange={e => this.valueChanged('arguments', e.target.value)}
                   inputProps={{maxLength: 254}}
