@@ -111,7 +111,6 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
             <TextField
               {...params}
               label="URL"
-              type="url"
               onChange={e => uriChanged(e.target.value)}
               variant="outlined"
               required={settings.required}

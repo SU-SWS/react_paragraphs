@@ -173,7 +173,10 @@ export class WidgetManager extends Component {
   }
 
   addToolToBottom(item_name, e) {
-    let lastRow = this.state.rowOrder[this.state.rowOrder.length - 1];
+    const rowOrder = this.state.rowOrder.filter(item => item != null);
+
+    let lastRow = rowOrder[rowOrder.length - 1];
+
     if (this.state.rows[lastRow].itemsOrder.length > 0) {
       this.addRow(() => {
         const simulated_drag = {
