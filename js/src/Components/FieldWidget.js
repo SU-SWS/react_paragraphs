@@ -13,11 +13,12 @@ export const FieldWidget = ({inputId, fieldName, items, tools, itemsPerRow, resi
       inputId={inputId}
       fieldName={fieldName}
       tools={tools}
+      maxItemsPerRow={itemsPerRow}
     >
       <FlexDiv alignItems={'flex-start'}>
         <DrupalContext.Consumer>
           {drupalContext => (
-            <DragDropContext onDragEnd={drupalContext.onDragEnd}>
+            <DragDropContext onBeforeCapture={drupalContext.onBeforeCapture} onDragEnd={drupalContext.onDragEnd}>
               <div style={{width:'calc(100% - 200px)', minHeight:'300px', marginTop: '20px'}}>
                 <Droppable
                   droppableId="rows"

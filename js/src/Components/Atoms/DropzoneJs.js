@@ -5,9 +5,9 @@ import exIcon from '../../icons/ex.svg';
 
 const ThumbsContainer = styled.aside`
   display: flex;
-  flexDirection: row,
-  flexWrap: wrap,
-  marginTop: 16
+  flexDirection: row;
+  flexWrap: wrap;
+  marginTop: 16;
 `;
 
 const RemoveButton = styled.button`

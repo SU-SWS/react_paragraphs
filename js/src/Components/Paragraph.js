@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Draggable} from "react-beautiful-dnd";
 import {Resizable} from "re-resizable";
 import styled from 'styled-components'
@@ -47,6 +47,11 @@ export const Paragraph = ({item, ...props}) => {
       alt=""
       src={iconSrc}
     />;
+  };
+
+  const onFormSubmit = (e) => {
+    e.preventDefault();
+    openCloseModal();
   };
 
   const onItemResize = () => {
@@ -138,11 +143,11 @@ export const Paragraph = ({item, ...props}) => {
 
               <DrupalModal
                 isOpen={!collapsed}
-                onRequestClose={openCloseModal}
+                onRequestClose={onFormSubmit}
                 contentLabel={`Edit ${props.typeLabel} > "${item.admin_title}"`}
                 wrapperProps={{style: {height: "calc(100% - 109px)"}}}
               >
-                <form onSubmit={e => e.preventDefault()}>
+                <form onSubmit={onFormSubmit}>
                   <div style={{padding: "20px"}}>
                     <AdminTitleField
                       textField={!collapsed}
@@ -158,10 +163,6 @@ export const Paragraph = ({item, ...props}) => {
                     <input
                       type="submit"
                       className="button button--primary"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        openCloseModal()
-                      }}
                       value="Continue"
                     />
 
