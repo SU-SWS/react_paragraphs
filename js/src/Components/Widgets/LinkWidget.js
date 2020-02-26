@@ -46,14 +46,17 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     // If the user is linking to the same site they are on, force the link to
     // be relative.
     if (parser.protocol === window.location.protocol && parser.host === window.location.host) {
+      if (url.substr(0, 1) !== '/') {
+        parser.href = '/' + url;
+      }
       return {
         protocol: null,
-        pathname: parser.pathname + parser.search + parser.hash,
+        pathname: decodeURIComponent(parser.pathname + parser.search + parser.hash)
       };
     }
     return {
       protocol: parser.protocol,
-      pathname: parser.pathname + parser.search + parser.hash,
+      pathname: parser.pathname + parser.search + parser.hash
     };
   };
 
