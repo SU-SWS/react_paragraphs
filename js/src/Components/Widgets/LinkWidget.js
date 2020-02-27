@@ -35,12 +35,29 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
         .then(response => response.json())
         .then(suggestionResults => setSuggestions(suggestionResults));
 
-    }, 800);
+    }, 600);
   };
 
   const parseUrl = (url) => {
-    const parse_url = /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z\/]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
-    return parse_url.exec(url);
+    let parser = document.createElement('a');
+    // Let the browser do the work
+    parser.href = url;
+
+    // If the user is linking to the same site they are on, force the link to
+    // be relative.
+    if (parser.protocol === window.location.protocol && parser.host === window.location.host) {
+      if (url.substr(0, 1) !== '/') {
+        parser.href = '/' + url;
+      }
+      return {
+        protocol: null,
+        pathname: decodeURIComponent(parser.pathname + parser.search + parser.hash)
+      };
+    }
+    return {
+      protocol: parser.protocol,
+      pathname: parser.pathname + parser.search + parser.hash
+    };
   };
 
   const getUriFromString = (userString) => {
@@ -48,14 +65,21 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     if (uri.length === 0) {
       return uri;
     }
-    const parsedValue = userString.match(/.+\s\(([^\)]+)\)/);
+    const matchedEntity = userString.match(/.+\s\(([^\)]+)\)/);
+    const parsedUrl = parseUrl(userString);
 
-    if (parsedValue && parsedValue.length === 2) {
-      uri = `entity:node/${parsedValue[1]}`
+    if (matchedEntity && matchedEntity.length === 2) {
+      uri = `entity:node/${matchedEntity[1]}`
     }
-    else if (!parseUrl(userString) || !parseUrl(userString)[1]) {
+    else if (parsedUrl.protocol === null) {
+      userString = parsedUrl.pathname;
       if (userString.trim().indexOf('<front>') === 0) {
         userString = '/' + userString.substr(7);
+      }
+      userString = userString.toLowerCase();
+
+      if (!['/', '?', '#'].includes(userString.substr(0, 1))) {
+        userString = `/${userString}`
       }
       uri = `internal:${userString}`;
     }
@@ -67,14 +91,14 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     const parsedUri = parseUrl(uri);
     var displayString = uri;
 
-    if (parsedUri && parsedUri[1] === 'internal') {
+    if (parsedUri.protocol === 'internal:') {
       displayString = uri.split(':', 2)[1];
 
-      if (parsedUri[3] === '/') {
+      if (parsedUri.pathname === '/') {
         displayString = '<front>' + uri.substr(uri.indexOf('/') + 1);
       }
     }
-    else if (parsedUri && parsedUri[1] === 'entity') {
+    else if (parsedUri.protocol === 'entity:') {
       // todo: get the entity label somehow.
       displayString = '/' + uri.split(':', 2)[1];
     }
@@ -111,7 +135,6 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
             <TextField
               {...params}
               label="URL"
-              type="url"
               onChange={e => uriChanged(e.target.value)}
               variant="outlined"
               required={settings.required}

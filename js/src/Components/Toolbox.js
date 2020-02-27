@@ -32,7 +32,7 @@ const Toolwrapper = styled.div`
   color: #4d4f53;
 
   img {
-    max-width: 80px
+    max-width: 80px;
     max-height: 40px;
     margin: 0 auto 3px;
     display: block;

@@ -1,6 +1,5 @@
 import React, {Component} from "react";
-
-const uuidv4 = require('uuid/v4');
+import {v4 as uuidv4} from 'uuid';
 
 export const DrupalContext = React.createContext({});
 
@@ -9,6 +8,7 @@ export class WidgetManager extends Component {
   functions = {
     updateParagraph: this.updateParagraph.bind(this),
     removeParagraph: this.removeParagraph.bind(this),
+    onBeforeCapture: this.onBeforeCapture.bind(this),
     onDragEnd: this.onDragEnd.bind(this),
     addRow: this.addRow.bind(this),
     removeRow: this.removeRow.bind(this),
@@ -173,7 +173,10 @@ export class WidgetManager extends Component {
   }
 
   addToolToBottom(item_name, e) {
-    let lastRow = this.state.rowOrder[this.state.rowOrder.length - 1];
+    const rowOrder = this.state.rowOrder.filter(item => item != null);
+
+    let lastRow = rowOrder[rowOrder.length - 1];
+
     if (this.state.rows[lastRow].itemsOrder.length > 0) {
       this.addRow(() => {
         const simulated_drag = {
@@ -237,6 +240,21 @@ export class WidgetManager extends Component {
     }
 
     this.setState(newState);
+  }
+
+  /**
+   * Before dragging an tool, create a new row if the last one is full.
+   */
+  onBeforeCapture(item) {
+    // When dragging rows, we don't want to add another row. Only when dragging
+    // items around.
+    if (item.draggableId.indexOf('row') === 0) {
+      return;
+    }
+    const lastRowId = this.state.rowOrder[this.state.rowOrder.length - 1];
+    if (this.state.rows[lastRowId].itemsOrder.length >= this.props.maxItemsPerRow) {
+      this.addRow();
+    }
   }
 
   /**
