@@ -23,40 +23,20 @@ export class CkeditorWidget extends Component {
     };
 
     this.onEditorChange = this.onEditorChange.bind(this);
-    this.onTextAreaChange = this.onTextAreaChange.bind(this);
-    this.onSummaryChange = this.onSummaryChange.bind(this);
-    this.onFormatChange = this.onFormatChange.bind(this);
-    this.showHideSummary = this.showHideSummary.bind(this);
-    this.unlockSnapshot = this.unlockSnapshot.bind(this);
     this.getSummaryInput = this.getSummaryInput.bind(this);
     this.addListeners = this.addListeners.bind(this);
+    this.updateState = this.updateState.bind(this);
   }
 
   componentDidMount() {
     try {
+      // Apply listeners to the ckeditor text area field. When the ckeditor
+      // format is changed, `instanceReady` is called again.
       CKEDITOR.on('instanceReady', this.addListeners);
       Drupal.behaviors.editor.attach(this.widgetRef.current, window.drupalSettings);
-
-      Object.keys(Drupal.editors).map(editorId => {
-        Drupal.editors[editorId].onChange(this.textareaRef, this.onEditorChange.bind(undefined, this.textareaRef));
-      })
     }
     catch (error) {
     }
-  }
-
-  addListeners() {
-    CKEDITOR.instances[`${this.props.fieldId}-text-area`].on('unlockSnapshot', this.unlockSnapshot.bind(undefined, this.textareaRef));
-    CKEDITOR.instances[`${this.props.fieldId}-text-area`].on("key", this.unlockSnapshot.bind(undefined, this.textareaRef));
-  }
-
-  unlockSnapshot(element, snapshot) {
-    // Timeout to let the keyed in value to be added to the data.
-    setTimeout(() => {
-      if (this.state.value != snapshot.editor.getData()) {
-        this.onEditorChange(element, snapshot.editor.getData());
-      }
-    }, 250);
   }
 
   componentWillUnmount() {
@@ -68,51 +48,65 @@ export class CkeditorWidget extends Component {
     }
   }
 
-  onFieldChange(value, format, summary) {
+  addListeners() {
+    // UnlockSnapshot is an event that is triggered when a button in the toolbar
+    // or media is added to the wysiwyg. Key is the only event triggered when
+    // the ckeditor is in "view source" mode.
+    CKEDITOR.instances[`${this.props.fieldId}-text-area`].on('unlockSnapshot', this.onEditorChange);
+    CKEDITOR.instances[`${this.props.fieldId}-text-area`].on("key", this.onEditorChange);
+  }
+
+  updateState(key, value) {
+    const newState = {...this.state};
+    newState[key] = value;
+    this.setState(newState);
+
+    // If the ckeditor area or the summary is empty, clear the field value.
+    if (newState.value.length === 0 && newState.summary.length === 0) {
+      this.props.onFieldChange([]);
+      return;
+    }
+
+    // Construct the new field value to bubble up to the widget manager.
     const newValue = [{
-      value: value,
-      format: format
+      value: newState.value,
+      format: newState.format
     }];
+
     if (this.props.settings.summary) {
-      newValue[0].summary = summary;
+      newValue[0].summary = newState.summary;
     }
     this.props.onFieldChange(newValue);
   }
 
-  onEditorChange(element, newValue) {
-    this.onFieldChange(newValue, this.state.format, this.state.summary);
-    this.setState({value: newValue});
-  }
+  onEditorChange(snapshot) {
+    clearTimeout(this.editorTimeout);
 
-  onTextAreaChange(event) {
-    this.onEditorChange(event, event.target.value);
-  }
+    // Make a new timeout set to go off in 200ms.
+    // This reduces the unnecessary calls since there are multiple event
+    // listeners on the ckeditor area.
+    this.editorTimeout = setTimeout(() => {
 
-  onSummaryChange(event) {
-    this.onFieldChange(this.state.value, this.state.format, event.target.value);
-    this.setState({summary: event.target.value});
-  }
-
-  onFormatChange(event) {
-    this.onFieldChange(this.state.value, event.target.value, this.state.summary);
-    this.setState({format: event.target.value});
-  }
-
-  showHideSummary() {
-    this.setState(prevState => ({
-      showSummary: !prevState.showSummary,
-      summaryText: prevState.showSummary ? 'Edit Summary' : 'Hide summary'
-    }));
+      // Make sure there is some data in the wysiwyg and its different than what
+      // we already have stored.
+      if (snapshot.editor.getData().length && snapshot.editor.getData() !== this.state.value) {
+        this.updateState('value', snapshot.editor.getData());
+      }
+    }, 200);
   }
 
   getSummaryInput() {
+    // The field is not configured to accept a summary.
+    if (!this.props.settings.summary) {
+      return;
+    }
     return (
       <div style={{display: this.state.showSummary ? 'block' : 'none'}}>
         <TextField
           label={`${this.props.settings.label} Summary`}
           id={`${this.props.fieldId}-summary`}
           defaultValue={this.state.summary}
-          onChange={this.onSummaryChange}
+          onChange={e => this.updateState('summary', e.target.value)}
           fullWidth
           variant="outlined"
         />
@@ -126,7 +120,7 @@ export class CkeditorWidget extends Component {
   render() {
     return (
       <FormGroup ref={this.widgetRef}>
-        {this.props.settings.summary && this.getSummaryInput()}
+        {this.getSummaryInput()}
 
         <CkeditorWrapper>
           <InputLabel htmlFor={`${this.props.fieldId}-text-area`}>
@@ -135,9 +129,9 @@ export class CkeditorWidget extends Component {
             <button
               type="button"
               className="link"
-              onClick={() => this.showHideSummary()}
+              onClick={() => this.setState({showSummary: !this.state.showSummary})}
             >
-              {this.state.summaryText}
+              {this.state.showSummary ? 'Hide summary' : 'Edit Summary'}
             </button>
             }
           </InputLabel>
@@ -146,7 +140,7 @@ export class CkeditorWidget extends Component {
             ref={elem => this.textareaRef = elem}
             id={`${this.props.fieldId}-text-area`}
             defaultValue={this.state.value}
-            onChange={this.onTextAreaChange}
+            onChange={e => this.updateState('value', e.target.value)}
             rows="8"
             style={{width: "100%"}}
           />
@@ -157,7 +151,7 @@ export class CkeditorWidget extends Component {
               <select
                 data-editor-for={`${this.props.fieldId}-text-area`}
                 defaultValue={this.state.format}
-                onChange={this.onFormatChange}
+                onChange={e => this.updateState('format', e.target.value)}
                 style={{marginLeft: '10px'}}
               >
                 {Object.keys(this.props.settings.allowed_formats).map(formatId =>
