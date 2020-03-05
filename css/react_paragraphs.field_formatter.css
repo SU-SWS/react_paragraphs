@@ -63,4 +63,4 @@
 .react-paragraphs-row [data-react-columns="12"] {
   -webkit-box-flex: 12;
       -ms-flex: 12 1 0px;
-          flex: 12 1 0; }
+          flex: 12 1 auto; }
