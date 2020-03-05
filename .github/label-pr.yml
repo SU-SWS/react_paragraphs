@@ -1,8 +1,0 @@
-- regExp: ".*\\.scss+$"
-  labels: ["Styles"]
-- regExp: ".*\\.md+$"
-  labels: ["Documentation"]
-- regExp: ".*(.php|.module|.theme)$"
-  labels: ["PHP"]
-- regExp: "^(.js)$"
-  labels: ["Javascript"]
