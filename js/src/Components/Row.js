@@ -13,7 +13,7 @@ const ItemsContainer = styled.div`
   align-items: center;
   flex-wrap: no-wrap;
   min-height: 80px;
-  background: ${props => props.isDraggingOver ? '#add8e6' : 'transparent'};
+  background: ${props => props.isDraggingOver ? '#add8e6' : props.hasItems ? '#EDEDE8' : 'transparent'};
 `;
 
 const RowWrapper = styled.div`
@@ -86,7 +86,6 @@ export class Row extends Component {
             ref={provided.innerRef}
             {...provided.draggableProps}
             isDragging={snapshot.isDragging}
-
           >
             <FlexDiv className="inner-row-wrapper" id={this.props.id}>
               <div className="move-row-handle" {...provided.dragHandleProps}>
@@ -100,13 +99,15 @@ export class Row extends Component {
                   droppableId={this.props.id}
                   direction="horizontal"
                   type="item"
-                  isDropDisabled={this.props.itemsOrder.length >= this.props.itemsPerRow}
+                  isDropDisabled={this.props.isDropDisabled}
                 >
                   {(provided, snapshot) => (
                     <ItemsContainer
+                      className="this-is-the-wrapper"
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                       isDraggingOver={snapshot.isDraggingOver}
+                      hasItems={this.props.itemsOrder.length > 0}
                     >
                       <DrupalContext.Consumer>
                         {drupalContext =>

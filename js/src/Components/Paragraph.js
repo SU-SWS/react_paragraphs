@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Draggable} from "react-beautiful-dnd";
-import {Resizable} from "re-resizable";
 import styled from 'styled-components'
 import {ParagraphForm} from "./ParagraphForm";
 import {DrupalContext} from "../WidgetManager";
@@ -9,7 +8,25 @@ import {FlexDiv} from "./Atoms/FlexDiv";
 import {DrupalModal} from "./Atoms/DrupalModal";
 import {DrupalModalFooter} from "./Atoms/DrupalModalFooter";
 
-const ParagraphWrapper = styled.div``;
+const ParagraphWrapper = styled.div`
+  margin: 0 5px;
+  flex: ${props => props.itemWidth }  0 auto;
+  background: ${props => props.isDragging ? '#dafcdf' : '#fff'};
+  border: ${props => props.isDragging ? '1px solid #bdbdbd' : 'none'};
+
+  &:first-child {
+    margin-left: 0
+  }
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  button {
+    display:  ${props => props.isDragging ? 'none' : 'block'};
+    margin-left: 10px;
+  }
+`;
 
 const ResizehandleWrapper = styled.div`
   width: 5px;
@@ -18,8 +35,8 @@ const ResizehandleWrapper = styled.div`
 `;
 
 const ItemIcon = styled.img`
-  max-height:35px;
-  max-width:35px;
+  max-height: 35px;
+  max-width: 35px;
   margin-right: 30px;
 `;
 
@@ -65,10 +82,6 @@ export const Paragraph = ({item, ...props}) => {
     submitButton.current.click();
   };
 
-  const onItemResize = () => {
-
-  };
-
   return (
     <Draggable
       draggableId={props.id}
@@ -83,70 +96,45 @@ export const Paragraph = ({item, ...props}) => {
               {...provided.draggableProps}
               isDragging={snapshot.isDragging}
               id={props.id}
+              itemWidth={item.width}
             >
-              <Resizable
-                style={{padding: "10px"}}
-                enable={{
-                  top: false,
-                  right: props.resizableItems,
-                  bottom: false,
-                  left: false,
-                  topRight: false,
-                  bottomRight: false,
-                  bottomLeft: false,
-                  topLeft: false
-                }}
-                defaultSize={{width: '100%', height: 'auto'}}
-                size={{
-                  width: item.width * (props.rowWidth / 12)
-                }}
-                onResizeStop={onItemResize}
-                handleComponent={{right: <ResizeHandle/>}}
-                grid={[props.rowWidth / 12, 1]}
-                minWidth={props.rowWidth / 12 * 2}
-                maxWidth={(12 - props.rowItemsWidthTotal + item.width) * (props.rowWidth / 12)}
+
+              <FlexDiv
+                className="move-item-handle"
+                alignItems="center"
+                justifyContent="left"
+                {...provided.dragHandleProps}
               >
+
                 <FlexDiv
-                  className="move-item-handle"
+                  justifyContents="left"
                   alignItems="center"
-                  justifyContent="left"
-                  {...provided.dragHandleProps}
+                  style={{
+                    color: "#4d4f53",
+                    border: "1px solid #BDBDBD",
+                    padding: "20px 50px",
+                    lineHeight: "35px",
+                    whiteSpace: "nowrap",
+                    textOverflow: "ellipsis"
+                  }}
                 >
+                  {getItemIcon(drupalContext.tools)}
 
-                  <FlexDiv
-                    justifyContents="left"
-                    alignItems="center"
-                    style={{
-                      color: "#4d4f53",
-                      border: "1px solid #BDBDBD",
-                      padding: "20px 50px",
-                      lineHeight: "35px",
-                      maxWidth: "150px",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis"
-                    }}
+                  {item.admin_title}
+
+                  <button
+                    type="button"
+                    className="button"
+                    onClick={() => setModalOpen(!modalOpen)}
                   >
-                    {getItemIcon(drupalContext.tools)}
-
-                    {item.admin_title}
-
-                  </FlexDiv>
-                  <div>
-                    <button
-                      type="button"
-                      className="button"
-                      onClick={() => setModalOpen(!modalOpen)}
-                      style={{marginLeft: '10px'}}
-                    >
-                      Edit
-                      <span className="visually-hidden">
+                    Edit
+                    <span className="visually-hidden">
                           {item.admin_title}
                         </span>
-                    </button>
-                  </div>
+                  </button>
                 </FlexDiv>
-              </Resizable>
+              </FlexDiv>
+
 
               <DrupalModal
                 isOpen={modalOpen}

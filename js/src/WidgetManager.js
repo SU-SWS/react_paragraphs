@@ -14,7 +14,8 @@ export class WidgetManager extends Component {
     removeRow: this.removeRow.bind(this),
     setItemWidth: this.setItemWidth.bind(this),
     onAdminTitleChange: this.onAdminTitleChange.bind(this),
-    addToolToBottom: this.addToolToBottom.bind(this)
+    addToolToBottom: this.addToolToBottom.bind(this),
+    onDragStart: this.onDragStart.bind(this)
   };
 
   apiUrls = {
@@ -44,7 +45,8 @@ export class WidgetManager extends Component {
         rows[rowId] = {
           id: rowId,
           items: {},
-          itemsOrder: []
+          itemsOrder: [],
+          isDropDisabled: true
         };
         rowOrder[rowNumber] = rowId;
       }
@@ -70,7 +72,8 @@ export class WidgetManager extends Component {
       rows['row-0'] = {
         id: 'row-0',
         items: {},
-        itemsOrder: []
+        itemsOrder: [],
+        isDropDisabled: true
       }
     }
 
@@ -215,7 +218,8 @@ export class WidgetManager extends Component {
     newState.rows[newRowId] = {
       id: newRowId,
       items: {},
-      itemsOrder: []
+      itemsOrder: [],
+      isDropDisabled: true
     };
     if (typeof callback === 'function') {
       this.setState(newState, callback);
@@ -235,7 +239,8 @@ export class WidgetManager extends Component {
       newState.rows['row-' + newState.rowCount] = {
         id: 'row-' + newState.rowCount,
         items: {},
-        itemsOrder: []
+        itemsOrder: [],
+        isDropDisabled: true
       }
     }
 
@@ -255,6 +260,36 @@ export class WidgetManager extends Component {
     if (this.state.rows[lastRowId].itemsOrder.length >= this.props.maxItemsPerRow) {
       this.addRow();
     }
+  }
+
+  onDragStart(dragItem) {
+
+    if (dragItem.type !== 'item') {
+      return;
+    }
+
+    let itemBundle = dragItem.draggableId;
+    if (dragItem.source.droppableId !== 'toolbox') {
+      const item = this.state.rows[dragItem.source.droppableId].items[itemBundle];
+      itemBundle = item.entity.type[0].target_id;
+    }
+
+    const newState = {...this.state};
+    this.state.rowOrder.map(rowId => {
+      newState.rows[rowId].isDropDisabled = !this.canDropInRow(itemBundle, rowId, dragItem.source.droppableId);
+    });
+    this.setState(newState);
+  }
+
+  canDropInRow(itemBundle, destinationRow, sourceRow) {
+    if (destinationRow === sourceRow) {
+      return true;
+    }
+    if (this.state.rows[destinationRow].itemsOrder.length >= this.props.maxItemsPerRow) {
+      return false;
+    }
+    // TODO add logic to check for available columns.
+    return true;
   }
 
   /**
@@ -319,9 +354,16 @@ export class WidgetManager extends Component {
     newState.rows[result.destination.droppableId].items[result.draggableId] = newState.rows[result.source.droppableId].items[result.draggableId];
     delete newState.rows[result.source.droppableId].items[result.draggableId];
 
-    const equalWidths = 12 / newState.rows[result.destination.droppableId].itemsOrder.length;
+    // Set the widths of all items in the destination row to equal columns.
+    let equalWidths = 12 / newState.rows[result.destination.droppableId].itemsOrder.length;
     Object.keys(newState.rows[result.destination.droppableId].items).forEach(itemId => {
       newState.rows[result.destination.droppableId].items[itemId].width = equalWidths;
+    });
+
+    // Set the widths of all items in the source row to equal columns.
+    equalWidths = 12 / newState.rows[result.source.droppableId].itemsOrder.length;
+    Object.keys(newState.rows[result.source.droppableId].items).forEach(itemId => {
+      newState.rows[result.source.droppableId].items[itemId].width = equalWidths;
     });
     this.setState(newState);
   }
