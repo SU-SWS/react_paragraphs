@@ -12,6 +12,7 @@ jobs:
   pr-labeler:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: codelytv/pr-size-labeler@v1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -20,4 +21,6 @@ jobs:
           m_max_size: '1000'
           l_max_size: '3000'
           fail_if_xl: 'false'
-
+      - uses: banyan/auto-label@1.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
