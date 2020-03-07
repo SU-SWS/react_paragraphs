@@ -13,7 +13,10 @@ const ItemsContainer = styled.div`
   align-items: center;
   flex-wrap: nowrap;
   min-height: 80px;
-  background: ${props => props.isDraggingOver ? '#add8e6' : props.hasItems ? '#EDEDE8' : 'transparent'};
+  background: ${props =>
+  props.isDraggingOver ? '#add8e6' :
+    props.rowIsDragging ? '#dafcdf' :
+      props.hasItems ? '#edede8' : 'transparent'};
 `;
 
 const RowWrapper = styled.div`
@@ -33,7 +36,7 @@ const RowWrapper = styled.div`
   }
 
   .row-actions {
-    display: flex;
+    display: ${props => props.isDragging ? 'none' : 'flex'};
     align-items: center;
     justify-content: left;
   }
@@ -75,6 +78,7 @@ export class Row extends Component {
     this.props.itemsOrder.forEach(itemId => {
       rowItemsWidthTotal += this.props.items[itemId].width;
     });
+    let rowIsDragging;
 
     return (
       <Draggable
@@ -87,6 +91,7 @@ export class Row extends Component {
             {...provided.draggableProps}
             isDragging={snapshot.isDragging}
           >
+            {rowIsDragging = snapshot.isDragging}
             <FlexDiv className="inner-row-wrapper" id={this.props.id}>
               <div className="move-row-handle" {...provided.dragHandleProps}>
               <span className="visually-hidden">
@@ -106,6 +111,7 @@ export class Row extends Component {
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                       isDraggingOver={snapshot.isDraggingOver}
+                      rowIsDragging={rowIsDragging}
                       hasItems={this.props.itemsOrder.length > 0}
                     >
                       <DrupalContext.Consumer>
