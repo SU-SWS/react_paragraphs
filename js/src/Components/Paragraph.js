@@ -9,22 +9,34 @@ import {DrupalModal} from "./Atoms/DrupalModal";
 import {DrupalModalFooter} from "./Atoms/DrupalModalFooter";
 
 const ParagraphWrapper = styled.div`
-  margin: 0 5px;
-  flex: ${props => props.itemWidth }  0 auto;
+  margin: 5px;
+  border: 1px solid #BDBDBD;
+  width: 0;
+  height: 80px;
+  line-height: 80px;
+  padding: 0px 85px 0px 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  position: relative;
+  flex: ${props => props.itemWidth} 1 0;
   background: ${props => props.isDragging ? '#dafcdf' : '#fff'};
-  border: ${props => props.isDragging ? '1px solid #bdbdbd' : 'none'};
 
-  &:first-child {
-    margin-left: 0
+  .img-helper {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
   }
 
-  &:last-child {
-    margin-right: 0;
+  img {
+    vertical-align: middle;
   }
 
   button {
-    display:  ${props => props.isDragging ? 'none' : 'block'};
-    margin-left: 10px;
+    display:  ${props => props.isDragging ? 'none' : 'inline-block'};
+    position: absolute;
+    top: calc(50% - 13px);
+    right: 5px;
   }
 `;
 
@@ -88,53 +100,28 @@ export const Paragraph = ({item, ...props}) => {
       index={props.index}
       isDragDisabled={!props.isDraggable}
     >
-      {(provided, snapshot) => (
+      {(provided, snapshot) =>
         <DrupalContext.Consumer>
           {drupalContext =>
             <ParagraphWrapper
               ref={provided.innerRef}
               {...provided.draggableProps}
+              {...provided.dragHandleProps}
               isDragging={snapshot.isDragging}
               id={props.id}
               itemWidth={item.width}
             >
+              <span className="img-helper"></span>
+              {getItemIcon(drupalContext.tools)}
+              {item.admin_title}
 
-              <FlexDiv
-                className="move-item-handle"
-                alignItems="center"
-                justifyContent="left"
-                {...provided.dragHandleProps}
+              <button
+                type="button"
+                className="button"
+                onClick={() => setModalOpen(!modalOpen)}
               >
-
-                <FlexDiv
-                  justifyContents="left"
-                  alignItems="center"
-                  style={{
-                    color: "#4d4f53",
-                    border: "1px solid #BDBDBD",
-                    padding: "20px 50px",
-                    lineHeight: "35px",
-                    whiteSpace: "nowrap",
-                    textOverflow: "ellipsis"
-                  }}
-                >
-                  {getItemIcon(drupalContext.tools)}
-
-                  {item.admin_title}
-
-                  <button
-                    type="button"
-                    className="button"
-                    onClick={() => setModalOpen(!modalOpen)}
-                  >
-                    Edit
-                    <span className="visually-hidden">
-                          {item.admin_title}
-                        </span>
-                  </button>
-                </FlexDiv>
-              </FlexDiv>
-
+                Edit<span className="visually-hidden">{item.admin_title}</span>
+              </button>
 
               <DrupalModal
                 isOpen={modalOpen}
@@ -168,7 +155,7 @@ export const Paragraph = ({item, ...props}) => {
             </ParagraphWrapper>
           }
         </DrupalContext.Consumer>
-      )}
+      }
     </Draggable>
   )
 };

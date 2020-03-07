@@ -11,6 +11,7 @@ export const AdminTitleField = ({textField, item, onChange}) => {
       InputLabelProps={{className: textField ? '' : 'visually-hidden'}}
       helperText="Provide a simple label for easy organization among other items."
       FormHelperTextProps={{className: textField ? '' : 'visually-hidden'}}
+      inputProps={{maxLength: 40}}
       variant="outlined"
     />
   )

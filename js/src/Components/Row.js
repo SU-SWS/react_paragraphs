@@ -11,7 +11,7 @@ import {DrupalModalFooter} from "./Atoms/DrupalModalFooter";
 const ItemsContainer = styled.div`
   display: flex;
   align-items: center;
-  flex-wrap: no-wrap;
+  flex-wrap: nowrap;
   min-height: 80px;
   background: ${props => props.isDraggingOver ? '#add8e6' : props.hasItems ? '#EDEDE8' : 'transparent'};
 `;
@@ -103,7 +103,6 @@ export class Row extends Component {
                 >
                   {(provided, snapshot) => (
                     <ItemsContainer
-                      className="this-is-the-wrapper"
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                       isDraggingOver={snapshot.isDraggingOver}
