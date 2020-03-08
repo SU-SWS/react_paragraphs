@@ -1,12 +1,17 @@
 const commonPaths = require('./common-paths');
 
 const webpack = require('webpack');
+const path = require('path');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const autoprefixer = require('autoprefixer');
 
 const config = {
   mode: 'production',
   entry: {
-    app: [`${commonPaths.appEntry}/index.js`]
+    app: [`${commonPaths.appEntry}/index.js`],
+    '../../css/react_paragraphs.field_widget': [`${commonPaths.drupalEntry}/field_widget.scss`],
+    '../../css/react_paragraphs.field_formatter': [`${commonPaths.drupalEntry}/field_formatter.scss`]
   },
   output: {
     filename: 'react_paragraphs.[name].min.js'
@@ -15,7 +20,7 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.scss$/,
+        test: /js\/\.scss$/,
         use: [
           {
             loader: 'style-loader'
@@ -31,14 +36,53 @@ const config = {
       {
         test: /\.(jpe?g|png|ttf|eot|svg|woff(2)?)(\?[a-z0-9=&.]+)?$/,
         use: 'base64-inline-loader?limit=1000&name=[name].[ext]'
-      }
+      },
+      {
+        test: /scss\/.*\.s[ac]ss$/,
+        use: [
+          // Extract loader.
+          MiniCssExtractPlugin.loader,
+          // CSS Loader. Generate sourceMaps.
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true,
+              url: true
+            }
+          },
+          // Post CSS. Run autoprefixer plugin.
+          {
+            loader: 'postcss-loader',
+            options: {
+              sourceMap: true,
+              plugins: () => [
+                autoprefixer({})
+              ]
+            }
+          },
+          // SASS Loader. Add compile paths to include bourbon.
+          {
+            loader: 'sass-loader',
+            options: {
+              sassOptions: {
+                includePaths: [
+                  path.resolve(__dirname, 'node_modules/')
+                ],
+                sourceMap: true,
+                lineNumbers: true,
+                outputStyle: 'nested',
+                precision: 10
+              }
+            }
+          }
+        ]
+      },
     ]
   },
   plugins: [
-    new ExtractTextPlugin({
-      filename: 'styles/styles.css',
-      allChunks: true
-    })
+    new MiniCssExtractPlugin({
+      filename: "../css/[name].css"
+    }),
   ]
 };
 

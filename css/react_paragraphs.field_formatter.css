@@ -2,12 +2,9 @@
   .react-paragraphs-row {
     display: -webkit-box;
     display: -ms-flexbox;
-    display: flex;
-    -ms-flex-wrap: nowrap;
-    flex-wrap: nowrap; }
-}
+    display: flex; } }
 
-.react-paragraphs-row [data-react-columns] {
+.react-paragraphs-row [data-react-columns="1"] {
   -webkit-box-flex: 1;
       -ms-flex: 1 1 0px;
           flex: 1 1 0; }
@@ -66,3 +63,6 @@
   -webkit-box-flex: 12;
       -ms-flex: 12 1 0px;
           flex: 12 1 0; }
+
+
+/*# sourceMappingURL=react_paragraphs.field_formatter.css.map*/
