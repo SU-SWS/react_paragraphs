@@ -190,21 +190,13 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     $bundle_entities = $this->entityTypeManager->getStorage('paragraphs_type')
       ->loadMultiple(array_keys($return_bundles));
 
+    $handler_settings = $this->getFieldSetting('handler_settings');
     /** @var \Drupal\paragraphs\ParagraphsTypeInterface $paragraph_type */
     foreach ($bundle_entities as $id => $paragraph_type) {
       $return_bundles[$id]['icon'] = self::getParagraphTypeIcon($paragraph_type);
+      $return_bundles[$id]['minWidth'] = $handler_settings['widths'][$id]['min'] ?? 1;
     }
 
-    $handler_settings = $this->getFieldSetting('handler_settings');
-    foreach (array_keys($return_bundles) as $bundle) {
-      $return_bundles[$bundle]['minWidth'] = 1;
-      $return_bundles[$bundle]['maxWidth'] = 12;
-
-      if (isset($handler_settings['widths'][$bundle])) {
-        $return_bundles[$bundle]['minWidth'] = $handler_settings['widths'][$bundle]['min'];
-        $return_bundles[$bundle]['maxWidth'] = $handler_settings['widths'][$bundle]['max'];
-      }
-    }
     return $return_bundles;
   }
 

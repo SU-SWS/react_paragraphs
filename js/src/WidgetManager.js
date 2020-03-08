@@ -204,10 +204,6 @@ export class WidgetManager extends Component {
 
       this.moveNewItemIntoRow(simulated_drag);
     }
-
-    function moveItem() {
-
-    }
   };
 
   addRow(callback) {
@@ -250,14 +246,27 @@ export class WidgetManager extends Component {
   /**
    * Before dragging an tool, create a new row if the last one is full.
    */
-  onBeforeCapture(item) {
+  onBeforeCapture(item, a) {
     // When dragging rows, we don't want to add another row. Only when dragging
     // items around.
     if (item.draggableId.indexOf('row') === 0) {
       return;
     }
     const lastRowId = this.state.rowOrder[this.state.rowOrder.length - 1];
+    let needsNewRow = false;
     if (this.state.rows[lastRowId].itemsOrder.length >= this.props.maxItemsPerRow) {
+      needsNewRow = true;
+    }
+    else {
+      try {
+        needsNewRow = !this.canDropInRow(item.draggableId, lastRowId, null);
+      }
+      catch (e) {
+        // Nothing to do here.
+      }
+    }
+
+    if (needsNewRow) {
       this.addRow();
     }
   }
@@ -288,8 +297,20 @@ export class WidgetManager extends Component {
     if (this.state.rows[destinationRow].itemsOrder.length >= this.props.maxItemsPerRow) {
       return false;
     }
-    // TODO add logic to check for available columns.
-    return true;
+
+    const requiredColumns = this.props.tools[itemBundle].minWidth;
+    let columnsTaken = 0;
+    this.state.rows[destinationRow].itemsOrder.map(itemId => {
+      const rowItem = this.state.rows[destinationRow].items[itemId];
+      const rowItemBundle = rowItem.entity.type[0].target_id;
+
+      columnsTaken += this.getRequiredMinColumns(rowItemBundle);
+    });
+    return 12 - columnsTaken >= requiredColumns;
+  }
+
+  getRequiredMinColumns(toolId) {
+    return parseInt(this.props.tools[toolId].minWidth);
   }
 
   /**
@@ -354,17 +375,8 @@ export class WidgetManager extends Component {
     newState.rows[result.destination.droppableId].items[result.draggableId] = newState.rows[result.source.droppableId].items[result.draggableId];
     delete newState.rows[result.source.droppableId].items[result.draggableId];
 
-    // Set the widths of all items in the destination row to equal columns.
-    let equalWidths = 12 / newState.rows[result.destination.droppableId].itemsOrder.length;
-    Object.keys(newState.rows[result.destination.droppableId].items).forEach(itemId => {
-      newState.rows[result.destination.droppableId].items[itemId].width = equalWidths;
-    });
-
-    // Set the widths of all items in the source row to equal columns.
-    equalWidths = 12 / newState.rows[result.source.droppableId].itemsOrder.length;
-    Object.keys(newState.rows[result.source.droppableId].items).forEach(itemId => {
-      newState.rows[result.source.droppableId].items[itemId].width = equalWidths;
-    });
+    this.resetRowItemWidths(result.destination.droppableId, newState);
+    this.resetRowItemWidths(result.source.droppableId, newState);
     this.setState(newState);
   }
 
@@ -381,12 +393,31 @@ export class WidgetManager extends Component {
     newState.rows[result.destination.droppableId].itemsOrder.splice(newItem.index, 0, newItem.id);
     newState.rows[result.destination.droppableId].items[newItem.id] = newItem;
 
-    const equalWidths = 12 / newState.rows[result.destination.droppableId].itemsOrder.length;
-    Object.keys(newState.rows[result.destination.droppableId].items).forEach(itemId => {
-      newState.rows[result.destination.droppableId].items[itemId].width = equalWidths;
+    this.resetRowItemWidths(result.destination.droppableId, newState);
+    this.setState(newState);
+  }
+
+  resetRowItemWidths(rowId, state) {
+    const equalWidths = 12 / state.rows[rowId].itemsOrder.length;
+
+    let totalColumns = 0;
+    state.rows[rowId].itemsOrder.map(itemId => {
+      const rowItemBundle = state.rows[rowId].items[itemId].entity.type[0].target_id;
+      state.rows[rowId].items[itemId].width = Math.max(equalWidths, this.getRequiredMinColumns(rowItemBundle));
+      totalColumns += state.rows[rowId].items[itemId].width;
     });
 
-    this.setState(newState);
+    while (totalColumns > 12) {
+      state.rows[rowId].itemsOrder.map(itemId => {
+        const rowItemBundle = state.rows[rowId].items[itemId].entity.type[0].target_id;
+
+        if (state.rows[rowId].items[itemId].width > this.getRequiredMinColumns(rowItemBundle)) {
+          state.rows[rowId].items[itemId].width--;
+          totalColumns--;
+        }
+      })
+    }
+
   }
 
   /**

@@ -52,20 +52,11 @@ class ReactParagraphs extends EntityReferenceRevisionsItem {
         '#title' => $this->t('%label settings', ['%label' => $label]),
       ];
       $form['handler']['handler_settings']['widths'][$key]['min'] = [
-        '#type' => 'number',
+        '#type' => 'select',
         '#title' => $this->t('Minimum Width for %label', ['%label' => $label]),
         '#description' => $this->t('Set the minimum required columns out of 12 that this paragraph needs to function correctly.'),
         '#default_value' => $settings['handler_settings']['widths'][$key]['min'] ?? 1,
-        '#min' => 1,
-        '#max' => 12,
-      ];
-      $form['handler']['handler_settings']['widths'][$key]['max'] = [
-        '#type' => 'number',
-        '#title' => $this->t('Maximum Width for %label', ['%label' => $label]),
-        '#description' => $this->t('Set the maximum required columns out of 12 that this paragraph needs to function correctly.'),
-        '#default_value' => 12,
-        '#min' => 1,
-        '#max' => 12,
+        '#options' => [1 => 1, 2 => 2, 3 => 3, 4 => 4, 6 => 6, 12 => 12],
       ];
     }
     return $form;
@@ -86,7 +77,7 @@ class ReactParagraphs extends EntityReferenceRevisionsItem {
 
     // Clean up the values if the bundle is not customized to with some widths.
     foreach ($form_state->getValue(['settings', 'handler_settings', 'widths']) as $bundle => $bundle_settings) {
-      if (!array_key_exists($bundle, $enabled_bundles) || ($bundle_settings['min'] == 1 && $bundle_settings['max'] == 12)) {
+      if (!array_key_exists($bundle, $enabled_bundles) || $bundle_settings['min'] == 1) {
         $form_state->unsetValue(['settings', 'handler_settings', 'widths', $bundle]);
       }
     }
