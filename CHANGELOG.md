@@ -1,5 +1,12 @@
 # React Paragprahs
 
+8.x-1.3
+--------------------------------------------------------------------------------
+_Release Date: 2020-03-05_
+
+- Refactored and simplified the ckeditor widget.
+- Added some github actions.
+
 8.x-1.2
 --------------------------------------------------------------------------------
 _Release Date: 2020-02-27_
