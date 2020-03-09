@@ -1,11 +1,14 @@
 @media (min-width: 768px) {
   .react-paragraphs-row {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
 }
 
-@for $i from 1 through 12 {
+@for $i from 1 through 11 {
+  $percentage: percentage($i / 12);
   .react-paragraphs-row [data-react-columns="#{$i}"] {
-    flex: $i 1 0;
+    width: calc(#{$percentage} - 30px);
   }
 }
