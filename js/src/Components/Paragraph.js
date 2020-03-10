@@ -120,6 +120,7 @@ export const Paragraph = ({item, ...props}) => {
                 <ParagraphForm
                   apiUrls={drupalContext.apiUrls}
                   item={item}
+                  formFields={drupalContext.getFormFields(item)}
                 />
               </FormDialog>
 

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {useState} from 'react';
 import {Draggable, Droppable} from "react-beautiful-dnd";
 import styled from 'styled-components'
 import {DrupalContext} from "../WidgetManager";
@@ -41,24 +41,15 @@ const RowWrapper = styled.div`
   }
 `;
 
-export class Row extends Component {
+export const Row =(props) =>  {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      rowWidth: 0,
-      deleteModalOpen: false
-    };
-    this.rowRef = React.createRef();
-  }
-
-  render() {
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     let rowIsDragging;
 
     return (
       <Draggable
-        draggableId={this.props.id}
-        index={this.props.index}
+        draggableId={props.id}
+        index={props.index}
       >
         {(provided, snapshot) => (
           <RowWrapper
@@ -67,19 +58,19 @@ export class Row extends Component {
             isDragging={snapshot.isDragging}
           >
             {rowIsDragging = snapshot.isDragging}
-            <FlexDiv className="inner-row-wrapper" id={this.props.id}>
+            <FlexDiv className="inner-row-wrapper" id={props.id}>
               <div className="move-row-handle" {...provided.dragHandleProps}>
               <span className="visually-hidden">
                 Move Row
               </span>
               </div>
 
-              <div ref={this.rowRef} style={{flex: 1}}>
+              <div style={{flex: 1}}>
                 <Droppable
-                  droppableId={this.props.id}
+                  droppableId={props.id}
                   direction="horizontal"
                   type="item"
-                  isDropDisabled={this.props.isDropDisabled}
+                  isDropDisabled={props.isDropDisabled}
                 >
                   {(provided, snapshot) => (
                     <ItemsContainer
@@ -87,26 +78,26 @@ export class Row extends Component {
                       {...provided.droppableProps}
                       isDraggingOver={snapshot.isDraggingOver}
                       rowIsDragging={rowIsDragging}
-                      hasItems={this.props.itemsOrder.length > 0}
+                      hasItems={props.itemsOrder.length > 0}
                     >
                       <DrupalContext.Consumer>
                         {drupalContext =>
                           <React.Fragment>
-                            {this.props.itemsOrder.map((itemId, index) => (
+                            {props.itemsOrder.map((itemId, index) => (
                               <Paragraph
                                 key={itemId}
                                 id={itemId}
                                 index={index}
-                                item={this.props.items[itemId]}
-                                isDraggable={this.props.itemsPerRow > 1}
+                                item={props.items[itemId]}
+                                isDraggable={props.itemsPerRow > 1}
                                 isDraggingOverRow={snapshot.isDraggingOver}
-                                typeLabel={drupalContext.tools[this.props.items[itemId].entity.type[0].target_id].label}
+                                typeLabel={drupalContext.tools[props.items[itemId].entity.type[0].target_id].label}
                               />
                             ))}
 
-                            {this.props.itemsOrder.length === 0 &&
+                            {props.itemsOrder.length === 0 &&
                             <HelpTextPlaceholder
-                              allowedNumber={this.props.itemsPerRow}/>
+                              allowedNumber={props.itemsPerRow}/>
                             }
                             {provided.placeholder}
                           </React.Fragment>
@@ -121,21 +112,21 @@ export class Row extends Component {
               <button
                 type="button"
                 className="button"
-                disabled={this.props.itemsOrder.length === 0 && this.props.onlyRow}
-                onClick={() => this.setState({deleteModalOpen: true})}
+                disabled={props.itemsOrder.length === 0 && props.onlyRow}
+                onClick={() => setDeleteModalOpen(true)}
                 style={{marginLeft: '10px', whiteSpace: 'nowrap'}}
               >
                 Delete Row
               </button>
 
               <ConfirmDialog
-                open={this.state.deleteModalOpen}
+                open={deleteModalOpen}
                 title="Delete this row?"
                 dialog="This action can not be undone."
-                onCancel={() => this.setState({deleteModalOpen: false})}
+                onCancel={() => setDeleteModalOpen(false)}
                 onConfirm={() => {
-                  this.setState({deleteModalOpen: false});
-                  this.props.onRemoveRow(this.props.id)
+                  setDeleteModalOpen(false);
+                  props.onRemoveRow(props.id)
                 }}
               />
             </div>
@@ -143,8 +134,7 @@ export class Row extends Component {
         )}
       </Draggable>
     )
-  }
-}
+};
 
 const HelpTextPlaceholder = ({allowedNumber = 1}) => {
   return (

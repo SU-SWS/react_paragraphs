@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import styled from 'styled-components'
 import {DrupalContext} from "../WidgetManager";
 import {TextWidget} from "./Widgets/TextWidget";
@@ -17,7 +17,7 @@ const FieldContainer = styled.div`
   margin: 40px 0 0;
 `;
 
-export const ParagraphForm = (props) => {
+export const ParagraphForm = ({formFields, ...props}) => {
 
   const widgetComponents = {
     text: TextWidget,
@@ -32,19 +32,8 @@ export const ParagraphForm = (props) => {
     media_library: MediaLibrary,
     viewfield: ViewFieldWidget
   };
-  const url = props.apiUrls.baseDomain + props.apiUrls.formApi;
-  const [formFields, setFormFields] = React.useState(null);
 
-  useEffect(() => {
-    fetch(url.replace('{entity_type_id}', 'paragraph').replace('{bundle}', props.item.entity.type[0].target_id))
-      .then(response => response.json())
-      .then(jsonData => {
-        setFormFields(jsonData)
-      });
-  }, []);
-
-
-  if (formFields === null) {
+  if (formFields === null || typeof formFields === 'undefined') {
     return (<div className="loading">Loading...</div>)
   }
 
@@ -54,7 +43,7 @@ export const ParagraphForm = (props) => {
         const WidgetName = widgetComponents[formFields[fieldName].widget_type];
 
         if (WidgetName === undefined) {
-          console.log('Unable to find widget for type: ' + formFields[fieldName].widget_type);
+          console.error('Unable to find widget for type: ' + formFields[fieldName].widget_type);
           return (
             <FieldContainer key={`widget-${props.item.id}-${fieldName}`}>
               Unable to provide a form for

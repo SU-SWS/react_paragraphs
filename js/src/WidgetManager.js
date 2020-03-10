@@ -15,7 +15,8 @@ export class WidgetManager extends Component {
     setItemWidth: this.setItemWidth.bind(this),
     onAdminTitleChange: this.onAdminTitleChange.bind(this),
     addToolToBottom: this.addToolToBottom.bind(this),
-    onDragStart: this.onDragStart.bind(this)
+    onDragStart: this.onDragStart.bind(this),
+    getFormFields: this.getFormFields.bind(this)
   };
 
   apiUrls = {
@@ -81,7 +82,8 @@ export class WidgetManager extends Component {
       rowCount: rowOrder.length,
       rows: rows,
       rowOrder: rowOrder,
-      loadedItems: 0
+      loadedItems: 0,
+      cachedForms: {}
     };
 
     window.addEventListener('beforeunload', this.handleBeforeunload.bind(this));
@@ -496,7 +498,33 @@ export class WidgetManager extends Component {
     this.setState(newState);
   }
 
+  /**
+   * Get entity form data from the cached api response or a new fetch.
+   * @param item
+   * @returns {*}
+   */
+  getFormFields(item) {
+    let url = this.apiUrls.baseDomain + this.apiUrls.formApi;
+    url = url.replace('{entity_type_id}', 'paragraph').replace('{bundle}', item.entity.type[0].target_id);
+
+    // We've already gotten this form once, return that one.
+    if (typeof this.state.cachedForms[url] !== 'undefined') {
+      return this.state.cachedForms[url];
+    }
+
+    fetch(url)
+      .then(response => response.json())
+      .then(jsonData => this.setState(prevState => ({
+        ...prevState,
+        cachedForms: {
+          ...prevState.cachedForms,
+          [url]: jsonData
+        }
+      }))).catch(e => console.error(e));
+  }
+
   render() {
+
     if (this.state.loadedItems >= this.props.items.length) {
       return (
         <DrupalContext.Provider
