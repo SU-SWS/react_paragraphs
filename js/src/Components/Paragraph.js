@@ -4,10 +4,9 @@ import styled from 'styled-components';
 import {ParagraphForm} from "./ParagraphForm";
 import {DrupalContext} from "../WidgetManager";
 import {AdminTitleField} from "./Widgets/AdminTitleField";
-import {DrupalModal} from "./Atoms/DrupalModal";
-import {DrupalModalFooter} from "./Atoms/DrupalModalFooter";
 import {DropButtons} from "./DropButtons"
 import {ConfirmDialog} from "./Atoms/ConfirmDialog";
+import {FormDialog} from "./Atoms/FormDialog";
 
 const ParagraphWrapper = styled.div`
   margin: 5px;
@@ -49,7 +48,6 @@ const ItemIcon = styled.img`
 
 export const Paragraph = ({item, ...props}) => {
 
-  let submitButton = React.createRef();
   const [modalOpen, setModalOpen] = useState(Object.keys(item.entity).length == 1);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
@@ -67,20 +65,6 @@ export const Paragraph = ({item, ...props}) => {
     />;
   };
 
-  /**
-   * Form submit handler.
-   */
-  const onFormSubmit = (e) => {
-    e.preventDefault();
-    setModalOpen(!modalOpen);
-  };
-
-  /**
-   * Modal close handler will instead click the form submit button.
-   */
-  const onRequestClose = () => {
-    submitButton.current.click();
-  };
 
   return (
     <Draggable
@@ -123,35 +107,21 @@ export const Paragraph = ({item, ...props}) => {
                 ]}
               />
 
-              <DrupalModal
-                isOpen={modalOpen}
-                onRequestClose={onRequestClose}
-                contentLabel={`Edit ${props.typeLabel} > "${item.admin_title}"`}
-                wrapperProps={{style: {height: "calc(100% - 109px)"}}}
+              <FormDialog
+                title={`Edit ${props.typeLabel} > "${item.admin_title}"`}
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
               >
-                <form onSubmit={onFormSubmit}>
-                  <div style={{padding: "20px"}}>
-                    <AdminTitleField
-                      textField={modalOpen}
-                      item={item}
-                      onChange={drupalContext.onAdminTitleChange.bind(undefined, item.id)}
-                    />
-                    <ParagraphForm
-                      apiUrls={drupalContext.apiUrls}
-                      item={item}
-                    />
-                  </div>
-                  <DrupalModalFooter>
-                    <input
-                      type="submit"
-                      className="button button--primary"
-                      value="Continue"
-                      ref={submitButton}
-                    />
-
-                  </DrupalModalFooter>
-                </form>
-              </DrupalModal>
+                <AdminTitleField
+                  textField={modalOpen}
+                  item={item}
+                  onChange={drupalContext.onAdminTitleChange.bind(undefined, item.id)}
+                />
+                <ParagraphForm
+                  apiUrls={drupalContext.apiUrls}
+                  item={item}
+                />
+              </FormDialog>
 
               <ConfirmDialog
                 open={deleteConfirmOpen}
