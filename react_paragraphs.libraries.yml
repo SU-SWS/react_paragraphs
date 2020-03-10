@@ -16,6 +16,7 @@ field_widget:
     - views/views.ajax
     - dropzonejs/dropzonejs
     - dropzonejs/integration
+    - core/drupal.dropbutton
 
 field_formatter:
   version: VERSION

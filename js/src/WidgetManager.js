@@ -171,8 +171,14 @@ export class WidgetManager extends Component {
     });
   }
 
-  removeParagraph() {
+  removeParagraph(itemId) {
+    const rowId = this.state.rowOrder.find(rowId => this.state.rows[rowId].itemsOrder.includes(itemId));
+    const newState = {...this.state};
 
+    delete newState.rows[rowId].items[itemId];
+    newState.rows[rowId].itemsOrder.splice(newState.rows[rowId].itemsOrder.indexOf(itemId), 1);
+    this.resetRowItemWidths(rowId, newState);
+    this.setState(newState);
   }
 
   addToolToBottom(item_name, e) {
@@ -245,8 +251,10 @@ export class WidgetManager extends Component {
 
   /**
    * Before dragging an tool, create a new row if the last one is full.
+   *
+   * @link https://github.com/atlassian/react-beautiful-dnd/blob/master/docs/guides/responders.md#ondragstart
    */
-  onBeforeCapture(item, a) {
+  onBeforeCapture(item) {
     // When dragging rows, we don't want to add another row. Only when dragging
     // items around.
     if (item.draggableId.indexOf('row') === 0) {
@@ -254,11 +262,15 @@ export class WidgetManager extends Component {
     }
     const lastRowId = this.state.rowOrder[this.state.rowOrder.length - 1];
     let needsNewRow = false;
+
+    // The last row is maxed out with items, a new row is needed.
     if (this.state.rows[lastRowId].itemsOrder.length >= this.props.maxItemsPerRow) {
       needsNewRow = true;
     }
     else {
       try {
+        // The last row is not full of items, but the items in the row require
+        // all columns for that row. We need a new row.
         needsNewRow = !this.canDropInRow(item.draggableId, lastRowId, null);
       }
       catch (e) {
@@ -271,18 +283,29 @@ export class WidgetManager extends Component {
     }
   }
 
+  /**
+   * When the drag is initiated.
+   *
+   * @param dragItem
+   *
+   * @link https://github.com/atlassian/react-beautiful-dnd/blob/master/docs/guides/responders.md#ondragstart
+   */
   onDragStart(dragItem) {
 
+    // We don't need to do anything here if the user is dragging a row.
     if (dragItem.type !== 'item') {
       return;
     }
 
+    // Find the tool machine name if the dragging item is a tool or an existing
+    // item.
     let itemBundle = dragItem.draggableId;
     if (dragItem.source.droppableId !== 'toolbox') {
       const item = this.state.rows[dragItem.source.droppableId].items[itemBundle];
       itemBundle = item.entity.type[0].target_id;
     }
 
+    // Go through all the rows and mark them as disabled if they are full.
     const newState = {...this.state};
     this.state.rowOrder.map(rowId => {
       newState.rows[rowId].isDropDisabled = !this.canDropInRow(itemBundle, rowId, dragItem.source.droppableId);
@@ -290,25 +313,42 @@ export class WidgetManager extends Component {
     this.setState(newState);
   }
 
+  /**
+   * Find out if the given tool can be dropped in the destination row.
+   *
+   * @param itemBundle
+   * @param destinationRow
+   * @param sourceRow
+   * @returns {boolean}
+   */
   canDropInRow(itemBundle, destinationRow, sourceRow) {
+    // Dragging within the same row is always allowed.
     if (destinationRow === sourceRow) {
       return true;
     }
+    // The destination row is already full of items.
     if (this.state.rows[destinationRow].itemsOrder.length >= this.props.maxItemsPerRow) {
       return false;
     }
 
+    // Find out how many columns are required as minimums of the existing items.
+    // If the minimum required columns is full, mark the row as full.
     const requiredColumns = this.props.tools[itemBundle].minWidth;
     let columnsTaken = 0;
     this.state.rows[destinationRow].itemsOrder.map(itemId => {
-      const rowItem = this.state.rows[destinationRow].items[itemId];
-      const rowItemBundle = rowItem.entity.type[0].target_id;
+      const rowItemBundle = this.state.rows[destinationRow].items[itemId].entity.type[0].target_id;
 
       columnsTaken += this.getRequiredMinColumns(rowItemBundle);
     });
-    return 12 - columnsTaken >= requiredColumns;
+    return (12 - columnsTaken) >= requiredColumns;
   }
 
+  /**
+   * Get the number of columns required for the current tool.
+   *
+   * @param toolId
+   * @returns {number}
+   */
   getRequiredMinColumns(toolId) {
     return parseInt(this.props.tools[toolId].minWidth);
   }
@@ -319,20 +359,25 @@ export class WidgetManager extends Component {
    * @param result
    */
   onDragEnd(result) {
+    // The item wasn't dragged anywhere, bail.
     if (!result.destination) {
       return;
     }
 
+    // When an item was dragged from the toolbox, create a new item and add it.
     if (result.source.droppableId === 'toolbox') {
       return this.moveNewItemIntoRow(result);
     }
 
+    // When a item was dragged in the same row, or a row was dragged to reorder.
     if (result.source.droppableId === result.destination.droppableId) {
       if (result.type === 'item') {
         return this.moveItemWithinRow(result);
       }
       return this.moveRow(result);
     }
+
+    // An item was dragged into a new row.
     this.moveItemToNewRow(result);
   }
 

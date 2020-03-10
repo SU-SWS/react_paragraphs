@@ -5,6 +5,5 @@ module.exports = {
   projectRoot: PROJECT_ROOT,
   outputPath: path.join(PROJECT_ROOT, 'build'),
   appEntry: path.join(PROJECT_ROOT, 'src'),
-  drupalOutputPath: path.join(PROJECT_ROOT, '../css'),
   drupalEntry: path.join(PROJECT_ROOT, '../scss')
 };
