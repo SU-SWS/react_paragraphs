@@ -16,6 +16,7 @@
 
     @for $i from 1 through 11 {
       $percentage: percentage($i / 12);
+
       [data-react-columns="#{$i}"] {
         width: calc(#{$percentage} - 30px);
       }

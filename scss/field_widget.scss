@@ -5,12 +5,16 @@ fieldset:not(.fieldgroup)[class*="MuiOutlinedInput"] {
   background-color: transparent;
 }
 
-.MuiInputLabel-outlined.MuiInputLabel-shrink {
-  background: #fff;
+.MuiInputLabel-outlined {
+  &.MuiInputLabel-shrink {
+    background: #fff;
+  }
 }
 
-legend.MuiFormLabel-root {
-  margin-bottom: 10px;
+legend {
+  &.MuiFormLabel-root {
+    margin-bottom: 10px;
+  }
 }
 
 .react-paragraphs-fieldset {

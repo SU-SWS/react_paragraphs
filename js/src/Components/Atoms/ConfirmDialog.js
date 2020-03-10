@@ -34,4 +34,4 @@ export const ConfirmDialog = ({open, title, dialog, confirmText="Agree", onConfi
       </Dialog>
     </div>
   );
-}
+};
