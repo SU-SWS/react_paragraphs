@@ -25,6 +25,10 @@ export const FormDialog = ({open, title, formContent, onClose, ...props}) => {
       open={open}
       aria-labelledby="max-width-dialog-title"
       onBackdropClick={onBackdropClick}
+      classes={{root: "form-modal-root"}}
+      PaperProps={{
+        style: {zIndex: 1}
+      }}
     >
       <DialogTitle style={{
         background: '#6b6b6b',

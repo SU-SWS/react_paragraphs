@@ -7,7 +7,7 @@
 @media (min-width: 768px) {
   .react-paragraphs-row {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: space-between;
 
     [data-react-columns] {
