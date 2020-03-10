@@ -36,6 +36,7 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
     'text',
     'hal',
     'serialization',
+    'field_ui'
   ];
 
   /**

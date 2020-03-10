@@ -5,6 +5,7 @@ namespace Drupal\Tests\react_paragraphs\Kernel\Plugin\Field\FieldWidget;
 use Drupal\Core\Form\FormState;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\field_ui\Form\FieldConfigEditForm;
 use Drupal\file\Entity\File;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
@@ -102,6 +103,7 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
           'card' => [
             'label' => 'Card',
             'weight' => 0,
+            'minWidth' => 1,
           ],
         ],
         'items' => [
@@ -232,6 +234,26 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
 
     $field_type = new TestReactParagraphsType();
     $this->assertNull($field_type->preSave());
+
+    $entity = FieldConfig::load('node.page.foo');
+    /** @var \Drupal\field_ui\Form\FieldConfigEditForm $form_object */
+    $form_object = \Drupal::entityTypeManager()->getFormObject($entity->getEntityTypeId(), 'edit');
+    $form_object->setEntity($entity);
+    $form = \Drupal::formBuilder()->buildForm($form_object, $form_state);
+
+    $this->assertArrayhasKey('card', $form['settings']['handler']['handler_settings']['widths']);
+    $this->assertCount(24, $form['settings']['handler']['handler_settings']['widths']['card']);
+
+    $form_state = new FormState();
+    $form_state->setBuildInfo(['callback_object' => $form_object]);
+    $form_state->setValue(['settings', 'handler_settings', 'negate'], 0);
+    $form_state->setValue(['settings', 'handler_settings', 'target_bundles_drag_drop'], ['card' => ['enabled' => 1]]);
+    $form_state->setValue(['settings', 'handler_settings', 'widths'], ['card' => ['min' => 1]]);
+
+    /** @var \Drupal\Core\Form\FormValidatorInterface $form_validator */
+    $form_validator = \Drupal::service('form_validator');
+    $form_validator->validateForm('field_config_edit_form', $form, $form_state);
+    $this->assertNull($form_state->getValue(['settings', 'handler_settings', 'widths', 'card']));
   }
 
 }

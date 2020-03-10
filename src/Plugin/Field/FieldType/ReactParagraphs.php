@@ -67,6 +67,7 @@ class ReactParagraphs extends EntityReferenceRevisionsItem {
    */
   public static function fieldSettingsFormValidate(array $form, FormStateInterface $form_state) {
     parent::fieldSettingsFormValidate($form, $form_state);
+
     $negate = $form_state->getValue(['settings', 'handler_settings', 'negate']);
     $bundles = $form_state->getValue(['settings', 'handler_settings', 'target_bundles_drag_drop']);
 
