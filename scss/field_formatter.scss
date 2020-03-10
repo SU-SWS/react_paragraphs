@@ -1,14 +1,24 @@
+.react-paragraphs-row {
+  [data-react-columns] {
+    width: 100%;
+  }
+}
+
 @media (min-width: 768px) {
   .react-paragraphs-row {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-  }
-}
 
-@for $i from 1 through 11 {
-  $percentage: percentage($i / 12);
-  .react-paragraphs-row [data-react-columns="#{$i}"] {
-    width: calc(#{$percentage} - 30px);
+    [data-react-columns] {
+      width: 100%;
+    }
+
+    @for $i from 1 through 11 {
+      $percentage: percentage($i / 12);
+      [data-react-columns="#{$i}"] {
+        width: calc(#{$percentage} - 30px);
+      }
+    }
   }
 }

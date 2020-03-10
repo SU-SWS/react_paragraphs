@@ -155,7 +155,7 @@ export const Paragraph = ({item, ...props}) => {
 
               <ConfirmDialog
                 open={deleteConfirmOpen}
-                title="Delete this item?"
+                title={`Delete ${item.admin_title}?`}
                 dialog="This action can not be undone."
                 onCancel={() => setDeleteConfirmOpen(false)}
                 onConfirm={() => {
