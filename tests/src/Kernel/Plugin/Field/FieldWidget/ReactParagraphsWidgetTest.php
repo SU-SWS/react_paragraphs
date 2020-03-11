@@ -5,7 +5,6 @@ namespace Drupal\Tests\react_paragraphs\Kernel\Plugin\Field\FieldWidget;
 use Drupal\Core\Form\FormState;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\field_ui\Form\FieldConfigEditForm;
 use Drupal\file\Entity\File;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
@@ -254,6 +253,20 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
     $form_validator = \Drupal::service('form_validator');
     $form_validator->validateForm('field_config_edit_form', $form, $form_state);
     $this->assertNull($form_state->getValue(['settings', 'handler_settings', 'widths', 'card']));
+  }
+
+    /**
+   * Test cron functions correctly.
+   */
+  public function testCron() {
+    \Drupal::service('module_installer')->install(['search']);
+    foreach (Paragraph::loadMultiple() as $entity) {
+      $entity->delete();
+    }
+    $search_page_repository = \Drupal::service('search.search_page_repository');
+    foreach ($search_page_repository->getIndexableSearchPages() as $entity) {
+      $entity->getPlugin()->updateIndex();
+    }
   }
 
 }
