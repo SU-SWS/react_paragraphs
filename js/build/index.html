@@ -19,7 +19,11 @@
     Learn how to configure a non-root public URL by running `npm run build`.
   -->
   <title>React App</title>
-<link rel="shortcut icon" href="/favicon.ico"></head>
+  <link rel="stylesheet" href="https://amptesting.sites.stanford.edu/core/misc/dropbutton/dropbutton.css"/>
+  <link rel="stylesheet" href="https://amptesting.sites.stanford.edu/core/themes/stable/css/core/dropbutton/dropbutton.css?q6wkff"/>
+  <link rel="stylesheet" href="https://amptesting.sites.stanford.edu/core/themes/classy/css/components/dropbutton.css?q6wkff"/>
+  <link rel="stylesheet" href="https://amptesting.sites.stanford.edu/core/themes/seven/css/components/dropbutton.component.css"/>
+<link rel="shortcut icon" href="/favicon.ico"><link href="/css/react_paragraphs.field_widget.css" rel="stylesheet"><link href="/css/react_paragraphs.field_formatter.css" rel="stylesheet"></head>
 <body>
 
 <style>
@@ -67,6 +71,7 @@
     font-weight: 700;
     -webkit-font-smoothing: antialiased;
   }
+
 </style>
 
 <script type="application/json" data-drupal-selector="drupal-settings-json">
@@ -83,24 +88,32 @@
         "inputId": "root-input",
         "entityId": 999,
         "fieldName": "field_react_paragraphs",
-        "itemsPerRow": 1,
+        "itemsPerRow": 4,
         "resizableItems": false,
         "tools": {
           "stanford_card": {
             "label": "Card",
-            "icon": "https:\/\/cdn0.iconfinder.com\/data\/icons\/business-concepts-3\/399\/Superhero-512.png"
+            "icon": "https:\/\/cdn0.iconfinder.com\/data\/icons\/business-concepts-3\/399\/Superhero-512.png",
+            "minWidth": 3,
+            "maxWidth": 12
           },
           "stanford_wysiwyg": {
             "label": "Text Area",
-            "icon": null
+            "icon": null,
+            "minWidth": 1,
+            "maxWidth": 12
           },
           "stanford_banner": {
             "label": "Banner",
-            "icon": null
+            "icon": null,
+            "minWidth": 6,
+            "maxWidth": 12
           },
           "view": {
             "label": "View",
-            "icon": null
+            "icon": null,
+            "minWidth": 1,
+            "maxWidth": 12
           }
         },
         "items": [
@@ -135,6 +148,8 @@
   src="https://amptesting.sites.stanford.edu/core/assets/vendor/sortable/Sortable.min.js?v=1.10.0"></script>
 <script
   src="https://amptesting.sites.stanford.edu/core/modules/media_library/js/media_library.widget.js?v=8.8.0-beta1"></script>
+<script
+  src="https://amptesting.sites.stanford.edu/core/misc/dropbutton/dropbutton.js?v=8.8.0-beta1"></script>
 
 <noscript>You need to enable JavaScript to run this app.</noscript>
 <div>
@@ -155,5 +170,5 @@
   To begin the development, run `npm start` or `yarn start`.
   To create a production bundle, use `npm run build` or `yarn build`.
 -->
-<script type="text/javascript" src="/react_paragraphs.vendor.min.js"></script><script type="text/javascript" src="/react_paragraphs.app.min.js"></script></body>
+<script type="text/javascript" src="/react_paragraphs.vendor.min.js"></script><script type="text/javascript" src="/react_paragraphs.app.min.js"></script><script type="text/javascript" src="/react_paragraphs.react_paragraphs.field_widget.min.js"></script><script type="text/javascript" src="/react_paragraphs.react_paragraphs.field_formatter.min.js"></script></body>
 </html>

@@ -43,6 +43,50 @@ class ReactParagraphs extends EntityReferenceRevisionsItem {
   /**
    * {@inheritdoc}
    */
+  public function fieldSettingsForm(array $form, FormStateInterface $form_state) {
+    $form = parent::fieldSettingsForm($form, $form_state);
+    $settings = $this->getSettings();
+    foreach ($form['handler']['handler_settings']['target_bundles']['#options'] as $key => $label) {
+      $form['handler']['handler_settings']['widths'][$key] = [
+        '#type' => 'details',
+        '#title' => $this->t('%label settings', ['%label' => $label]),
+      ];
+      $form['handler']['handler_settings']['widths'][$key]['min'] = [
+        '#type' => 'select',
+        '#title' => $this->t('Minimum Width for %label', ['%label' => $label]),
+        '#description' => $this->t('Set the minimum required columns out of 12 that this paragraph needs to function correctly.'),
+        '#default_value' => $settings['handler_settings']['widths'][$key]['min'] ?? 1,
+        '#options' => [1 => 1, 2 => 2, 3 => 3, 4 => 4, 6 => 6, 12 => 12],
+      ];
+    }
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function fieldSettingsFormValidate(array $form, FormStateInterface $form_state) {
+    parent::fieldSettingsFormValidate($form, $form_state);
+
+    $negate = $form_state->getValue(['settings', 'handler_settings', 'negate']);
+    $bundles = $form_state->getValue(['settings', 'handler_settings', 'target_bundles_drag_drop']);
+
+    // Find the paragraph bundles that are allowed in the widget.
+    $enabled_bundles = array_filter($bundles, function ($bundle_settings) use ($negate) {
+      return (!$bundle_settings['enabled'] && $negate) || ($bundle_settings['enabled'] && !$negate);
+    });
+
+    // Clean up the values if the bundle is not customized to with some widths.
+    foreach ($form_state->getValue(['settings', 'handler_settings', 'widths']) as $bundle => $bundle_settings) {
+      if (!array_key_exists($bundle, $enabled_bundles) || $bundle_settings['min'] == 1) {
+        $form_state->unsetValue(['settings', 'handler_settings', 'widths', $bundle]);
+      }
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data) {
     $element = parent::storageSettingsForm($form, $form_state, $has_data);
     $element['target_type']['#options'] = [

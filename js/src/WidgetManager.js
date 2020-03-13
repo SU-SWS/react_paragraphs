@@ -14,7 +14,9 @@ export class WidgetManager extends Component {
     removeRow: this.removeRow.bind(this),
     setItemWidth: this.setItemWidth.bind(this),
     onAdminTitleChange: this.onAdminTitleChange.bind(this),
-    addToolToBottom: this.addToolToBottom.bind(this)
+    addToolToBottom: this.addToolToBottom.bind(this),
+    onDragStart: this.onDragStart.bind(this),
+    getFormFields: this.getFormFields.bind(this)
   };
 
   apiUrls = {
@@ -44,7 +46,8 @@ export class WidgetManager extends Component {
         rows[rowId] = {
           id: rowId,
           items: {},
-          itemsOrder: []
+          itemsOrder: [],
+          isDropDisabled: true
         };
         rowOrder[rowNumber] = rowId;
       }
@@ -70,7 +73,8 @@ export class WidgetManager extends Component {
       rows['row-0'] = {
         id: 'row-0',
         items: {},
-        itemsOrder: []
+        itemsOrder: [],
+        isDropDisabled: true
       }
     }
 
@@ -78,7 +82,8 @@ export class WidgetManager extends Component {
       rowCount: rowOrder.length,
       rows: rows,
       rowOrder: rowOrder,
-      loadedItems: 0
+      loadedItems: 0,
+      cachedForms: {}
     };
 
     window.addEventListener('beforeunload', this.handleBeforeunload.bind(this));
@@ -168,8 +173,14 @@ export class WidgetManager extends Component {
     });
   }
 
-  removeParagraph() {
+  removeParagraph(itemId) {
+    const rowId = this.state.rowOrder.find(rowId => this.state.rows[rowId].itemsOrder.includes(itemId));
+    const newState = {...this.state};
 
+    delete newState.rows[rowId].items[itemId];
+    newState.rows[rowId].itemsOrder.splice(newState.rows[rowId].itemsOrder.indexOf(itemId), 1);
+    this.resetRowItemWidths(rowId, newState);
+    this.setState(newState);
   }
 
   addToolToBottom(item_name, e) {
@@ -201,10 +212,6 @@ export class WidgetManager extends Component {
 
       this.moveNewItemIntoRow(simulated_drag);
     }
-
-    function moveItem() {
-
-    }
   };
 
   addRow(callback) {
@@ -215,7 +222,8 @@ export class WidgetManager extends Component {
     newState.rows[newRowId] = {
       id: newRowId,
       items: {},
-      itemsOrder: []
+      itemsOrder: [],
+      isDropDisabled: true
     };
     if (typeof callback === 'function') {
       this.setState(newState, callback);
@@ -235,7 +243,8 @@ export class WidgetManager extends Component {
       newState.rows['row-' + newState.rowCount] = {
         id: 'row-' + newState.rowCount,
         items: {},
-        itemsOrder: []
+        itemsOrder: [],
+        isDropDisabled: true
       }
     }
 
@@ -244,6 +253,8 @@ export class WidgetManager extends Component {
 
   /**
    * Before dragging an tool, create a new row if the last one is full.
+   *
+   * @link https://github.com/atlassian/react-beautiful-dnd/blob/master/docs/guides/responders.md#ondragstart
    */
   onBeforeCapture(item) {
     // When dragging rows, we don't want to add another row. Only when dragging
@@ -252,9 +263,96 @@ export class WidgetManager extends Component {
       return;
     }
     const lastRowId = this.state.rowOrder[this.state.rowOrder.length - 1];
+    let needsNewRow = false;
+
+    // The last row is maxed out with items, a new row is needed.
     if (this.state.rows[lastRowId].itemsOrder.length >= this.props.maxItemsPerRow) {
+      needsNewRow = true;
+    }
+    else {
+      try {
+        // The last row is not full of items, but the items in the row require
+        // all columns for that row. We need a new row.
+        needsNewRow = !this.canDropInRow(item.draggableId, lastRowId, null);
+      }
+      catch (e) {
+        // Nothing to do here.
+      }
+    }
+
+    if (needsNewRow) {
       this.addRow();
     }
+  }
+
+  /**
+   * When the drag is initiated.
+   *
+   * @param dragItem
+   *
+   * @link https://github.com/atlassian/react-beautiful-dnd/blob/master/docs/guides/responders.md#ondragstart
+   */
+  onDragStart(dragItem) {
+
+    // We don't need to do anything here if the user is dragging a row.
+    if (dragItem.type !== 'item') {
+      return;
+    }
+
+    // Find the tool machine name if the dragging item is a tool or an existing
+    // item.
+    let itemBundle = dragItem.draggableId;
+    if (dragItem.source.droppableId !== 'toolbox') {
+      const item = this.state.rows[dragItem.source.droppableId].items[itemBundle];
+      itemBundle = item.entity.type[0].target_id;
+    }
+
+    // Go through all the rows and mark them as disabled if they are full.
+    const newState = {...this.state};
+    this.state.rowOrder.map(rowId => {
+      newState.rows[rowId].isDropDisabled = !this.canDropInRow(itemBundle, rowId, dragItem.source.droppableId);
+    });
+    this.setState(newState);
+  }
+
+  /**
+   * Find out if the given tool can be dropped in the destination row.
+   *
+   * @param itemBundle
+   * @param destinationRow
+   * @param sourceRow
+   * @returns {boolean}
+   */
+  canDropInRow(itemBundle, destinationRow, sourceRow) {
+    // Dragging within the same row is always allowed.
+    if (destinationRow === sourceRow) {
+      return true;
+    }
+    // The destination row is already full of items.
+    if (this.state.rows[destinationRow].itemsOrder.length >= this.props.maxItemsPerRow) {
+      return false;
+    }
+
+    // Find out how many columns are required as minimums of the existing items.
+    // If the minimum required columns is full, mark the row as full.
+    const requiredColumns = this.props.tools[itemBundle].minWidth;
+    let columnsTaken = 0;
+    this.state.rows[destinationRow].itemsOrder.map(itemId => {
+      const rowItemBundle = this.state.rows[destinationRow].items[itemId].entity.type[0].target_id;
+
+      columnsTaken += this.getRequiredMinColumns(rowItemBundle);
+    });
+    return (12 - columnsTaken) >= requiredColumns;
+  }
+
+  /**
+   * Get the number of columns required for the current tool.
+   *
+   * @param toolId
+   * @returns {number}
+   */
+  getRequiredMinColumns(toolId) {
+    return parseInt(this.props.tools[toolId].minWidth);
   }
 
   /**
@@ -263,20 +361,25 @@ export class WidgetManager extends Component {
    * @param result
    */
   onDragEnd(result) {
+    // The item wasn't dragged anywhere, bail.
     if (!result.destination) {
       return;
     }
 
+    // When an item was dragged from the toolbox, create a new item and add it.
     if (result.source.droppableId === 'toolbox') {
       return this.moveNewItemIntoRow(result);
     }
 
+    // When a item was dragged in the same row, or a row was dragged to reorder.
     if (result.source.droppableId === result.destination.droppableId) {
       if (result.type === 'item') {
         return this.moveItemWithinRow(result);
       }
       return this.moveRow(result);
     }
+
+    // An item was dragged into a new row.
     this.moveItemToNewRow(result);
   }
 
@@ -319,10 +422,8 @@ export class WidgetManager extends Component {
     newState.rows[result.destination.droppableId].items[result.draggableId] = newState.rows[result.source.droppableId].items[result.draggableId];
     delete newState.rows[result.source.droppableId].items[result.draggableId];
 
-    const equalWidths = 12 / newState.rows[result.destination.droppableId].itemsOrder.length;
-    Object.keys(newState.rows[result.destination.droppableId].items).forEach(itemId => {
-      newState.rows[result.destination.droppableId].items[itemId].width = equalWidths;
-    });
+    this.resetRowItemWidths(result.destination.droppableId, newState);
+    this.resetRowItemWidths(result.source.droppableId, newState);
     this.setState(newState);
   }
 
@@ -339,12 +440,31 @@ export class WidgetManager extends Component {
     newState.rows[result.destination.droppableId].itemsOrder.splice(newItem.index, 0, newItem.id);
     newState.rows[result.destination.droppableId].items[newItem.id] = newItem;
 
-    const equalWidths = 12 / newState.rows[result.destination.droppableId].itemsOrder.length;
-    Object.keys(newState.rows[result.destination.droppableId].items).forEach(itemId => {
-      newState.rows[result.destination.droppableId].items[itemId].width = equalWidths;
+    this.resetRowItemWidths(result.destination.droppableId, newState);
+    this.setState(newState);
+  }
+
+  resetRowItemWidths(rowId, state) {
+    const equalWidths = 12 / state.rows[rowId].itemsOrder.length;
+
+    let totalColumns = 0;
+    state.rows[rowId].itemsOrder.map(itemId => {
+      const rowItemBundle = state.rows[rowId].items[itemId].entity.type[0].target_id;
+      state.rows[rowId].items[itemId].width = Math.max(equalWidths, this.getRequiredMinColumns(rowItemBundle));
+      totalColumns += state.rows[rowId].items[itemId].width;
     });
 
-    this.setState(newState);
+    while (totalColumns > 12) {
+      state.rows[rowId].itemsOrder.map(itemId => {
+        const rowItemBundle = state.rows[rowId].items[itemId].entity.type[0].target_id;
+
+        if (state.rows[rowId].items[itemId].width > this.getRequiredMinColumns(rowItemBundle)) {
+          state.rows[rowId].items[itemId].width--;
+          totalColumns--;
+        }
+      })
+    }
+
   }
 
   /**
@@ -378,7 +498,33 @@ export class WidgetManager extends Component {
     this.setState(newState);
   }
 
+  /**
+   * Get entity form data from the cached api response or a new fetch.
+   * @param item
+   * @returns {*}
+   */
+  getFormFields(item) {
+    let url = this.apiUrls.baseDomain + this.apiUrls.formApi;
+    url = url.replace('{entity_type_id}', 'paragraph').replace('{bundle}', item.entity.type[0].target_id);
+
+    // We've already gotten this form once, return that one.
+    if (typeof this.state.cachedForms[url] !== 'undefined') {
+      return this.state.cachedForms[url];
+    }
+
+    fetch(url)
+      .then(response => response.json())
+      .then(jsonData => this.setState(prevState => ({
+        ...prevState,
+        cachedForms: {
+          ...prevState.cachedForms,
+          [url]: jsonData
+        }
+      }))).catch(e => console.error(e));
+  }
+
   render() {
+
     if (this.state.loadedItems >= this.props.items.length) {
       return (
         <DrupalContext.Provider

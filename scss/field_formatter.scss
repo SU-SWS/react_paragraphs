@@ -1,0 +1,25 @@
+.react-paragraphs-row {
+  [data-react-columns] {
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .react-paragraphs-row {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+
+    [data-react-columns] {
+      width: 100%;
+    }
+
+    @for $i from 1 through 11 {
+      $percentage: percentage($i / 12);
+
+      [data-react-columns="#{$i}"] {
+        width: calc(#{$percentage} - 30px);
+      }
+    }
+  }
+}

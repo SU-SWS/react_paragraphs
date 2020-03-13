@@ -18,8 +18,17 @@ export const FieldWidget = ({inputId, fieldName, items, tools, itemsPerRow, resi
       <FlexDiv alignItems={'flex-start'}>
         <DrupalContext.Consumer>
           {drupalContext => (
-            <DragDropContext onBeforeCapture={drupalContext.onBeforeCapture} onDragEnd={drupalContext.onDragEnd}>
-              <div style={{width:'calc(100% - 200px)', minHeight:'300px', marginTop: '20px'}}>
+            <DragDropContext
+              onBeforeCapture={drupalContext.onBeforeCapture}
+              onDragStart={drupalContext.onDragStart}
+              onDragEnd={drupalContext.onDragEnd}
+              onDragUpdate={drupalContext.onDragUpdate}
+            >
+              <div style={{
+                width: 'calc(100% - 200px)',
+                minHeight: '300px',
+                marginTop: '20px'
+              }}>
                 <Droppable
                   droppableId="rows"
                   type="row"
@@ -40,6 +49,7 @@ export const FieldWidget = ({inputId, fieldName, items, tools, itemsPerRow, resi
                           itemsPerRow={itemsPerRow}
                           resizableItems={resizableItems}
                           onlyRow={drupalContext.state.rowOrder.length === 1}
+                          isDropDisabled={drupalContext.state.rows[rowId].isDropDisabled}
                         />
                       ))}
                       {provided.placeholder}

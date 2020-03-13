@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import styled from 'styled-components'
 import {DrupalContext} from "../WidgetManager";
 import {TextWidget} from "./Widgets/TextWidget";
@@ -17,9 +17,9 @@ const FieldContainer = styled.div`
   margin: 40px 0 0;
 `;
 
-export class ParagraphForm extends Component {
+export const ParagraphForm = ({formFields, ...props}) => {
 
-  widgetComponents = {
+  const widgetComponents = {
     text: TextWidget,
     link: LinkWidget,
     boolean: BooleanWidget,
@@ -33,60 +33,43 @@ export class ParagraphForm extends Component {
     viewfield: ViewFieldWidget
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      formFields: {}
-    };
-    const url = this.props.apiUrls.baseDomain + this.props.apiUrls.formApi;
-
-    fetch(url.replace('{entity_type_id}', 'paragraph').replace('{bundle}', this.props.item.entity.type[0].target_id))
-      .then(response => response.json())
-      .then(jsonData => {
-        this.setState({formFields: jsonData})
-      });
+  if (formFields === null || typeof formFields === 'undefined') {
+    return (<div className="loading">Loading...</div>)
   }
 
-  render() {
-    if (Object.keys(this.state.formFields).length === 0) {
-      return (<div className="loading">Loading...</div>)
-    }
+  return (
+    <div className="item-form">
+      {Object.keys(formFields).map(fieldName => {
+        const WidgetName = widgetComponents[formFields[fieldName].widget_type];
 
-    return (
-      <div className="item-form">
-        <input data-drupal-selector="edit-node-test-media-form" type="hidden" name="form_id" value={this.props.item.entity.type[0].target_id + '_form'} />
-
-        {Object.keys(this.state.formFields).map(fieldName => {
-          const WidgetName = this.widgetComponents[this.state.formFields[fieldName].widget_type];
-
-          if (WidgetName === undefined) {
-            console.log('Unable to find widget for type: ' + this.state.formFields[fieldName].widget_type);
-            return (
-              <FieldContainer key={`widget-${this.props.item.id}-${fieldName}`}>
-                Unable to provide a form for
-                field {this.state.formFields[fieldName].label}
-              </FieldContainer>
-            )
-          }
+        if (WidgetName === undefined) {
+          console.error('Unable to find widget for type: ' + formFields[fieldName].widget_type);
           return (
-            <FieldContainer key={`widget-${this.props.item.id}-${fieldName}`}>
-              <DrupalContext.Consumer>
-                {drupalContext =>
-                  <WidgetName
-                    fieldId={`${this.props.item.id}-${fieldName}`}
-                    onFieldChange={drupalContext.updateParagraph.bind(undefined, this.props.item, fieldName)}
-                    settings={this.state.formFields[fieldName]}
-                    defaultValue={this.props.item.entity[fieldName]}
-                    apiUrls={drupalContext.apiUrls}
-                    fieldName={fieldName}
-                    bundle={this.props.item.entity.type[0].target_id}
-                  />
-                }
-              </DrupalContext.Consumer>
+            <FieldContainer key={`widget-${props.item.id}-${fieldName}`}>
+              Unable to provide a form for
+              field {formFields[fieldName].label}
             </FieldContainer>
           )
-        })}
-      </div>
-    )
-  }
-}
+        }
+        return (
+          <FieldContainer key={`widget-${props.item.id}-${fieldName}`}>
+            <DrupalContext.Consumer>
+              {drupalContext =>
+                <WidgetName
+                  fieldId={`${props.item.id}-${fieldName}`}
+                  onFieldChange={drupalContext.updateParagraph.bind(undefined, props.item, fieldName)}
+                  settings={formFields[fieldName]}
+                  defaultValue={props.item.entity[fieldName]}
+                  apiUrls={drupalContext.apiUrls}
+                  fieldName={fieldName}
+                  bundle={props.item.entity.type[0].target_id}
+                />
+              }
+            </DrupalContext.Consumer>
+          </FieldContainer>
+        )
+      })}
+    </div>
+  )
+
+};

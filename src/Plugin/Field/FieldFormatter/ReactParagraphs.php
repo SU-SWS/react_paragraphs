@@ -6,6 +6,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Template\Attribute;
 use Drupal\entity_reference_revisions\Plugin\Field\FieldFormatter\EntityReferenceRevisionsEntityFormatter;
+use Drupal\paragraphs\ParagraphInterface;
 
 /**
  * Plugin implementation of the 'react_paragraphs' formatter.
@@ -31,7 +32,8 @@ class ReactParagraphs extends EntityReferenceRevisionsEntityFormatter {
     // The elements are a single column list of paragraph entities provided by
     // entity_reference_revisions. We want to organize them into row groups
     // and put them in the correct order.
-    foreach ($items->getValue() as $delta => $item) {
+    foreach ($elements as $delta => $element) {
+      $item = $this->getItem($element['#paragraph'], $items);
 
       // In an unusual case that the settings is not valid data, we'll populate
       // it with some basic values.
@@ -84,6 +86,25 @@ class ReactParagraphs extends EntityReferenceRevisionsEntityFormatter {
       '#is_multiple' => FALSE,
       '#attached' => ['library' => ['react_paragraphs/field_formatter']],
     ];
+  }
+
+  /**
+   * Get the item from the list that matches a paragraph entity.
+   *
+   * @param \Drupal\paragraphs\ParagraphInterface $entity
+   *   Content entity being rendered.
+   * @param \Drupal\Core\Field\FieldItemListInterface $items
+   *   Field item list from the current entity.
+   *
+   * @return array
+   *   Item value that matches the entity.
+   */
+  protected function getItem(ParagraphInterface $entity, FieldItemListInterface $items) {
+    foreach ($items->getValue() as $item) {
+      if ($item['target_id'] == $entity->id()) {
+        return $item;
+      }
+    }
   }
 
   /**

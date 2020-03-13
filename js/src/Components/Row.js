@@ -1,19 +1,21 @@
-import React, {Component} from 'react';
+import React, {useState} from 'react';
 import {Draggable, Droppable} from "react-beautiful-dnd";
 import styled from 'styled-components'
 import {DrupalContext} from "../WidgetManager";
 import {Paragraph} from "./Paragraph";
-import moveIcon from '../icons/move.svg';
 import {FlexDiv} from "./Atoms/FlexDiv";
-import {DrupalModal} from "./Atoms/DrupalModal";
-import {DrupalModalFooter} from "./Atoms/DrupalModalFooter";
+import {ConfirmDialog} from "./Atoms/ConfirmDialog";
+import moveIcon from '../icons/move.svg';
 
 const ItemsContainer = styled.div`
   display: flex;
   align-items: center;
-  flex-wrap: no-wrap;
+  flex-wrap: nowrap;
   min-height: 80px;
-  background: ${props => props.isDraggingOver ? '#add8e6' : 'transparent'};
+  background: ${props =>
+  props.isDraggingOver ? '#add8e6' :
+    props.rowIsDragging ? '#dafcdf' :
+      props.hasItems ? '#edede8' : 'transparent'};
 `;
 
 const RowWrapper = styled.div`
@@ -33,103 +35,69 @@ const RowWrapper = styled.div`
   }
 
   .row-actions {
-    display: flex;
+    display: ${props => props.isDragging ? 'none' : 'flex'};
     align-items: center;
     justify-content: left;
   }
 `;
 
-export class Row extends Component {
+export const Row =(props) =>  {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      rowWidth: 0,
-      deleteModalOpen: false
-    };
-    this.rowRef = React.createRef();
-  }
-
-  /**
-   * When the component mounts, add an event listener so we can measure the
-   * container.
-   */
-  componentDidMount() {
-    this.setState({rowWidth: this.rowRef.current.offsetWidth});
-    window.addEventListener("resize", this.onWindowResize.bind(this));
-  }
-
-  /**
-   * If the window is resized, measure and save the new row container width.
-   */
-  onWindowResize(e) {
-    // Set row width very small so that the individual items in the row don't
-    // prevent the row itself from shrinking. Set to a multiple of 12 since
-    // the grids use 12 columns.
-    this.setState({rowWidth: 12 * 2});
-    this.setState({rowWidth: this.rowRef.current.offsetWidth});
-  }
-
-  render() {
-    let rowItemsWidthTotal = 0;
-    this.props.itemsOrder.forEach(itemId => {
-      rowItemsWidthTotal += this.props.items[itemId].width;
-    });
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    let rowIsDragging;
 
     return (
       <Draggable
-        draggableId={this.props.id}
-        index={this.props.index}
+        draggableId={props.id}
+        index={props.index}
       >
         {(provided, snapshot) => (
           <RowWrapper
             ref={provided.innerRef}
             {...provided.draggableProps}
             isDragging={snapshot.isDragging}
-
           >
-            <FlexDiv className="inner-row-wrapper" id={this.props.id}>
+            {rowIsDragging = snapshot.isDragging}
+            <FlexDiv className="inner-row-wrapper" id={props.id}>
               <div className="move-row-handle" {...provided.dragHandleProps}>
               <span className="visually-hidden">
                 Move Row
               </span>
               </div>
 
-              <div ref={this.rowRef} style={{flex: 1}}>
+              <div style={{flex: 1}}>
                 <Droppable
-                  droppableId={this.props.id}
+                  droppableId={props.id}
                   direction="horizontal"
                   type="item"
-                  isDropDisabled={this.props.itemsOrder.length >= this.props.itemsPerRow}
+                  isDropDisabled={props.isDropDisabled}
                 >
                   {(provided, snapshot) => (
                     <ItemsContainer
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                       isDraggingOver={snapshot.isDraggingOver}
+                      rowIsDragging={rowIsDragging}
+                      hasItems={props.itemsOrder.length > 0}
                     >
                       <DrupalContext.Consumer>
                         {drupalContext =>
                           <React.Fragment>
-                            {this.props.itemsOrder.map((itemId, index) => (
+                            {props.itemsOrder.map((itemId, index) => (
                               <Paragraph
                                 key={itemId}
                                 id={itemId}
                                 index={index}
-                                item={this.props.items[itemId]}
-                                rowWidth={this.state.rowWidth}
-                                rowItemsWidthTotal={rowItemsWidthTotal}
-                                setItemWidth={drupalContext.setItemWidth}
-                                resizableItems={this.props.resizableItems}
-                                isDraggable={this.props.itemsPerRow > 1}
+                                item={props.items[itemId]}
+                                isDraggable={props.itemsPerRow > 1}
                                 isDraggingOverRow={snapshot.isDraggingOver}
-                                typeLabel={drupalContext.tools[this.props.items[itemId].entity.type[0].target_id].label}
+                                typeLabel={drupalContext.tools[props.items[itemId].entity.type[0].target_id].label}
                               />
                             ))}
 
-                            {this.props.itemsOrder.length === 0 &&
+                            {props.itemsOrder.length === 0 &&
                             <HelpTextPlaceholder
-                              allowedNumber={this.props.itemsPerRow}/>
+                              allowedNumber={props.itemsPerRow}/>
                             }
                             {provided.placeholder}
                           </React.Fragment>
@@ -144,51 +112,29 @@ export class Row extends Component {
               <button
                 type="button"
                 className="button"
-                disabled={this.props.itemsOrder.length === 0 && this.props.onlyRow}
-                onClick={() => this.setState({deleteModalOpen: true})}
+                disabled={props.itemsOrder.length === 0 && props.onlyRow}
+                onClick={() => setDeleteModalOpen(true)}
                 style={{marginLeft: '10px', whiteSpace: 'nowrap'}}
               >
                 Delete Row
               </button>
 
-              <DrupalModal
-                isOpen={this.state.deleteModalOpen}
-                onRequestClose={() => this.setState({deleteModalOpen: false})}
-                contentLabel={`Delete the Row?`}
-                wrapperProps={{style: {height: "calc(100% - 109px)"}}}
-                smallModal
-              >
-                <div style={{padding: "15px", textAlign: "center"}}>
-                  Are you sure you wish to delete this row? This can not be
-                  undone.
-                </div>
-                <DrupalModalFooter>
-                  <button
-                    type="button"
-                    className="button button--primary"
-                    onClick={() => {
-                      this.setState({deleteModalOpen: false});
-                      this.props.onRemoveRow(this.props.id)
-                    }}
-                  >
-                    Delete
-                  </button>
-                  <button
-                    type="button"
-                    className="button"
-                    onClick={() => this.setState({deleteModalOpen: false})}
-                  >
-                    Cancel
-                  </button>
-                </DrupalModalFooter>
-              </DrupalModal>
+              <ConfirmDialog
+                open={deleteModalOpen}
+                title="Delete this row?"
+                dialog="This action can not be undone."
+                onCancel={() => setDeleteModalOpen(false)}
+                onConfirm={() => {
+                  setDeleteModalOpen(false);
+                  props.onRemoveRow(props.id)
+                }}
+              />
             </div>
           </RowWrapper>
         )}
       </Draggable>
     )
-  }
-}
+};
 
 const HelpTextPlaceholder = ({allowedNumber = 1}) => {
   return (
