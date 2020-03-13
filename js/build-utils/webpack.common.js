@@ -37,7 +37,7 @@ const config = {
       template: `${commonPaths.projectRoot}/public/index.html`,
       favicon: `${commonPaths.projectRoot}/public/favicon.ico`,
       filename: 'index.html',
-      inject: true,
+      inject: true
     })
   ]
 };

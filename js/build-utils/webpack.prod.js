@@ -14,7 +14,7 @@ const config = {
   },
   output: {
     filename: 'react_paragraphs.[name].min.js',
-    path: path.resolve(__dirname, '../build'),
+    path: path.resolve(__dirname, '../build')
   },
   devtool: 'source-map',
   module: {
@@ -44,7 +44,7 @@ const config = {
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
-              publicPath: '/css/',
+              publicPath: '/css/'
             }
           },
           // CSS Loader. Generate sourceMaps.
@@ -86,7 +86,7 @@ const config = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: 'css/[name].css',
+      filename: 'css/[name].css'
     })
   ]
 };
