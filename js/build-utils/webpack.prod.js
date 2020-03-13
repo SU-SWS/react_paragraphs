@@ -9,11 +9,12 @@ const config = {
   mode: 'production',
   entry: {
     app: [`${commonPaths.appEntry}/index.js`],
-    '../../css/react_paragraphs.field_widget': [`${commonPaths.drupalEntry}/field_widget.scss`],
-    '../../css/react_paragraphs.field_formatter': [`${commonPaths.drupalEntry}/field_formatter.scss`]
+    'react_paragraphs.field_widget': [`${commonPaths.drupalEntry}/field_widget.scss`],
+    'react_paragraphs.field_formatter': [`${commonPaths.drupalEntry}/field_formatter.scss`]
   },
   output: {
-    filename: 'react_paragraphs.[name].min.js'
+    filename: 'react_paragraphs.[name].min.js',
+    path: path.resolve(__dirname, '../build'),
   },
   devtool: 'source-map',
   module: {
@@ -40,7 +41,12 @@ const config = {
         test: /scss\/.*\.s[ac]ss$/,
         use: [
           // Extract loader.
-          MiniCssExtractPlugin.loader,
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: '/css/',
+            }
+          },
           // CSS Loader. Generate sourceMaps.
           {
             loader: 'css-loader',
@@ -80,7 +86,7 @@ const config = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: '../css/[name].css'
+      filename: 'css/[name].css',
     })
   ]
 };
