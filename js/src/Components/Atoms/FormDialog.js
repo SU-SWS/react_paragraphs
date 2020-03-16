@@ -25,6 +25,7 @@ export const FormDialog = ({open, title, formContent, onClose, ...props}) => {
       open={open}
       aria-labelledby="max-width-dialog-title"
       onBackdropClick={onBackdropClick}
+      onEscapeKeyDown={onBackdropClick}
       style={{zIndex:'1100'}}
       PaperProps={{
         style: {zIndex: 1}
