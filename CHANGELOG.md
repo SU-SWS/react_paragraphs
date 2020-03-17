@@ -1,4 +1,24 @@
-# React Paragprahs
+# React Paragraphs
+
+8.x-1.4
+--------------------------------------------------------------------------------
+_Release Date: 2020-03-05_
+
+- D8CORE-1680 Esc key on dialogs to exit
+- D8CORE-1421 Refactored ckeditor widget and simplified
+- D8CORE-1498 D8CORE-1502 Improve multiple per row
+- D8CORE-1421: Moved webpack compiler to the root level of the module and added compiling of the scss for the drupal areas.
+- D8CORE-1421: Adjusted styles on the frontend from flex: 1 0 0; to widths with gutters.
+- D8CORE-1421: Removed resizeable components until we get that in scope
+- D8CORE-1421: converted a few classes to functional components
+- D8CORE-1421: removed react-modal in favor of material-ui dialog since its already a dependency.
+- D8CORE-1421: added a "minWidth" configurable for each paragraph item
+- D8CORE-1421: Rows are disabled from dropping if the rows are full of items
+- D8CORE-1421: Rows are disabled if the items within the row require the full 12 columns.
+- D8CORE-1421: Added a "Delete" button the paragraph under the "edit" button. this uses drupal's dropbutton styles and js.
+- D8CORE-1421: Limited admin titles to 40 characters and improved display of the admin title with ellipsis.
+- D8CORE-1421: Move form api fetch to the widget manager and store results so that it "caches" the form data. Preventing multiple api hits by open/closing/opening an item.
+- D8CORE-1421: Fixed error when a paragraph doesn't exist and cron is trying to index the node.
 
 8.x-1.3
 --------------------------------------------------------------------------------
