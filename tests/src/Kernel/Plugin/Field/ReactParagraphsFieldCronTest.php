@@ -25,7 +25,7 @@ class ReactParagraphsFieldCronTest extends ReactParagraphsFieldTestBase {
    */
   protected $node;
 
-  protected function testIndexing() {
+  public function testIndexing() {
     \Drupal::service('module_installer')->install(['search']);
 
     \Drupal::service('file_system')->copy($this->root . '/core/misc/druplicon.png', 'public://example.jpg');
