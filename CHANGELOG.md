@@ -4,7 +4,8 @@
 --------------------------------------------------------------------------------
 _Release Date: 2020-03-17_
 
-- Fix tab indexes when the media browser is open
+- Fix tab indexes when the media browser is open so users can enter alt text on the modal
+- Fixes behat testing issue where input fields are not interactive when modal is open.
 
 8.x-1.5
 --------------------------------------------------------------------------------
