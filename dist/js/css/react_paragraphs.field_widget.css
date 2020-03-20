@@ -1,0 +1,18 @@
+fieldset:not(.fieldgroup)[class*="MuiOutlinedInput"] {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  background-color: transparent; }
+
+.MuiInputLabel-outlined.MuiInputLabel-shrink {
+  background: #fff; }
+
+legend.MuiFormLabel-root {
+  margin-bottom: 10px; }
+
+.react-paragraphs-fieldset legend {
+  text-transform: none;
+  letter-spacing: 0; }
+
+
+/*# sourceMappingURL=react_paragraphs.field_widget.css.map*/

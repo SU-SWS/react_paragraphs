@@ -6,7 +6,7 @@
 // /////////////////////////////////////////////////////////////////////////////
 // Requires / Dependencies /////////////////////////////////////////////////////
 // /////////////////////////////////////////////////////////////////////////////
-  // CJW remove:
+  // CJW to remove:
 const util = require('util');
 
 const buildValidations = require('./js/build-utils/build-validations');
@@ -25,13 +25,13 @@ const addons = (/* string | string[] */ addonsArg) => {
 const path = require('path');
 const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
-// const FileManagerPlugin = require('filemanager-webpack-plugin');
-// const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const FileManagerPlugin = require('filemanager-webpack-plugin');
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-// const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-// const WebpackAssetsManifest = require("webpack-assets-manifest");
-// const ExtraWatchWebpackPlugin = require("extra-watch-webpack-plugin");
-// const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const WebpackAssetsManifest = require("webpack-assets-manifest");
+const ExtraWatchWebpackPlugin = require("extra-watch-webpack-plugin");
+const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
 
 // /////////////////////////////////////////////////////////////////////////////
 // Paths ///////////////////////////////////////////////////////////////////////
@@ -57,14 +57,16 @@ var webpackConfig = {
    name: 'react_paragraphs',
    // Allows for map files.
    devtool: 'source-map',
-//   // What build?
-//   entry: {},
-//
-//   // Where to put build?
-//   output: {
-//     filename: "[name].js",
-//     path: path.resolve(__dirname, distJS)
-//   },
+  // What to build?
+   entry: {
+     "index":         path.resolve(__dirname, srcSass, "index.scss"),
+   },
+
+  // Where to put build?
+   output: {
+     filename: "[name].js",
+     path: path.resolve(__dirname, distJS)
+   },
 }
 
 module.exports = env => {
