@@ -6,8 +6,6 @@
 // /////////////////////////////////////////////////////////////////////////////
 // Requires / Dependencies /////////////////////////////////////////////////////
 // /////////////////////////////////////////////////////////////////////////////
-  // CJW to remove:
-const util = require('util');
 
 const buildValidations = require('./js/build-utils/build-validations');
 const commonConfig = require('./js/build-utils/webpack.common');
@@ -59,7 +57,7 @@ var webpackConfig = {
    devtool: 'source-map',
   // What to build?
    entry: {
-     "index":         path.resolve(__dirname, srcSass, "index.scss"),
+     "index": path.resolve(__dirname, srcSass, "index.scss"),
    },
 
   // Where to put build?
@@ -67,14 +65,119 @@ var webpackConfig = {
      filename: "[name].js",
      path: path.resolve(__dirname, distJS)
    },
+
+  // Additional module rules.
+  module: {
+    rules: [
+      // Drupal behaviors need special handling with webpack.
+      // https://www.npmjs.com/package/drupal-behaviors-loader
+      {
+        test: /\.behavior.js$/,
+        exclude: /node_modules/,
+        options: {
+          enableHmr: false
+        },
+        loader: 'drupal-behaviors-loader'
+      },
+      // Good ol' Babel.
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        query: {
+          presets: ['@babel/preset-env']
+        }
+      },
+      // Apply Plugins to SCSS/SASS files.
+      {
+        test: /\.s[ac]ss$/,
+        // use: [
+        //   // Extract loader.
+        //   MiniCssExtractPlugin.loader,
+        //   // CSS Loader. Generate sourceMaps.
+        //   {
+        //     loader: 'css-loader',
+        //     options: {
+        //       sourceMap: true,
+        //       url: true
+        //     }
+        //   },
+        //   // Post CSS. Run autoprefixer plugin.
+        //   {
+        //     loader: 'postcss-loader',
+        //     options: {
+        //       sourceMap: true,
+        //       plugins: () => [
+        //         autoprefixer()
+        //       ]
+        //     }
+        //   },
+        //   // SASS Loader. Add compile paths to include bourbon.
+        //   {
+        //     loader: 'sass-loader',
+        //     options: {
+        //       includePaths: [
+        //         path.resolve(__dirname, npmPackage, "bourbon/core"),
+        //         path.resolve(__dirname, srcSass),
+        //         path.resolve(__dirname, npmPackage)
+        //       ],
+        //       sourceMap: true,
+        //       lineNumbers: true,
+        //       outputStyle: 'nested',
+        //       precision: 10
+        //     }
+        //   }
+        // ]
+      },
+      // Apply plugin to font assets.
+      {
+        test: /\.(woff2?|ttf|otf|eot)$/,
+        loader: 'file-loader',
+        options: {
+          name: "[name].[ext]",
+          publicPath: "../assets/fonts",
+          outputPath: "../assets/fonts"
+        }
+      },
+      // Apply plugins to image assets.
+      {
+        test: /\.(png|jpg|gif)$/i,
+        use: [
+          // A loader for webpack which transforms files into base64 URIs.
+          // https://github.com/webpack-contrib/url-loader
+          {
+            loader: "file-loader",
+            options: {
+              name: "[name].[ext]",
+              publicPath: "../../assets/img",
+              outputPath: "../../assets/img"
+            }
+          }
+        ]
+      },
+      // Apply plugins to svg assets.
+      {
+        test: /\.(svg)$/i,
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              name: "[name].[ext]",
+              publicPath: "../../assets/svg",
+              outputPath: "../../assets/svg"
+            }
+          }
+        ]
+      },
+    ]
+  },
+
+
 }
 
 module.exports = env => {
   if (!env) {
     throw new Error(buildValidations.ERR_NO_ENV_FLAG);
   }
-
-  console.log(util.inspect(webpackConfig, {depth: null}));
 
   const envConfig = require(`./js/build-utils/webpack.${env.env}.js`);
   const mergedConfig = webpackMerge(
@@ -83,7 +186,6 @@ module.exports = env => {
     webpackConfig,
     ...addons(env.addons)
   );
-  console.log(util.inspect(mergedConfig, {depth: null}));
 
   return mergedConfig;
 };
