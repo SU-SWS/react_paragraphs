@@ -21,9 +21,11 @@ export class MediaLibrary extends Component {
 
   updateWidget() {
     const newState = {...this.state};
-    this.inputRef.current.value.split(',').forEach(item => newState.selectedMedia.push({target_id: item}));
-    this.setState(newState);
-    this.updateField();
+    if (this.inputRef.current.value) {
+      this.inputRef.current.value.split(',').forEach(item => newState.selectedMedia.push({target_id: item}));
+      this.setState(newState);
+      this.updateField();
+    }
   }
 
   updateField() {
