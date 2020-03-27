@@ -10,7 +10,7 @@ use Drupal\Tests\UnitTestCase;
  *
  * @package Drupal\Tests\react_paragraphs\Unit
  */
-class YamlLint extends UnitTestCase {
+class YamlLintTest extends UnitTestCase {
 
   /**
    * Validate all yaml files using pecl library that acquia has installed.
