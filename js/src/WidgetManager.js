@@ -89,6 +89,19 @@ export class WidgetManager extends Component {
     window.addEventListener('beforeunload', this.handleBeforeunload.bind(this));
   }
 
+  /**
+   * Trigger form updated event for drupal confirm leave module.
+   *
+   * We trigger this at various steps to make this more specific about when to
+   * trigger the update. We don't want to do this in componentDidUpdate because
+   * if the user just loads the page we don't need to trigger the event until
+   * actual changes have been made.
+   */
+  triggerFormUpdated() {
+    const formItemsField = document.getElementById(this.props.inputId);
+    jQuery(formItemsField).closest('.form-item').trigger('formUpdated');
+  }
+
   handleBeforeunload() {
     if (this.state.rowOrder.length === 0) {
       localStorage.removeItem(`react-data-${this.props.fieldName}`);
@@ -146,7 +159,6 @@ export class WidgetManager extends Component {
         rowOrder: this.state.rowOrder,
       };
       formItemsField.value = encodeURI(JSON.stringify(returnValue));
-      jQuery(formItemsField).closest('.form-item').trigger('formUpdated');
     }
   }
 
@@ -158,6 +170,7 @@ export class WidgetManager extends Component {
       }
     });
     this.setState(newState);
+    this.triggerFormUpdated();
   }
 
   updateParagraph(item, fieldName, newValues) {
@@ -171,6 +184,7 @@ export class WidgetManager extends Component {
         return;
       }
     });
+    this.triggerFormUpdated();
   }
 
   removeParagraph(itemId) {
@@ -181,6 +195,7 @@ export class WidgetManager extends Component {
     newState.rows[rowId].itemsOrder.splice(newState.rows[rowId].itemsOrder.indexOf(itemId), 1);
     this.resetRowItemWidths(rowId, newState);
     this.setState(newState);
+    this.triggerFormUpdated();
   }
 
   addToolToBottom(item_name, e) {
@@ -212,6 +227,7 @@ export class WidgetManager extends Component {
 
       this.moveNewItemIntoRow(simulated_drag);
     }
+    this.triggerFormUpdated();
   };
 
   addRow(callback) {
@@ -231,6 +247,7 @@ export class WidgetManager extends Component {
     else {
       this.setState(newState);
     }
+    this.triggerFormUpdated();
   }
 
   removeRow(rowId) {
@@ -249,6 +266,7 @@ export class WidgetManager extends Component {
     }
 
     this.setState(newState);
+    this.triggerFormUpdated();
   }
 
   /**
