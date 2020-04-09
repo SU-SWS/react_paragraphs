@@ -16,7 +16,8 @@ export class WidgetManager extends Component {
     onAdminTitleChange: this.onAdminTitleChange.bind(this),
     addToolToBottom: this.addToolToBottom.bind(this),
     onDragStart: this.onDragStart.bind(this),
-    getFormFields: this.getFormFields.bind(this)
+    getFormFields: this.getFormFields.bind(this),
+    loadEntity: this.loadEntity.bind(this)
   };
 
   apiUrls = {
@@ -61,7 +62,8 @@ export class WidgetManager extends Component {
         index: item.settings.index,
         width: item.settings.width,
         admin_title: item.settings.admin_title,
-        entity: {}
+        entity: item.entity,
+        loadedEntity: false,
       };
       // todo: find a way to handle if multiple items in the same row have the
       // same index.
@@ -85,8 +87,6 @@ export class WidgetManager extends Component {
       loadedItems: 0,
       cachedForms: {}
     };
-
-    window.addEventListener('beforeunload', this.handleBeforeunload.bind(this));
   }
 
   /**
@@ -102,53 +102,19 @@ export class WidgetManager extends Component {
     jQuery(formItemsField).closest('.form-item').trigger('formUpdated');
   }
 
-  handleBeforeunload() {
-    if (this.state.rowOrder.length === 0) {
-      localStorage.removeItem(`react-data-${this.props.fieldName}`);
-      return;
-    }
-
-    const storage = {...this.state};
-    storage.expire = new Date().getTime() + 1000 * 15;
-    localStorage.setItem(`react-data-${this.props.fieldName}`, JSON.stringify(storage));
-  }
-
-  checkLocalStorage() {
-    let previousData = localStorage.getItem(`react-data-${this.props.fieldName}`);
-    if (previousData) {
-      // previousData = JSON.parse(previousData);
-      // if (parseInt(previousData.expire) >= new Date().getTime()) {
-      //   this.setState(previousData);
-      //   // alert("Previous edits have been restored");
-      //   return true;
-      // }
-    }
-    return false;
-  }
-
-  componentDidMount() {
-    if (this.checkLocalStorage()) {
-      return;
-    }
-
+  loadEntity(itemId) {
+    const rowId = this.state.rowOrder.find(row => this.state.rows[row].itemsOrder.includes(itemId));
     const url = this.apiUrls.baseDomain + this.apiUrls.paragraphApi;
-    this.state.rowOrder.map(rowId => {
-      this.state.rows[rowId].itemsOrder.map(itemId => {
+    const item = this.state.rows[rowId].items[itemId];
 
-        const item = this.state.rows[rowId].items[itemId];
-
-        fetch(url.replace('{entity_id}', item.target_id))
-          .then(response => response.json())
-          .then(entityData => {
-            item.entity = entityData;
-
-            const newState = {...this.state};
-            newState.rows[rowId].items[itemId] = item;
-            newState.loadedItems++;
-            this.setState(newState);
-          })
+    fetch(url.replace('{entity_id}', item.target_id))
+      .then(response => response.json())
+      .then(entityData => {
+        const newState = {...this.state};
+        newState.rows[rowId].items[itemId].entity = entityData;
+        delete newState.rows[rowId].items[itemId].loadedEntity;
+        this.setState(newState);
       })
-    });
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -215,8 +181,7 @@ export class WidgetManager extends Component {
 
         this.moveNewItemIntoRow(simulated_drag);
       });
-    }
-    else {
+    } else {
       const simulated_drag = {
         draggableId: item_name,
         destination: {
@@ -243,8 +208,7 @@ export class WidgetManager extends Component {
     };
     if (typeof callback === 'function') {
       this.setState(newState, callback);
-    }
-    else {
+    } else {
       this.setState(newState);
     }
     this.triggerFormUpdated();
@@ -286,14 +250,12 @@ export class WidgetManager extends Component {
     // The last row is maxed out with items, a new row is needed.
     if (this.state.rows[lastRowId].itemsOrder.length >= this.props.maxItemsPerRow) {
       needsNewRow = true;
-    }
-    else {
+    } else {
       try {
         // The last row is not full of items, but the items in the row require
         // all columns for that row. We need a new row.
         needsNewRow = !this.canDropInRow(item.draggableId, lastRowId, null);
-      }
-      catch (e) {
+      } catch (e) {
         // Nothing to do here.
       }
     }
@@ -459,7 +421,12 @@ export class WidgetManager extends Component {
     newState.rows[result.destination.droppableId].items[newItem.id] = newItem;
 
     this.resetRowItemWidths(result.destination.droppableId, newState);
-    this.setState(newState);
+    // After settings the state, the children will re-render. We can then remove the indicator that the item is new.
+    this.setState(newState, () => {
+      const newState = {...this.state};
+      delete newState.rows[result.destination.droppableId].items[newItem.id].isNew;
+      this.setState(newState);
+    });
   }
 
   resetRowItemWidths(rowId, state) {
@@ -500,6 +467,7 @@ export class WidgetManager extends Component {
       index: index,
       width: width,
       admin_title: this.props.tools[machine_name].label,
+      isNew: true,
       entity: {
         type: [{target_id: machine_name}],
       }
@@ -523,11 +491,12 @@ export class WidgetManager extends Component {
    */
   getFormFields(item) {
     let url = this.apiUrls.baseDomain + this.apiUrls.formApi;
-    url = url.replace('{entity_type_id}', 'paragraph').replace('{bundle}', item.entity.type[0].target_id);
+    const itemBundle = item.entity.type[0].target_id;
+    url = url.replace('{entity_type_id}', 'paragraph').replace('{bundle}', itemBundle);
 
     // We've already gotten this form once, return that one.
-    if (typeof this.state.cachedForms[url] !== 'undefined') {
-      return this.state.cachedForms[url];
+    if (typeof this.state.cachedForms[itemBundle] !== 'undefined') {
+      return this.state.cachedForms[itemBundle];
     }
 
     fetch(url)
@@ -536,30 +505,25 @@ export class WidgetManager extends Component {
         ...prevState,
         cachedForms: {
           ...prevState.cachedForms,
-          [url]: jsonData
+          [itemBundle]: jsonData
         }
-      }))).catch(e => console.error(e));
+      })))
+      .catch(e => console.error(e));
   }
 
   render() {
-
-    if (this.state.loadedItems >= this.props.items.length) {
-      return (
-        <DrupalContext.Provider
-          value={{
-            state: this.state,
-            apiUrls: this.apiUrls,
-            tools: this.props.tools,
-            ...this.functions
-          }}>
-          {this.props.children}
-        </DrupalContext.Provider>
-      )
-    }
-
     return (
-      <div className="loading">Loading...</div>
+      <DrupalContext.Provider
+        value={{
+          state: this.state,
+          apiUrls: this.apiUrls,
+          tools: this.props.tools,
+          ...this.functions
+        }}>
+        {this.props.children}
+      </DrupalContext.Provider>
     )
+
   }
 
 }

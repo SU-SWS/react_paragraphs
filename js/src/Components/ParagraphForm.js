@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components'
-import {DrupalContext} from "../WidgetManager";
 import {TextWidget} from "./Widgets/TextWidget";
 import {LinkWidget} from "./Widgets/LinkWidget";
 import {BooleanWidget} from "./Widgets/BooleanWidget";
@@ -12,12 +11,13 @@ import {RadiosWidget} from "./Widgets/RadiosWidget";
 import {CkeditorWidget} from "./Widgets/CkeditorWidget";
 import {MediaLibrary} from "./Widgets/MediaLibrary";
 import {ViewFieldWidget} from "./Widgets/ViewFieldWidget";
+import {Loader} from "./Atoms/Loader";
 
 const FieldContainer = styled.div`
   margin: 40px 0 0;
 `;
 
-export const ParagraphForm = ({formFields, ...props}) => {
+export const ParagraphForm = ({item, drupalContext, ...props}) => {
 
   const widgetComponents = {
     text: TextWidget,
@@ -33,8 +33,14 @@ export const ParagraphForm = ({formFields, ...props}) => {
     viewfield: ViewFieldWidget
   };
 
-  if (formFields === null || typeof formFields === 'undefined') {
-    return (<div className="loading">Loading...</div>)
+  if (typeof item.loadedEntity !== 'undefined') {
+    drupalContext.loadEntity(item.id);
+    return <Loader/>;
+  }
+
+  const formFields = drupalContext.getFormFields(item);
+  if (typeof formFields === 'undefined') {
+    return <Loader/>;
   }
 
   return (
@@ -45,27 +51,22 @@ export const ParagraphForm = ({formFields, ...props}) => {
         if (WidgetName === undefined) {
           console.error('Unable to find widget for type: ' + formFields[fieldName].widget_type);
           return (
-            <FieldContainer key={`widget-${props.item.id}-${fieldName}`}>
+            <FieldContainer key={`widget-${item.id}-${fieldName}`}>
               Unable to provide a form for
               field {formFields[fieldName].label}
             </FieldContainer>
           )
         }
         return (
-          <FieldContainer key={`widget-${props.item.id}-${fieldName}`}>
-            <DrupalContext.Consumer>
-              {drupalContext =>
-                <WidgetName
-                  fieldId={`${props.item.id}-${fieldName}`}
-                  onFieldChange={drupalContext.updateParagraph.bind(undefined, props.item, fieldName)}
-                  settings={formFields[fieldName]}
-                  defaultValue={props.item.entity[fieldName]}
-                  apiUrls={drupalContext.apiUrls}
-                  fieldName={fieldName}
-                  bundle={props.item.entity.type[0].target_id}
-                />
-              }
-            </DrupalContext.Consumer>
+          <FieldContainer key={`widget-${item.id}-${fieldName}`}>
+            <WidgetName
+              fieldId={`${item.id}-${fieldName}`}
+              onFieldChange={drupalContext.updateParagraph.bind(undefined, item, fieldName)}
+              settings={formFields[fieldName]}
+              defaultValue={item.entity[fieldName]}
+              fieldName={fieldName}
+              bundle={item.entity.type[0].target_id}
+            />
           </FieldContainer>
         )
       })}
