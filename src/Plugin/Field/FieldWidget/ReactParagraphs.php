@@ -234,11 +234,6 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     $react_data = json_decode(urldecode($values['container']['value']), TRUE);
     $return_data = [];
 
-    // Nothing was added to the rows so there's nothing to do.
-    if (empty($react_data['rowOrder'])) {
-      return $return_data;
-    }
-
     // Loop through each row from react, then loop through the items in each
     // row, build the entity, and store the row/order data into the settings.
     foreach ($react_data['rowOrder'] as $row_number => $row_id) {
