@@ -48,7 +48,7 @@ const ItemIcon = styled.img`
 
 export const Paragraph = ({item, ...props}) => {
 
-  const [modalOpen, setModalOpen] = useState(Object.keys(item.entity).length == 1);
+  const [modalOpen, setModalOpen] = useState(typeof item.isNew === 'undefined' ? false : true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   const getItemIcon = (availableTools) => {
@@ -119,9 +119,8 @@ export const Paragraph = ({item, ...props}) => {
                   onChange={drupalContext.onAdminTitleChange.bind(undefined, item.id)}
                 />
                 <ParagraphForm
-                  apiUrls={drupalContext.apiUrls}
                   item={item}
-                  formFields={drupalContext.getFormFields(item)}
+                  drupalContext={drupalContext}
                 />
               </FormDialog>
 

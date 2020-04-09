@@ -99,9 +99,16 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
 
     /** @var \Drupal\paragraphs\ParagraphInterface[] $referenced_entities */
     $referenced_entities = $items->referencedEntities();
-
     $item_values = array_filter($items->getValue());
+
     foreach ($item_values as $delta => &$item) {
+      foreach ($referenced_entities as $entity) {
+        if ($entity->id() == $item['target_id']) {
+          $item['entity']['type'][0]['target_id'] = $entity->bundle();
+          break;
+        }
+      }
+
       if (!empty($item['settings'])) {
         continue;
       }
@@ -159,7 +166,8 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    */
   protected function getItemLabel(ContentEntityInterface $entity) {
     if (empty($this->paragraphTypes)) {
-      $this->paragraphTypes = $this->entityTypeManager->getStorage('paragraphs_type')->loadMultiple();
+      $this->paragraphTypes = $this->entityTypeManager->getStorage('paragraphs_type')
+        ->loadMultiple();
     }
     // Get the paragraph type bundle label to be used in the widget.
     return $this->paragraphTypes[$entity->bundle()]->label();
@@ -212,9 +220,9 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
   protected static function getParagraphTypeIcon(ParagraphsTypeInterface $type) {
     try {
       return $type->getIconUrl() ?: NULL;
-    }
-    catch (\Exception $e) {
-      \Drupal::logger('react_paragraphs')->error('Unable to get paragraph icon for %type', ['%type' => $type]);
+    } catch (\Exception $e) {
+      \Drupal::logger('react_paragraphs')
+        ->error('Unable to get paragraph icon for %type', ['%type' => $type]);
     }
   }
 
@@ -240,8 +248,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
         // still save all the other paragraphs.
         try {
           $entity = $this->getEntity($item);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
           $this->messenger()
             ->addError($this->t('Unable to create the item %title in row %row. See logs for more information.', [
               '%title' => $item['admin_title'],
