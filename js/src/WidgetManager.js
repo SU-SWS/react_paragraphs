@@ -83,7 +83,7 @@ export class WidgetManager extends Component {
     this.state = {
       rowCount: rowOrder.length,
       rows: rows,
-      rowOrder: rowOrder,
+      rowOrder: rowOrder.filter(rowId => rowId != null),
       loadedItems: 0,
       cachedForms: {}
     };
