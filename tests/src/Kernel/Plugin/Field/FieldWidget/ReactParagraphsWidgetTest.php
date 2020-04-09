@@ -34,7 +34,8 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
    */
   protected function setUp() {
     parent::setUp();
-    \Drupal::service('file_system')->copy($this->root . '/core/misc/druplicon.png', 'public://example.jpg');
+    \Drupal::service('file_system')
+      ->copy($this->root . '/core/misc/druplicon.png', 'public://example.jpg');
     $image = File::create(['uri' => 'public://example.jpg']);
     $image->save();
 
@@ -77,7 +78,12 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
         [
           'target_id' => $paragraph2->id(),
           'entity' => $paragraph2,
-          'settings' => json_encode(['row' => 1, 'index' => 0, 'width' => 12, 'admin_title' => '']),
+          'settings' => json_encode([
+            'row' => 1,
+            'index' => 0,
+            'width' => 12,
+            'admin_title' => '',
+          ]),
         ],
       ],
     ]);
@@ -115,6 +121,7 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
               'width' => 12,
               'admin_title' => 'Card',
             ],
+            'entity' => ['type' => [['target_id' => 'card']]],
           ],
           1 => [
             'target_id' => '2',
@@ -125,6 +132,7 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
               'width' => 12,
               'admin_title' => '',
             ],
+            'entity' => ['type' => [['target_id' => 'card']]],
           ],
         ],
         'itemsPerRow' => 1,
@@ -236,7 +244,8 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
 
     $entity = FieldConfig::load('node.page.foo');
     /** @var \Drupal\field_ui\Form\FieldConfigEditForm $form_object */
-    $form_object = \Drupal::entityTypeManager()->getFormObject($entity->getEntityTypeId(), 'edit');
+    $form_object = \Drupal::entityTypeManager()
+      ->getFormObject($entity->getEntityTypeId(), 'edit');
     $form_object->setEntity($entity);
     $form = \Drupal::formBuilder()->buildForm($form_object, $form_state);
 
@@ -246,16 +255,29 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
     $form_state = new FormState();
     $form_state->setBuildInfo(['callback_object' => $form_object]);
     $form_state->setValue(['settings', 'handler_settings', 'negate'], 0);
-    $form_state->setValue(['settings', 'handler_settings', 'target_bundles_drag_drop'], ['card' => ['enabled' => 1]]);
-    $form_state->setValue(['settings', 'handler_settings', 'widths'], ['card' => ['min' => 1]]);
+    $form_state->setValue([
+      'settings',
+      'handler_settings',
+      'target_bundles_drag_drop',
+    ], ['card' => ['enabled' => 1]]);
+    $form_state->setValue([
+      'settings',
+      'handler_settings',
+      'widths',
+    ], ['card' => ['min' => 1]]);
 
     /** @var \Drupal\Core\Form\FormValidatorInterface $form_validator */
     $form_validator = \Drupal::service('form_validator');
     $form_validator->validateForm('field_config_edit_form', $form, $form_state);
-    $this->assertNull($form_state->getValue(['settings', 'handler_settings', 'widths', 'card']));
+    $this->assertNull($form_state->getValue([
+      'settings',
+      'handler_settings',
+      'widths',
+      'card',
+    ]));
   }
 
-    /**
+  /**
    * Test cron functions correctly.
    */
   public function testCron() {
