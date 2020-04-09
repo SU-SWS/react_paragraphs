@@ -80,13 +80,19 @@ export class WidgetManager extends Component {
       }
     }
 
+    // Set the rowCount to the size of the rowOrder before filtering. This ensures that new rows will have a row ID
+    // that is one number higher than the last row in the order.
     this.state = {
       rowCount: rowOrder.length,
       rows: rows,
-      rowOrder: rowOrder,
+      rowOrder: rowOrder.filter(rowId => rowId != null),
       loadedItems: 0,
       cachedForms: {}
     };
+
+    // After constructing the form, we need to update the hidden input field so that if no changes were made, we won't
+    // have empty data upon saving.
+    this.componentDidUpdate();
   }
 
   /**
