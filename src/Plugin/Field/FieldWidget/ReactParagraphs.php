@@ -220,7 +220,8 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
   protected static function getParagraphTypeIcon(ParagraphsTypeInterface $type) {
     try {
       return $type->getIconUrl() ?: NULL;
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       \Drupal::logger('react_paragraphs')
         ->error('Unable to get paragraph icon for %type', ['%type' => $type]);
     }
@@ -248,7 +249,8 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
         // still save all the other paragraphs.
         try {
           $entity = $this->getEntity($item);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
           $this->messenger()
             ->addError($this->t('Unable to create the item %title in row %row. See logs for more information.', [
               '%title' => $item['admin_title'],
