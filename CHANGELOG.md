@@ -1,5 +1,15 @@
 # React Paragraphs
 
+8.x-1.7
+--------------------------------------------------------------------------------
+_Release Date: 2020-04-16_
+
+- Check for value if a user didnt select a media item (#33)
+- D8CORE-1548 Dont trigger form updated on component load (#34)
+- D8CORE-1644 Added documentation for the release workflow
+- D8CORE-1829 Visual tweaks and API call adjustments (#35)
+- Filter Row order to get rid of null values (#37)
+
 8.x-1.6
 --------------------------------------------------------------------------------
 _Release Date: 2020-03-17_
