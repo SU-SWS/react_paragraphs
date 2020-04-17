@@ -14,7 +14,7 @@ const ParagraphWrapper = styled.div`
   width: 0;
   height: 80px;
   line-height: 80px;
-  padding: 0px 85px 0px 50px;
+  padding: 0px 85px 0px 20px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -42,13 +42,13 @@ const ParagraphWrapper = styled.div`
 const ItemIcon = styled.img`
   max-height: 35px;
   max-width: 35px;
-  margin-right: 30px;
+  margin-right: 2px;
 `;
 
 
 export const Paragraph = ({item, ...props}) => {
 
-  const [modalOpen, setModalOpen] = useState(Object.keys(item.entity).length == 1);
+  const [modalOpen, setModalOpen] = useState(typeof item.isNew === 'undefined' ? false : true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   const getItemIcon = (availableTools) => {
@@ -88,6 +88,7 @@ export const Paragraph = ({item, ...props}) => {
               {item.admin_title}
 
               <DropButtons
+                style={{marginRight: '6px'}}
                 buttons={[
                   <button
                     type="button"
@@ -118,9 +119,8 @@ export const Paragraph = ({item, ...props}) => {
                   onChange={drupalContext.onAdminTitleChange.bind(undefined, item.id)}
                 />
                 <ParagraphForm
-                  apiUrls={drupalContext.apiUrls}
                   item={item}
-                  formFields={drupalContext.getFormFields(item)}
+                  drupalContext={drupalContext}
                 />
               </FormDialog>
 

@@ -3,6 +3,7 @@ import {FormHelperText} from "@material-ui/core";
 import {FlexDiv} from "../Atoms/FlexDiv";
 import {XButton} from "../Atoms/XButton";
 import styled from 'styled-components';
+import {Loader} from "../Atoms/Loader";
 
 export class MediaLibrary extends Component {
 
@@ -13,17 +14,21 @@ export class MediaLibrary extends Component {
     this.updateWidget = this.updateWidget.bind(this);
     this.removeItem = this.removeItem.bind(this);
 
+    // Make sure the existing default value is valid. Make sure the ids are more than 0.
     this.state = {
-      selectedMedia: typeof this.props.defaultValue === 'undefined' ? [] : this.props.defaultValue
+      selectedMedia: typeof this.props.defaultValue === 'undefined' ? [] : this.props.defaultValue.filter(item => item.target_id > 0)
     };
+
     this.inputRef = React.createRef();
   }
 
   updateWidget() {
     const newState = {...this.state};
-    this.inputRef.current.value.split(',').forEach(item => newState.selectedMedia.push({target_id: item}));
-    this.setState(newState);
-    this.updateField();
+    if (this.inputRef.current.value) {
+      this.inputRef.current.value.split(',').forEach(item => newState.selectedMedia.push({target_id: item}));
+      this.setState(newState);
+      this.updateField();
+    }
   }
 
   updateField() {
@@ -149,29 +154,43 @@ const MediaItemPreview = ({mid, onRemove}) => {
       fetch(`/media/${mid}/edit?_format=json`)
         .then(response => response.json())
         .then(jsonData => {
+          if (typeof jsonData.message !== 'undefined') {
+            console.error(jsonData.message);
+          }
           setMediaData(jsonData);
         });
     }
   }, []);
 
   if (!mediaData) {
-    return <div>Loading Preview...</div>
+    return <Loader/>
   }
 
   return (
     <PreviewContainer>
       <XButton title="Remove Media Item" onClick={() => onRemove(mid)}
                greyIcon/>
-      <div style={{background: "#ebebeb", padding: "0 20px"}}>
-        <PreviewImage
-          src={mediaData.thumbnail[0].url}
-          alt=""
-          role="presentation"
-        />
-      </div>
-      <div style={{padding: "5px"}}>
-        {mediaData.name[0].value}
-      </div>
+
+      {typeof mediaData.message === 'undefined' &&
+      <React.Fragment>
+        <div style={{background: "#ebebeb", padding: "0 20px"}}>
+          <PreviewImage
+            src={mediaData.thumbnail[0].url}
+            alt=""
+            role="presentation"
+          />
+        </div>
+        <div style={{padding: "5px"}}>
+          {mediaData.name[0].value}
+        </div>
+      </React.Fragment>
+      }
+
+      {typeof mediaData.message !== 'undefined' &&
+      // When the media entity doesn't exist or some communication error occurs.
+      <div style={{padding: '20px'}}>Unable to provide a preview of media.</div>
+      }
+
     </PreviewContainer>
   )
 };
