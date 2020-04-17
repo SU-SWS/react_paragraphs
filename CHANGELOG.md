@@ -4,6 +4,7 @@
 --------------------------------------------------------------------------------
 _Release Date: 2020-04-16_
 
+- Added error handeling for media library widget (#39)
 - Check for value if a user didnt select a media item (#33)
 - D8CORE-1548 Dont trigger form updated on component load (#34)
 - D8CORE-1644 Added documentation for the release workflow
