@@ -70,7 +70,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
 
     if (matchedEntity && matchedEntity.length === 2) {
       uri = `entity:node/${matchedEntity[1]}`
-    }
+    } 
     else if (parsedUrl.protocol === null) {
       userString = parsedUrl.pathname;
       if (userString.trim().indexOf('<front>') === 0) {
@@ -96,8 +96,14 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
 
       if (parsedUri.pathname === '/') {
         displayString = '<front>' + uri.substr(uri.indexOf('/') + 1);
+      } 
+      else if (parsedUri.pathname.indexOf('/<front>') >= 0) {
+        // If the user inputs `<front>#some-anchor`, the saved data on the entity is saved as
+        // `internal:/<front>#some-anchor` and the pathname is `/<front>#some-anchor`. We want
+        // to clean that up for users.
+        displayString = parsedUri.pathname.substr(1);
       }
-    }
+    } 
     else if (parsedUri.protocol === 'entity:') {
       // todo: get the entity label somehow.
       displayString = '/' + uri.split(':', 2)[1];
