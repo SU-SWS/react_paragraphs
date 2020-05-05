@@ -16,18 +16,22 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     title: defaultValue && defaultValue.length ? defaultValue[0].title : ''
   };
 
+  /**
+   * When the uri changes, use a timer like a debounce and fetch some suggestions from the linkit module.
+   */
   const uriChanged = (newUri) => {
     clearTimeout(timeout);
 
     // Make a new timeout set to go off in 800ms
     timeout = setTimeout(() => {
 
-      onFieldChange([{
-        title: defaultFieldValue.title,
-        uri: getUriFromString(newUri)
-      }]);
-
-      if (newUri.substr(0, 1) === '/' || newUri.substr(0, 1) === '<') {
+      // If the user enters a url that starts with some characters, we dont want to fetch suggestions that will just
+      // be empty anyways. This includes absolute urls, <front> and relative urls.
+      if (
+        newUri.substr(0, 1) === '/' ||
+        newUri.substr(0, 1) === '<' ||
+        newUri.search(/[a-z0-9]:\/\//) >= 0
+      ) {
         setSuggestions([]);
         return;
       }
@@ -70,7 +74,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
 
     if (matchedEntity && matchedEntity.length === 2) {
       uri = `entity:node/${matchedEntity[1]}`
-    } 
+    }
     else if (parsedUrl.protocol === null) {
       userString = parsedUrl.pathname;
       if (userString.trim().indexOf('<front>') === 0) {
@@ -96,14 +100,14 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
 
       if (parsedUri.pathname === '/') {
         displayString = '<front>' + uri.substr(uri.indexOf('/') + 1);
-      } 
+      }
       else if (parsedUri.pathname.indexOf('/<front>') >= 0) {
         // If the user inputs `<front>#some-anchor`, the saved data on the entity is saved as
         // `internal:/<front>#some-anchor` and the pathname is `/<front>#some-anchor`. We want
         // to clean that up for users.
         displayString = parsedUri.pathname.substr(1);
       }
-    } 
+    }
     else if (parsedUri.protocol === 'entity:') {
       // todo: get the entity label somehow.
       displayString = '/' + uri.split(':', 2)[1];
@@ -111,6 +115,9 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     return displayString;
   };
 
+  /**
+   * A suggestion was picked, pass that up to the manager to store the value.
+   */
   const suggestionPicked = (e, selectedValue) => {
     onFieldChange([{
       title: defaultFieldValue.title,
@@ -118,9 +125,15 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     }]);
   };
 
-  const titleChanged = (newTitle) => {
-    onFieldChange([{title: newTitle, uri: defaultFieldValue.uri}]);
-  };
+  /**
+   * When the textfield on the URI blurs, that's when we want to trigger the field change and pass it up to the manager.
+   */
+  const onUriBlur = (e) => {
+    onFieldChange([{
+      title: defaultFieldValue.title,
+      uri: getUriFromString(e.target.value)
+    }]);
+  }
 
   return (
     <FormGroup>
@@ -130,22 +143,23 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
 
       <FormControl style={{marginBottom: '20px'}}>
         <Autocomplete
-          id={`${fieldId}-uri`}
           freeSolo
+          id={`${fieldId}-uri`}
           options={urlSuggestions}
           renderOption={option => <div>{option.label}</div>}
           getOptionLabel={option => typeof option.label !== 'undefined' ? option.label : getUriAsDisplayableString(option)}
           onChange={suggestionPicked}
-          defaultValue={defaultFieldValue.uri}
+          value={getUriAsDisplayableString(defaultFieldValue.uri)}
           renderInput={params => (
             <TextField
               {...params}
-              label="URL"
-              onChange={e => uriChanged(e.target.value)}
-              variant="outlined"
-              required={settings.required}
-              helperText="Start typing the title of a piece of content to select it. You can also enter an internal path such as /foo/bar or an external URL such as http://example.com. Enter <front> to link to the front page."
               fullWidth
+              label="URL"
+              variant="outlined"
+              helperText="Start typing the title of a piece of content to select it. You can also enter an internal path such as /foo/bar or an external URL such as http://example.com. Enter <front> to link to the front page."
+              onChange={e => uriChanged(e.target.value)}
+              required={settings.required}
+              onBlur={onUriBlur}
             />
           )}
         />
@@ -157,7 +171,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
           id={`${fieldId}-title`}
           label="Link text"
           value={defaultFieldValue.title}
-          onChange={e => titleChanged(e.target.value)}
+          onChange={e => onFieldChange([{title: e.target.value, uri: defaultFieldValue.uri}])}
           variant="outlined"
           required={typeof defaultFieldValue.uri !== 'undefined' && defaultFieldValue.uri.length >= 1}
           fullWidth
