@@ -30,7 +30,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
       if (
         newUri.substr(0, 1) === '/' ||
         newUri.substr(0, 1) === '<' ||
-        newUri.substr(0, 4) === 'http'
+        newUri.search(/[a-z0-9]:\/\//) >= 0
       ) {
         setSuggestions([]);
         return;
