@@ -338,7 +338,8 @@ export class WidgetManager extends Component {
    * @returns {number}
    */
   getRequiredMinColumns(toolId) {
-    return parseInt(this.props.tools[toolId].minWidth);
+    const tool = this.props.tools.find(tool => tool.id === toolId);
+    return parseInt(tool.minWidth);
   }
 
   /**
@@ -468,11 +469,14 @@ export class WidgetManager extends Component {
    */
   createNewItem(machine_name, index, width) {
     const uuid = uuidv4();
+
+    const tool = this.props.tools.find(tool => tool.id === machine_name);
+
     return {
       id: "new-" + uuid,
       index: index,
       width: width,
-      admin_title: this.props.tools[machine_name].label,
+      admin_title: tool.label,
       isNew: true,
       entity: {
         type: [{target_id: machine_name}],

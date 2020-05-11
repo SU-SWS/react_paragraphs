@@ -201,11 +201,13 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     $handler_settings = $this->getFieldSetting('handler_settings');
     /** @var \Drupal\paragraphs\ParagraphsTypeInterface $paragraph_type */
     foreach ($bundle_entities as $id => $paragraph_type) {
+      $return_bundles[$id]['id'] = $id;
       $return_bundles[$id]['icon'] = self::getParagraphTypeIcon($paragraph_type);
       $return_bundles[$id]['minWidth'] = $handler_settings['widths'][$id]['min'] ?? 1;
+      $return_bundles[$id]['description'] = $paragraph_type->getDescription();
     }
 
-    return $return_bundles;
+    return array_values($return_bundles);
   }
 
   /**
