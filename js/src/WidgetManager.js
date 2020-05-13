@@ -7,6 +7,7 @@ export class WidgetManager extends Component {
 
   functions = {
     updateParagraph: this.updateParagraph.bind(this),
+    updateRow: this.updateRow.bind(this),
     removeParagraph: this.removeParagraph.bind(this),
     onBeforeCapture: this.onBeforeCapture.bind(this),
     onDragEnd: this.onDragEnd.bind(this),
@@ -46,7 +47,8 @@ export class WidgetManager extends Component {
         items: {},
         itemsOrder: [],
         isDropDisabled: true,
-        entity: row.row
+        entity: row.row.entity,
+        target_id: row.row.target_id
       }
 
       row.rowItems.map((rowItem, itemIndex) => {
@@ -70,7 +72,6 @@ export class WidgetManager extends Component {
       loadedItems: 0,
       cachedForms: {}
     };
-    console.log(this.state);
     this.componentDidUpdate();
   }
 
@@ -126,6 +127,12 @@ export class WidgetManager extends Component {
     });
     this.setState(newState);
     this.triggerFormUpdated();
+  }
+
+  updateRow(rowId, fieldName, newValues) {
+    const newState = {...this.state}
+    newState.rows[rowId].entity[fieldName] = newValues;
+    this.setState(newState);
   }
 
   updateParagraph(item, fieldName, newValues) {
@@ -194,7 +201,9 @@ export class WidgetManager extends Component {
       id: newRowId,
       items: {},
       itemsOrder: [],
-      isDropDisabled: true
+      isDropDisabled: true,
+      entity: {},
+      target_id: null
     };
     if (typeof callback === 'function') {
       this.setState(newState, callback);

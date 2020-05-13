@@ -128,6 +128,8 @@ export const Row = (props) => {
                   open={rowFormOpen}
                   drupalContext={drupalContext}
                   onClose={() => setRowFormOpen(false)}
+                  rowId={props.id}
+                  entity={props.entity}
                 />
 
                 <ConfirmDialog

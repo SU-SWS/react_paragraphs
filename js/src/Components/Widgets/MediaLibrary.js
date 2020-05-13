@@ -16,7 +16,7 @@ export class MediaLibrary extends Component {
 
     // Make sure the existing default value is valid. Make sure the ids are more than 0.
     this.state = {
-      selectedMedia: typeof this.props.defaultValue === 'undefined' ? [] : this.props.defaultValue.filter(item => item.target_id > 0)
+      selectedMedia: this.props.defaultValue === null ? [] : this.props.defaultValue.filter(item => item.target_id > 0)
     };
 
     this.inputRef = React.createRef();

@@ -230,9 +230,11 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     // row, build the entity, and store the row/order data into the settings.
     foreach ($react_data['rowOrder'] as $row_number => $row_id) {
 
+      $row_data = $react_data['rows'][$row_id];
       $row_field_value = [];
-      foreach ($react_data['rows'][$row_id]['itemsOrder'] as $item_number => $item_id) {
-        $item = $react_data['rows'][$row_id]['items'][$item_id];
+
+      foreach ($row_data['itemsOrder'] as $item_number => $item_id) {
+        $item = $row_data['items'][$item_id];
 
         // In case there was any incorrect data passed to the entity, we can
         // still save all the other paragraphs.
@@ -256,7 +258,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
         }
       }
 
-      $row = $this->getRowEntity();
+      $row = $this->getRowEntity($row_data['entity'], $row_data['target_id'] ?? NULL);
       $row->set('su_row_items', $row_field_value);
       $return_data[] = ['entity' => $row];
     }
@@ -266,8 +268,20 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
   /**
    * @return \Drupal\react_paragraphs\Entity\ParagraphsRowInterface
    */
-  protected function getRowEntity() {
-    return ParagraphsRow::create(['type' => 'basic_page_row', 'label' => 'Foo Bar']);
+  protected function getRowEntity($field_data, $entity_id = NULL) {
+    if ($entity_id) {
+      $row = ParagraphsRow::load($entity_id);
+    }
+    else {
+      $row = ParagraphsRow::create(['type' => 'basic_page_row', 'label' => 'Foo Bar']);
+    }
+
+    foreach ($row->getFieldDefinitions() as $field_definition) {
+      if (isset($field_data[$field_definition->getName()]) && $field_definition instanceof FieldConfigInterface) {
+        $row->set($field_definition->getName(), $field_data[$field_definition->getName()]);
+      }
+    }
+    return $row;
   }
 
   /**

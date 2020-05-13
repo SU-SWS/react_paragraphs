@@ -43,13 +43,11 @@ export const FieldWidget = ({inputId, fieldName, items, tools, itemsPerRow, resi
                           key={rowId}
                           id={rowId}
                           index={index}
-                          items={drupalContext.state.rows[rowId].items}
-                          itemsOrder={drupalContext.state.rows[rowId].itemsOrder}
-                          onRemoveRow={drupalContext.removeRow}
                           itemsPerRow={itemsPerRow}
                           resizableItems={resizableItems}
+                          onRemoveRow={drupalContext.removeRow}
                           onlyRow={drupalContext.state.rowOrder.length === 1}
-                          isDropDisabled={drupalContext.state.rows[rowId].isDropDisabled}
+                          {...drupalContext.state.rows[rowId]}
                         />
                       ))}
                       {provided.placeholder}

@@ -4,12 +4,8 @@ import {Loader} from "./Atoms/Loader";
 import {EntityForm} from "./EntityForm";
 
 
-export const RowForm = ({open, drupalContext, rowEntity, onClose}) => {
+export const RowForm = ({open, drupalContext, rowId, onClose, entity}) => {
   const formFields = drupalContext.getEntityForm('paragraphs_row', 'basic_page_row');
-
-  const onFieldChange = (fieldName, newValue) => {
-
-  }
 
   if (formFields === undefined) {
     return <Loader/>
@@ -20,9 +16,9 @@ export const RowForm = ({open, drupalContext, rowEntity, onClose}) => {
       <EntityForm
         entityType="paragraphs_row"
         bundle="basic_page_row"
-        onFieldChange={onFieldChange}
+        onFieldChange={(fieldName, newValue) => drupalContext.updateRow(rowId, fieldName, newValue)}
         drupalContext={drupalContext}
-        entity={{}}
+        entity={entity}
       />
     </FormDialog>
   )
