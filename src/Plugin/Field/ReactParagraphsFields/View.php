@@ -51,36 +51,29 @@ class View extends ReactParagraphsFieldsBase {
    */
   public function getFieldInfo(array $field_element, FieldConfigInterface $field_config) {
     $info = parent::getFieldInfo($field_element, $field_config);
-    $info['displays'] = [];
     $info['views'] = [];
+    $info['displays'] = [];
+    $widget = $field_element['widget'][0];
+    unset($widget['target_id']['#options']['_none']);
 
-    $view_storage = $this->entityTypeManager->getStorage('view');
-    $view_options = $field_element['widget'][0]['target_id']['#options'];
-    $allowed_displays = array_filter($field_config->getSetting('allowed_display_types'));
+    $allowed_views_keys = array_keys($widget['target_id']['#options']);
+    $allowed_views_values = array_values($widget['target_id']['#options']);
+    $allowed_displays = $widget['display_id']['#options'];
 
-    /** @var \Drupal\views\ViewEntityInterface $view */
-    foreach ($view_storage->loadMultiple(array_keys($view_options)) as $view) {
-      $displays = $view->get('display');
-      $valid_displays = FALSE;
+    // TODO: Get these default values working.
+    // $info['defaultValue']['views'] = $widget['target_id']['#default_value'];
+    // $info['defaultValue']['displays'] = $widget['display_id']['#default_value'];
 
-      foreach ($displays as $display_id => $display) {
-        // The field only allows certain display modes. Don't allow those
-        // displays from being available to the user.
-        if ($allowed_displays && !in_array($display['display_plugin'], $allowed_displays)) {
-          continue;
-        }
+    foreach ($allowed_views_keys as $i => $v) {
+      $info['views'][] = [
+        'value' => $allowed_views_keys[$i],
+        'label' => $allowed_views_values[$i],
+      ];
 
-        $valid_displays = TRUE;
-        $info['displays'][$view->id()][] = [
-          'value' => $display_id,
-          'label' => $display['display_title'],
-        ];
-      }
-
-      if ($valid_displays) {
-        $info['views'][] = [
-          'value' => $view->id(),
-          'label' => $view->label(),
+      foreach ($allowed_displays as $display_name => $display_label) {
+        $info['displays'][$allowed_views_keys[$i]][] = [
+          'value' => $display_name,
+          'label' => $display_label,
         ];
       }
     }
