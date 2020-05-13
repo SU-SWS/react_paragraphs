@@ -1,0 +1,7 @@
+# Paragraphs Row type menu items definition
+entity.paragraphs_row_type.collection:
+  title: 'Paragraph Row Types'
+  route_name: entity.paragraphs_row_type.collection
+  description: 'List Paragraphs Row type (bundles)'
+  parent: system.admin_structure
+

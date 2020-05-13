@@ -5,13 +5,43 @@
  * react_paragraphs.module
  */
 
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\field\Entity\FieldConfig;
+
 /**
  * Implements hook_theme().
  */
 function react_paragraphs_theme($existing, $type, $theme, $path) {
-  return [
-    'react_paragraphs' => [
-      'variables' => ['rows' => NULL],
-    ],
+  $theme = [];
+  $theme['paragraphs_row'] = [
+    'render element' => 'elements',
+    'file' => 'paragraphs_row.page.inc',
+    'template' => 'paragraphs_row',
   ];
+  $theme['paragraphs_row_content_add_list'] = [
+    'render element' => 'content',
+    'variables' => ['content' => NULL],
+    'file' => 'paragraphs_row.page.inc',
+  ];
+  $theme ['react_paragraphs'] = [
+    'variables' => ['rows' => NULL],
+  ];
+  return $theme;
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function react_paragraphs_theme_suggestions_paragraphs_row(array $variables) {
+  $suggestions = [];
+  $entity = $variables['elements']['#paragraphs_row'];
+  $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+
+  $suggestions[] = 'paragraphs_row__' . $sanitized_view_mode;
+  $suggestions[] = 'paragraphs_row__' . $entity->bundle();
+  $suggestions[] = 'paragraphs_row__' . $entity->bundle() . '__' . $sanitized_view_mode;
+  $suggestions[] = 'paragraphs_row__' . $entity->id();
+  $suggestions[] = 'paragraphs_row__' . $entity->id() . '__' . $sanitized_view_mode;
+  return $suggestions;
 }

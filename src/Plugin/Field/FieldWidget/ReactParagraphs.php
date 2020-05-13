@@ -97,31 +97,6 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       ],
     ];
 
-    /** @var \Drupal\paragraphs\ParagraphInterface[] $referenced_entities */
-    $referenced_entities = $items->referencedEntities();
-    $item_values = array_filter($items->getValue());
-
-    foreach ($item_values as $delta => &$item) {
-      foreach ($referenced_entities as $entity) {
-        if ($entity->id() == $item['target_id']) {
-          $item['entity']['type'][0]['target_id'] = $entity->bundle();
-          break;
-        }
-      }
-
-      if (!empty($item['settings'])) {
-        continue;
-      }
-      // In the circumstance that the items don't have settings data, just put
-      // them into a single column.
-      $item['settings'] = [
-        'row' => $delta,
-        'index' => 0,
-        'width' => 12,
-        'admin_title' => $this->getItemLabel($referenced_entities[$delta]),
-      ];
-    }
-
     // Find unique elements for the widget react container and input field.
     $element_id = Html::getUniqueId('react-' . $this->fieldDefinition->getName());
     $input_id = Html::getUniqueId($element_id . '-input');
@@ -135,7 +110,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       'fieldId' => $element_id,
       'inputId' => $input_id,
       'tools' => $this->getTools($this->fieldDefinition),
-      'items' => $item_values,
+      'items' => [],
       'itemsPerRow' => $this->getSetting('items_per_row'),
       'resizableItems' => (bool) $this->getSetting('resizable'),
     ];
@@ -153,27 +128,6 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
   }
 
   /**
-   * Get the paragraph type bundle name from the entity id to use as the label.
-   *
-   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
-   *   Paragraph entity.
-   *
-   * @return string
-   *   Bundle name or the entity id.
-   *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
-   */
-  protected function getItemLabel(ContentEntityInterface $entity) {
-    if (empty($this->paragraphTypes)) {
-      $this->paragraphTypes = $this->entityTypeManager->getStorage('paragraphs_type')
-        ->loadMultiple();
-    }
-    // Get the paragraph type bundle label to be used in the widget.
-    return $this->paragraphTypes[$entity->bundle()]->label();
-  }
-
-  /**
    * Get the available paragraph types that are allowed in this field.
    *
    * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
@@ -187,22 +141,30 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    */
   protected function getTools(FieldDefinitionInterface $field_definition) {
     $return_bundles = [];
-    $handler = $this->selectionManager->getSelectionHandler($field_definition ?: $this->fieldDefinition);
+    $target_bundles = $field_definition->getSettings()['handler_settings']['target_bundles'];
+    $row_bundle_id = reset($target_bundles);
+    $row_item_field = $this->entityTypeManager->getStorage('field_config')
+      ->load("paragraphs_row.$row_bundle_id.su_row_items");
 
+    $handler = $this->selectionManager->getSelectionHandler($row_item_field);
     // Get a list of paragraph types that are allowed in the current field.
     if ($handler instanceof ParagraphSelection) {
-      $return_bundles = $handler->getSortedAllowedTypes();
+      $field_bundles = $handler->getSortedAllowedTypes();
     }
 
     // Load the paragraph types to check for icons.
     $bundle_entities = $this->entityTypeManager->getStorage('paragraphs_type')
-      ->loadMultiple(array_keys($return_bundles));
+      ->loadMultiple(array_keys($field_bundles));
 
-    $handler_settings = $this->getFieldSetting('handler_settings');
     /** @var \Drupal\paragraphs\ParagraphsTypeInterface $paragraph_type */
     foreach ($bundle_entities as $id => $paragraph_type) {
-      $return_bundles[$id]['icon'] = self::getParagraphTypeIcon($paragraph_type);
-      $return_bundles[$id]['minWidth'] = $handler_settings['widths'][$id]['min'] ?? 1;
+      $return_bundles[] = [
+        'id' => $id,
+        'label'  => $paragraph_type->label(),
+        'description' => $paragraph_type->getDescription(),
+        'icon' =>  self::getParagraphTypeIcon($paragraph_type),
+        'minWidth' => 1,
+      ];
     }
 
     return $return_bundles;

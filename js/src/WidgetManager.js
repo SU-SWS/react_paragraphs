@@ -17,7 +17,8 @@ export class WidgetManager extends Component {
     addToolToBottom: this.addToolToBottom.bind(this),
     onDragStart: this.onDragStart.bind(this),
     getFormFields: this.getFormFields.bind(this),
-    loadEntity: this.loadEntity.bind(this)
+    loadEntity: this.loadEntity.bind(this),
+    getToolInformation: this.getToolInformation.bind(this)
   };
 
   apiUrls = {
@@ -132,6 +133,10 @@ export class WidgetManager extends Component {
       };
       formItemsField.value = encodeURI(JSON.stringify(returnValue));
     }
+  }
+
+  getToolInformation(toolId){
+    return this.props.tools.find(tool => tool.id === toolId);
   }
 
   onAdminTitleChange(itemId, title) {
@@ -321,7 +326,7 @@ export class WidgetManager extends Component {
 
     // Find out how many columns are required as minimums of the existing items.
     // If the minimum required columns is full, mark the row as full.
-    const requiredColumns = this.props.tools[itemBundle].minWidth;
+    const requiredColumns = this.getToolInformation(itemBundle).minWidth;
     let columnsTaken = 0;
     this.state.rows[destinationRow].itemsOrder.map(itemId => {
       const rowItemBundle = this.state.rows[destinationRow].items[itemId].entity.type[0].target_id;
@@ -338,7 +343,7 @@ export class WidgetManager extends Component {
    * @returns {number}
    */
   getRequiredMinColumns(toolId) {
-    return parseInt(this.props.tools[toolId].minWidth);
+    return parseInt(this.getToolInformation(toolId).minWidth);
   }
 
   /**
@@ -472,7 +477,7 @@ export class WidgetManager extends Component {
       id: "new-" + uuid,
       index: index,
       width: width,
-      admin_title: this.props.tools[machine_name].label,
+      admin_title: this.getToolInformation(machine_name).label,
       isNew: true,
       entity: {
         type: [{target_id: machine_name}],

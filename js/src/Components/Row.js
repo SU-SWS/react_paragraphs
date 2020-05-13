@@ -91,7 +91,7 @@ export const Row =(props) =>  {
                                 item={props.items[itemId]}
                                 isDraggable={props.itemsPerRow > 1}
                                 isDraggingOverRow={snapshot.isDraggingOver}
-                                typeLabel={drupalContext.tools[props.items[itemId].entity.type[0].target_id].label}
+                                typeLabel={drupalContext.getToolInformation(props.items[itemId].entity.type[0].target_id).label}
                               />
                             ))}
 
