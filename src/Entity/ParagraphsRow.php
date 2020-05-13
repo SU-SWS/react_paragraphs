@@ -18,14 +18,19 @@ use Drupal\user\UserInterface;
  *
  * @ContentEntityType(
  *   id = "paragraphs_row",
- *   label = @Translation("Paragraphs Row"),
- *   bundle_label = @Translation("Paragraphs Row type"),
+ *   label = @Translation("Row"),
+ *   bundle_label = @Translation("Row type"),
  *   handlers = {
  *     "storage" = "Drupal\react_paragraphs\ParagraphsRowStorage",
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "views_data" = "Drupal\react_paragraphs\Entity\ParagraphsRowViewsData",
  *     "translation" = "Drupal\react_paragraphs\ParagraphsRowTranslationHandler",
  *     "access" = "Drupal\react_paragraphs\ParagraphsRowAccessControlHandler",
+ *     "form" = {
+ *       "default" = "Drupal\Core\Entity\ContentEntityForm",
+ *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
+ *       "edit" = "Drupal\Core\Entity\ContentEntityForm"
+ *     }
  *   },
  *   base_table = "paragraphs_row",
  *   data_table = "paragraphs_row_field_data",
@@ -37,7 +42,6 @@ use Drupal\user\UserInterface;
  *     "id" = "id",
  *     "revision" = "vid",
  *     "bundle" = "type",
- *     "label" = "name",
  *     "uuid" = "uuid",
  *     "uid" = "user_id",
  *     "langcode" = "langcode",
@@ -103,21 +107,6 @@ class ParagraphsRow extends EditorialContentEntityBase implements ParagraphsRowI
   /**
    * {@inheritdoc}
    */
-  public function getName() {
-    return $this->get('name')->value;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setName($name) {
-    $this->set('name', $name);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getCreatedTime() {
     return $this->get('created')->value;
   }
@@ -160,6 +149,10 @@ class ParagraphsRow extends EditorialContentEntityBase implements ParagraphsRowI
     return $this;
   }
 
+  public function getChangedTime() {
+    return NULL;
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -193,49 +186,6 @@ class ParagraphsRow extends EditorialContentEntityBase implements ParagraphsRowI
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
-
-    $fields['name'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Name'))
-      ->setDescription(t('The name of the Paragraphs Row entity.'))
-      ->setRevisionable(TRUE)
-      ->setSettings([
-        'max_length' => 50,
-        'text_processing' => 0,
-      ])
-      ->setDefaultValue('')
-      ->setDisplayOptions('view', [
-        'label' => 'above',
-        'type' => 'string',
-        'weight' => -4,
-      ])
-      ->setDisplayOptions('form', [
-        'type' => 'string_textfield',
-        'weight' => -4,
-      ])
-      ->setDisplayConfigurable('form', TRUE)
-      ->setDisplayConfigurable('view', TRUE)
-      ->setRequired(TRUE);
-
-    $fields['status']->setDescription(t('A boolean indicating whether the Paragraphs Row is published.'))
-      ->setDisplayOptions('form', [
-        'type' => 'boolean_checkbox',
-        'weight' => -3,
-      ]);
-
-    $fields['created'] = BaseFieldDefinition::create('created')
-      ->setLabel(t('Created'))
-      ->setDescription(t('The time that the entity was created.'));
-
-    $fields['changed'] = BaseFieldDefinition::create('changed')
-      ->setLabel(t('Changed'))
-      ->setDescription(t('The time that the entity was last edited.'));
-
-    $fields['revision_translation_affected'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(t('Revision translation affected'))
-      ->setDescription(t('Indicates if the last edit of a translation belongs to current revision.'))
-      ->setReadOnly(TRUE)
-      ->setRevisionable(TRUE)
-      ->setTranslatable(TRUE);
 
     return $fields;
   }

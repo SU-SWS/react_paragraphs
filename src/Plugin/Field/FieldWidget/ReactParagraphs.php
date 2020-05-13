@@ -3,7 +3,6 @@
 namespace Drupal\react_paragraphs\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -11,6 +10,7 @@ use Drupal\field\FieldConfigInterface;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\paragraphs\ParagraphsTypeInterface;
 use Drupal\paragraphs\Plugin\EntityReferenceSelection\ParagraphSelection;
+use Drupal\react_paragraphs\Entity\ParagraphsRow;
 
 /**
  * Plugin implementation of the 'react_paragraphs' widget.
@@ -110,7 +110,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       'fieldId' => $element_id,
       'inputId' => $input_id,
       'tools' => $this->getTools($this->fieldDefinition),
-      'items' => [],
+      'items' => $this->getRowItems($items),
       'itemsPerRow' => $this->getSetting('items_per_row'),
       'resizableItems' => (bool) $this->getSetting('resizable'),
     ];
@@ -123,8 +123,33 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       '#attached' => $attachments,
       '#attributes' => ['id' => $input_id],
     ];;
+
     $element['#attached']['library'][] = 'react_paragraphs/field_widget';
     return $element;
+  }
+
+  protected function getRowItems(FieldItemListInterface $items) {
+    $all_items = [];
+    foreach ($items->referencedEntities() as $row_delta => $row_entity) {
+      $all_items[$row_delta]['row'] = [
+        'target_id' => $row_entity->id(),
+        'entity' => ['type' => [['target_id' => $row_entity->bundle()]]],
+      ];
+
+      foreach ($row_entity->get('su_row_items')->referencedEntities() as $item_delta => $row_item) {
+        $all_items[$row_delta]['rowItems'][$item_delta] = [
+          'target_id' => $row_item->id(),
+          'entity' => ['type' => [['target_id' => $row_item->bundle()]]],
+          'settings' => [
+            'width' => 12,
+            'admin_title' => 'Title',
+          ],
+        ];
+      }
+
+      $all_items[$row_delta]['rowItems'] = array_values($all_items[$row_delta]['rowItems']);
+    }
+    return $all_items;
   }
 
   /**
@@ -160,9 +185,9 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     foreach ($bundle_entities as $id => $paragraph_type) {
       $return_bundles[] = [
         'id' => $id,
-        'label'  => $paragraph_type->label(),
+        'label' => $paragraph_type->label(),
         'description' => $paragraph_type->getDescription(),
-        'icon' =>  self::getParagraphTypeIcon($paragraph_type),
+        'icon' => self::getParagraphTypeIcon($paragraph_type),
         'minWidth' => 1,
       ];
     }
@@ -204,6 +229,8 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     // Loop through each row from react, then loop through the items in each
     // row, build the entity, and store the row/order data into the settings.
     foreach ($react_data['rowOrder'] as $row_number => $row_id) {
+
+      $row_field_value = [];
       foreach ($react_data['rows'][$row_id]['itemsOrder'] as $item_number => $item_id) {
         $item = $react_data['rows'][$row_id]['items'][$item_id];
 
@@ -211,6 +238,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
         // still save all the other paragraphs.
         try {
           $entity = $this->getEntity($item);
+          $row_field_value[] = ['entity' => $entity];
         }
         catch (\Exception $e) {
           $this->messenger()
@@ -226,24 +254,20 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
             ]);
           continue;
         }
-
-        // Settings column blob data.
-        $settings = [
-          'row' => $row_number,
-          'index' => $item_number,
-          'width' => $item['width'],
-          'admin_title' => $item['admin_title'],
-        ];
-
-        $return_data[] = [
-          'entity' => $entity,
-          'target_id' => $entity->id(),
-          'target_revision_id' => $entity->getRevisionId(),
-          'settings' => json_encode($settings),
-        ];
       }
+
+      $row = $this->getRowEntity();
+      $row->set('su_row_items', $row_field_value);
+      $return_data[] = ['entity' => $row];
     }
     return $return_data;
+  }
+
+  /**
+   * @return \Drupal\react_paragraphs\Entity\ParagraphsRowInterface
+   */
+  protected function getRowEntity() {
+    return ParagraphsRow::create(['type' => 'basic_page_row', 'label' => 'Foo Bar']);
   }
 
   /**

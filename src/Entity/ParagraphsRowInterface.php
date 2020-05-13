@@ -16,29 +16,6 @@ use Drupal\user\EntityOwnerInterface;
 interface ParagraphsRowInterface extends ContentEntityInterface, RevisionLogInterface, EntityChangedInterface, EntityPublishedInterface, EntityOwnerInterface {
 
   /**
-   * Add get/set methods for your configuration properties here.
-   */
-
-  /**
-   * Gets the Paragraphs Row name.
-   *
-   * @return string
-   *   Name of the Paragraphs Row.
-   */
-  public function getName();
-
-  /**
-   * Sets the Paragraphs Row name.
-   *
-   * @param string $name
-   *   The Paragraphs Row name.
-   *
-   * @return \Drupal\react_paragraphs\Entity\ParagraphsRowInterface
-   *   The called Paragraphs Row entity.
-   */
-  public function setName($name);
-
-  /**
    * Gets the Paragraphs Row creation timestamp.
    *
    * @return int

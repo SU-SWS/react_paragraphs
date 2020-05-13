@@ -26,7 +26,7 @@ class ReactParagraphs extends EntityReferenceRevisionsEntityFormatter {
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = parent::viewElements($items, $langcode);
-
+    return $elements;
     $organized_elements = [];
 
     // The elements are a single column list of paragraph entities provided by

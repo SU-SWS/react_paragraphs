@@ -17,6 +17,7 @@ export class WidgetManager extends Component {
     addToolToBottom: this.addToolToBottom.bind(this),
     onDragStart: this.onDragStart.bind(this),
     getFormFields: this.getFormFields.bind(this),
+    getEntityForm: this.getEntityForm.bind(this),
     loadEntity: this.loadEntity.bind(this),
     getToolInformation: this.getToolInformation.bind(this)
   };
@@ -34,55 +35,34 @@ export class WidgetManager extends Component {
     if (typeof window.drupalSettings.user === 'undefined') {
       this.apiUrls.baseDomain = 'http://docroot.cardinalsites.loc/';
     }
-
     let rows = {};
     let rowOrder = [];
 
-    // Build the initial state from the given list of items.
-    this.props.items.forEach(item => {
-      const rowNumber = item.settings.row;
-      const rowId = 'row-' + rowNumber;
-
-      // Build each row data set if it hasn't already been created.
-      if (typeof (rows[rowId]) === 'undefined') {
-        rows[rowId] = {
-          id: rowId,
-          items: {},
-          itemsOrder: [],
-          isDropDisabled: true
-        };
-        rowOrder[rowNumber] = rowId;
-      }
-
-      // Add the current item into the appropriate row.
-      const itemId = 'item-' + item.target_id;
-
-      rows[rowId].items[itemId] = {
-        id: itemId,
-        target_id: item.target_id,
-        index: item.settings.index,
-        width: item.settings.width,
-        admin_title: item.settings.admin_title,
-        entity: item.entity,
-        loadedEntity: false,
-      };
-      // todo: find a way to handle if multiple items in the same row have the
-      // same index.
-      rows[rowId].itemsOrder[item.settings.index] = itemId;
-    });
-
-    if (rowOrder.length === 0) {
-      rowOrder.push('row-0');
-      rows['row-0'] = {
-        id: 'row-0',
+    this.props.items.map((row, rowIndex) => {
+      const rowId = 'row-' + rowIndex;
+      rowOrder[rowIndex] = rowId;
+      rows[rowId] = {
+        id: rowId,
         items: {},
         itemsOrder: [],
-        isDropDisabled: true
+        isDropDisabled: true,
+        entity: row.row
       }
-    }
 
-    // Set the rowCount to the size of the rowOrder before filtering. This ensures that new rows will have a row ID
-    // that is one number higher than the last row in the order.
+      row.rowItems.map((rowItem, itemIndex) => {
+        const itemId = 'item-' + rowItem.target_id;
+        rows[rowId].itemsOrder[itemIndex] = itemId;
+        rows[rowId].items[itemId] = {
+          id: itemId,
+          target_id: rowItem.target_id,
+          index: itemIndex,
+          width: rowItem.settings.width,
+          admin_title: rowItem.settings.admin_title,
+          entity: rowItem.entity,
+          loadedEntity: false,
+        };
+      })
+    })
     this.state = {
       rowCount: rowOrder.length,
       rows: rows,
@@ -90,9 +70,7 @@ export class WidgetManager extends Component {
       loadedItems: 0,
       cachedForms: {}
     };
-
-    // After constructing the form, we need to update the hidden input field so that if no changes were made, we won't
-    // have empty data upon saving.
+    console.log(this.state);
     this.componentDidUpdate();
   }
 
@@ -135,7 +113,7 @@ export class WidgetManager extends Component {
     }
   }
 
-  getToolInformation(toolId){
+  getToolInformation(toolId) {
     return this.props.tools.find(tool => tool.id === toolId);
   }
 
@@ -192,7 +170,8 @@ export class WidgetManager extends Component {
 
         this.moveNewItemIntoRow(simulated_drag);
       });
-    } else {
+    }
+    else {
       const simulated_drag = {
         draggableId: item_name,
         destination: {
@@ -219,7 +198,8 @@ export class WidgetManager extends Component {
     };
     if (typeof callback === 'function') {
       this.setState(newState, callback);
-    } else {
+    }
+    else {
       this.setState(newState);
     }
     this.triggerFormUpdated();
@@ -261,7 +241,8 @@ export class WidgetManager extends Component {
     // The last row is maxed out with items, a new row is needed.
     if (this.state.rows[lastRowId].itemsOrder.length >= this.props.maxItemsPerRow) {
       needsNewRow = true;
-    } else {
+    }
+    else {
       try {
         // The last row is not full of items, but the items in the row require
         // all columns for that row. We need a new row.
@@ -517,6 +498,25 @@ export class WidgetManager extends Component {
         cachedForms: {
           ...prevState.cachedForms,
           [itemBundle]: jsonData
+        }
+      })))
+      .catch(e => console.error(e));
+  }
+
+  getEntityForm(entityType, bundle) {
+    let url = this.apiUrls.baseDomain + this.apiUrls.formApi;
+    url = url.replace('{entity_type_id}', entityType).replace('{bundle}', bundle);
+    if (typeof this.state.cachedForms[`${entityType}-${bundle}`] !== 'undefined') {
+      return this.state.cachedForms[`${entityType}-${bundle}`];
+    }
+
+    fetch(url)
+      .then(response => response.json())
+      .then(jsonData => this.setState(prevState => ({
+        ...prevState,
+        cachedForms: {
+          ...prevState.cachedForms,
+          [`${entityType}-${bundle}`]: jsonData
         }
       })))
       .catch(e => console.error(e));
