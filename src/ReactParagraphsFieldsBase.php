@@ -2,6 +2,7 @@
 
 namespace Drupal\react_paragraphs;
 
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\field\FieldConfigInterface;
@@ -15,10 +16,23 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class ReactParagraphsFieldsBase extends PluginBase implements ContainerFactoryPluginInterface, ReactParagraphsFieldsInterface {
 
   /**
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * {@inheritDoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static($configuration, $plugin_id, $plugin_definition);
+    return new static($configuration, $plugin_id, $plugin_definition, $container->get('module_handler'));
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ModuleHandlerInterface $moduleHandler) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->moduleHandler = $moduleHandler;
   }
 
   /**
