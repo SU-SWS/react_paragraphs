@@ -20,10 +20,6 @@ use Drupal\Core\Render\Element;
  *   - attributes: HTML attributes for the containing element.
  */
 function template_preprocess_paragraphs_row(array &$variables) {
-  // Fetch ParagraphsRow Entity Object.
-  $paragraphs_row = $variables['elements']['#paragraphs_row'];
-
-  // Helpful $content variable for templates.
   foreach (Element::children($variables['elements']) as $key) {
     $variables['content'][$key] = $variables['elements'][$key];
   }

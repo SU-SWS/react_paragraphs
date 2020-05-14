@@ -23,7 +23,6 @@ use Drupal\user\UserInterface;
  *   handlers = {
  *     "storage" = "Drupal\react_paragraphs\ParagraphsRowStorage",
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
- *     "views_data" = "Drupal\react_paragraphs\Entity\ParagraphsRowViewsData",
  *     "translation" = "Drupal\react_paragraphs\ParagraphsRowTranslationHandler",
  *     "access" = "Drupal\react_paragraphs\ParagraphsRowAccessControlHandler",
  *     "form" = {

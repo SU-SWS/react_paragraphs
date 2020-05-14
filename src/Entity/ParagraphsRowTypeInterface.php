@@ -9,5 +9,4 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
  */
 interface ParagraphsRowTypeInterface extends ConfigEntityInterface {
 
-  // Add get/set methods for your configuration properties here.
 }

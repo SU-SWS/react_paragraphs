@@ -35,8 +35,6 @@ class ParagraphsRowTypeForm extends EntityForm {
       '#disabled' => !$paragraphs_row_type->isNew(),
     ];
 
-    /* You will need additional form elements for your custom properties. */
-
     return $form;
   }
 

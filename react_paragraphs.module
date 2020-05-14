@@ -19,14 +19,6 @@ function react_paragraphs_theme($existing, $type, $theme, $path) {
     'file' => 'paragraphs_row.page.inc',
     'template' => 'paragraphs_row',
   ];
-  $theme['paragraphs_row_content_add_list'] = [
-    'render element' => 'content',
-    'variables' => ['content' => NULL],
-    'file' => 'paragraphs_row.page.inc',
-  ];
-  $theme ['react_paragraphs'] = [
-    'variables' => ['rows' => NULL],
-  ];
   return $theme;
 }
 
