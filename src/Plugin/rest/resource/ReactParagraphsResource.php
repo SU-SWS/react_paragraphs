@@ -4,6 +4,7 @@ namespace Drupal\react_paragraphs\Plugin\rest\resource;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Render\Element;
 use Drupal\field\FieldConfigInterface;
 use Drupal\react_paragraphs\ReactParagraphsFieldsManager;
@@ -33,6 +34,13 @@ class ReactParagraphsResource extends ResourceBase {
   protected $entityTypeManager;
 
   /**
+   * Module handler server.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * Form builder service.
    *
    * @var \Drupal\Core\Entity\EntityFormBuilderInterface
@@ -58,18 +66,20 @@ class ReactParagraphsResource extends ResourceBase {
       $container->get('logger.factory')->get('rest'),
       $container->get('entity_type.manager'),
       $container->get('entity.form_builder'),
-      $container->get('plugin.manager.react_paragraphs_fields')
+      $container->get('plugin.manager.react_paragraphs_fields'),
+      $container->get('module_hander')
     );
   }
 
   /**
    * {@inheritDoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, array $serializer_formats, LoggerInterface $logger, EntityTypeManagerInterface $entity_type_manager, EntityFormBuilderInterface $form_builder, ReactParagraphsFieldsManager $field_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, array $serializer_formats, LoggerInterface $logger, EntityTypeManagerInterface $entity_type_manager, EntityFormBuilderInterface $form_builder, ReactParagraphsFieldsManager $field_manager, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger);
     $this->entityTypeManager = $entity_type_manager;
     $this->formBuilder = $form_builder;
     $this->reactFieldsPluginManager = $field_manager;
+    $this->moduleHandler = $module_handler;
   }
 
   /**
@@ -119,6 +129,7 @@ class ReactParagraphsResource extends ResourceBase {
       $field_config = $field_config_storage->load("$entity_type_id.$bundle.$field_name");
       if ($field_config && ($plugin = $this->getReactFieldsPlugin($field_config))) {
         $data[$field_name] = $plugin->getFieldInfo($form[$field_name], $field_config);
+        $this->moduleHandler->invokeAll("react_paragraphs_getfieldinfo_post_alter", [$form[$field_name], $field_config,  $data[$field_name]]);
       }
     }
 
