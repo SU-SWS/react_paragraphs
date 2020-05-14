@@ -1,13 +1,21 @@
 <?php
 
+/**
+ * @file
+ * Hooks specific to the react_paragraph module.
+ */
+
 use Drupal\Field\Entity\FieldConfig;
 
 /**
  * Alter the info before being sent to the react widget.
  *
  * @param array $field_element
+ *   The form field element that is being transformed into react data.
  * @param \Drupal\Field\Entity\FieldConfig $field_config
+ *   The field configuration object.
  * @param array $info
+ *   The array of data being passed to the react widget.
  *
  * @see \Drupal\react_paragraphs\Plugin\rest\resource\ReactParagraphsResource::get
  */

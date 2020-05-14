@@ -129,7 +129,14 @@ class ReactParagraphsResource extends ResourceBase {
       $field_config = $field_config_storage->load("$entity_type_id.$bundle.$field_name");
       if ($field_config && ($plugin = $this->getReactFieldsPlugin($field_config))) {
         $data[$field_name] = $plugin->getFieldInfo($form[$field_name], $field_config);
-        $this->moduleHandler->invokeAll("react_paragraphs_getfieldinfo_post_alter", [$form[$field_name], $field_config,  $data[$field_name]]);
+        $this->moduleHandler->invokeAll(
+          "react_paragraphs_getfieldinfo_post_alter",
+          [
+            $form[$field_name],
+            $field_config,
+            $data[$field_name]
+          ]
+        );
       }
     }
 
