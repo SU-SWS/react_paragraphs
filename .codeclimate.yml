@@ -125,3 +125,4 @@ exclude_patterns:
 - "postcss.config.js"
 - "**.map"
 - "js/build"
+- "react_paragraphs.api.php"

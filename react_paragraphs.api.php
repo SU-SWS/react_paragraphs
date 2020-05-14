@@ -3,12 +3,16 @@
 /**
  * @file
  * Hooks specific to the react_paragraph module.
+ *
+ * @codeCoverageIgnore
  */
 
 use Drupal\Field\Entity\FieldConfig;
 
 /**
  * Alter the info before being sent to the react widget.
+ *
+ * @codeCoverageIgnore
  *
  * @param array $field_element
  *   The form field element that is being transformed into react data.
