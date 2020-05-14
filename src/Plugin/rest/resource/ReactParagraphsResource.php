@@ -67,7 +67,7 @@ class ReactParagraphsResource extends ResourceBase {
       $container->get('entity_type.manager'),
       $container->get('entity.form_builder'),
       $container->get('plugin.manager.react_paragraphs_fields'),
-      $container->get('module_hander')
+      $container->get('module_handler')
     );
   }
 
