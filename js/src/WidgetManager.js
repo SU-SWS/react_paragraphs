@@ -65,6 +65,19 @@ export class WidgetManager extends Component {
         };
       })
     })
+
+    if (rowOrder.length === 0) {
+      rowOrder.push('row-0');
+      rows['row-0'] = {
+        id: 'row-0',
+        items: {},
+        itemsOrder: [],
+        isDropDisabled: true,
+        entity: {"type": [{"target_id": this.props.rowBundle}]},
+        target_id: null
+      }
+    }
+
     this.state = {
       rowCount: rowOrder.length,
       rows: rows,
@@ -197,12 +210,13 @@ export class WidgetManager extends Component {
     newState.rowCount++;
     const newRowId = 'row-' + (newState.rowCount);
     newState.rowOrder.push(newRowId);
+
     newState.rows[newRowId] = {
       id: newRowId,
       items: {},
       itemsOrder: [],
       isDropDisabled: true,
-      entity: {},
+      entity: {"type": [{"target_id": this.props.rowBundle}]},
       target_id: null
     };
     if (typeof callback === 'function') {
@@ -535,6 +549,7 @@ export class WidgetManager extends Component {
     return (
       <DrupalContext.Provider
         value={{
+          props: this.props,
           state: this.state,
           apiUrls: this.apiUrls,
           tools: this.props.tools,

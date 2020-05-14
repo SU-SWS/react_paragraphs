@@ -43,7 +43,7 @@ export const EntityForm = ({entityType, bundle, entity, onFieldChange, drupalCon
         if (WidgetName === undefined) {
           console.error('Unable to find widget for type: ' + field.widget_type);
           return (
-            <FieldContainer key={`widget-${item.id}-${fieldName}`}>
+            <FieldContainer key={`widget-${fieldName}`}>
               Unable to provide a form for
               field {field.label}
             </FieldContainer>

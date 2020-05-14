@@ -5,17 +5,17 @@ import {EntityForm} from "./EntityForm";
 
 
 export const RowForm = ({open, drupalContext, rowId, onClose, entity}) => {
-  const formFields = drupalContext.getEntityForm('paragraphs_row', 'basic_page_row');
+  const formFields = drupalContext.getEntityForm('paragraphs_row', drupalContext.props.rowBundle);
 
   if (formFields === undefined) {
     return <Loader/>
   }
 
   return (
-    <FormDialog open={open} onClose={onClose}>
+    <FormDialog open={open} onClose={onClose} title={'Edit Row'}>
       <EntityForm
         entityType="paragraphs_row"
-        bundle="basic_page_row"
+        bundle={drupalContext.props.rowBundle}
         onFieldChange={(fieldName, newValue) => drupalContext.updateRow(rowId, fieldName, newValue)}
         drupalContext={drupalContext}
         entity={entity}

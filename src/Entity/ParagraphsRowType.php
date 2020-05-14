@@ -9,7 +9,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *
  * @ConfigEntityType(
  *   id = "paragraphs_row_type",
- *   label = @Translation("Paragraphs Row type"),
+ *   label = @Translation("Row type"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\react_paragraphs\ParagraphsRowTypeListBuilder",

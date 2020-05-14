@@ -5,7 +5,7 @@ import {Toolbox} from "./Toolbox";
 import {WidgetManager, DrupalContext} from "../WidgetManager";
 import {FlexDiv} from "./Atoms/FlexDiv";
 
-export const FieldWidget = ({inputId, fieldName, items, tools, itemsPerRow, resizableItems}) => {
+export const FieldWidget = ({inputId, fieldName, items, tools, itemsPerRow, resizableItems, rowBundle}) => {
 
   return (
     <WidgetManager
@@ -14,6 +14,7 @@ export const FieldWidget = ({inputId, fieldName, items, tools, itemsPerRow, resi
       fieldName={fieldName}
       tools={tools}
       maxItemsPerRow={itemsPerRow}
+      rowBundle={rowBundle}
     >
       <FlexDiv alignItems={'flex-start'}>
         <DrupalContext.Consumer>

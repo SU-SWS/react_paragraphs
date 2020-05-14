@@ -19,7 +19,8 @@ use Drupal\react_paragraphs\Entity\ParagraphsRow;
  *   id = "react_paragraphs",
  *   label = @Translation("React Paragraphs"),
  *   field_types = {
- *     "react_paragraphs"
+ *     "react_paragraphs",
+ *     "entity_reference_revisions"
  *   },
  *   multiple_values = true
  * )
@@ -48,6 +49,13 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     $settings['items_per_row'] = 1;
     $settings['resizable'] = FALSE;
     return $settings;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function isApplicable(FieldDefinitionInterface $field_definition) {
+    return $field_definition->getSetting('handler') == 'default:paragraphs_row';
   }
 
   /**
@@ -109,6 +117,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     $attachments['drupalSettings']['reactParagraphs'][] = [
       'fieldId' => $element_id,
       'inputId' => $input_id,
+      'rowBundle' => 'su_basic_row',
       'tools' => $this->getTools($this->fieldDefinition),
       'items' => $this->getRowItems($items),
       'itemsPerRow' => $this->getSetting('items_per_row'),
@@ -136,13 +145,14 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
         'entity' => ['type' => [['target_id' => $row_entity->bundle()]]],
       ];
 
+      /** @var \Drupal\paragraphs\ParagraphInterface $row_item */
       foreach ($row_entity->get('su_row_items')->referencedEntities() as $item_delta => $row_item) {
         $all_items[$row_delta]['rowItems'][$item_delta] = [
           'target_id' => $row_item->id(),
           'entity' => ['type' => [['target_id' => $row_item->bundle()]]],
           'settings' => [
-            'width' => 12,
-            'admin_title' => 'Title',
+            'width' => $row_item->getBehaviorSetting('react', 'width'),
+            'admin_title' => $row_item->getBehaviorSetting('react', 'label'),
           ],
         ];
       }
@@ -168,14 +178,21 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     $return_bundles = [];
     $target_bundles = $field_definition->getSettings()['handler_settings']['target_bundles'];
     $row_bundle_id = reset($target_bundles);
-    $row_item_field = $this->entityTypeManager->getStorage('field_config')
-      ->load("paragraphs_row.$row_bundle_id.su_row_items");
+
+    foreach ($this->fieldManager->getFieldDefinitions('paragraphs_row', $row_bundle_id) as $target_field) {
+      if ($target_field instanceof FieldConfigInterface && $target_field->getType() === 'entity_reference_revisions') {
+        $row_item_field = $target_field;
+        break;
+      }
+    }
 
     $handler = $this->selectionManager->getSelectionHandler($row_item_field);
     // Get a list of paragraph types that are allowed in the current field.
-    if ($handler instanceof ParagraphSelection) {
-      $field_bundles = $handler->getSortedAllowedTypes();
+    if (!$handler instanceof ParagraphSelection) {
+      throw new \Exception('Invalid field');
     }
+
+    $field_bundles = $handler->getSortedAllowedTypes();
 
     // Load the paragraph types to check for icons.
     $bundle_entities = $this->entityTypeManager->getStorage('paragraphs_type')
@@ -240,6 +257,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
         // still save all the other paragraphs.
         try {
           $entity = $this->getEntity($item);
+          $entity->save();
           $row_field_value[] = ['entity' => $entity];
         }
         catch (\Exception $e) {
@@ -259,21 +277,26 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       }
 
       $row = $this->getRowEntity($row_data['entity'], $row_data['target_id'] ?? NULL);
-      $row->set('su_row_items', $row_field_value);
+      $row->set($this->getRowReferenceField(), $row_field_value)->save();
       $return_data[] = ['entity' => $row];
     }
     return $return_data;
   }
 
   /**
+   *
+   * @param array $field_data
+   * @param int|null $entity_id
+   *
    * @return \Drupal\react_paragraphs\Entity\ParagraphsRowInterface
    */
-  protected function getRowEntity($field_data, $entity_id = NULL) {
+  protected function getRowEntity(array $field_data, $entity_id = NULL) {
+    /** @var \Drupal\react_paragraphs\Entity\ParagraphsRowInterface $row */
     if ($entity_id) {
       $row = ParagraphsRow::load($entity_id);
     }
     else {
-      $row = ParagraphsRow::create(['type' => 'basic_page_row', 'label' => 'Foo Bar']);
+      $row = ParagraphsRow::create(['type' => $this->getRowBundle()]);
     }
 
     foreach ($row->getFieldDefinitions() as $field_definition) {
@@ -282,6 +305,15 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       }
     }
     return $row;
+  }
+
+  protected function getRowBundle() {
+    $settings = $this->fieldDefinition->getSetting('handler_settings');
+    return reset($settings['target_bundles']);
+  }
+
+  protected function getRowReferenceField() {
+    return 'su_row_items';
   }
 
   /**
@@ -303,6 +335,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     // An existing paragraph was edited. Load that paragraph and set all the
     // field values to the data passed in.
     if (!empty($item_data['target_id'])) {
+      /** @var \Drupal\paragraphs\ParagraphInterface $entity */
       $entity = Paragraph::load($item_data['target_id']);
 
       /** @var \Drupal\Core\Field\FieldDefinitionInterface $field_definition */
@@ -317,6 +350,10 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       $entity = Paragraph::create($item_data['entity']);
     }
 
+    $entity->setBehaviorSettings('react', [
+      'width' => $item_data['width'],
+      'label' => $item_data['admin_title'],
+    ]);
     $this->paragraphs[$item_data['id']] = $entity;
     return $this->paragraphs[$item_data['id']];
   }

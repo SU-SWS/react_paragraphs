@@ -2,6 +2,7 @@
 
 namespace Drupal\react_paragraphs\Plugin\Field\FieldWidget;
 
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
@@ -40,6 +41,11 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
   protected $editorManager;
 
   /**
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   */
+  protected $fieldManager;
+
+  /**
    * Current account object.
    *
    * @var \Drupal\Core\Session\AccountProxyInterface
@@ -59,6 +65,7 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
       $container->get('plugin.manager.entity_reference_selection'),
       $container->get('entity_type.manager'),
       $container->get('plugin.manager.editor'),
+      $container->get('entity_field.manager'),
       $container->get('current_user')
     );
   }
@@ -66,11 +73,12 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
   /**
    * {@inheritdoc}
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, SelectionPluginManagerInterface $selection_manager, EntityTypeManagerInterface $entity_type_manager, EditorManager $editor_manager, AccountProxyInterface $current_user) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, SelectionPluginManagerInterface $selection_manager, EntityTypeManagerInterface $entity_type_manager, EditorManager $editor_manager,EntityFieldManagerInterface $field_manager, AccountProxyInterface $current_user) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
     $this->selectionManager = $selection_manager;
     $this->entityTypeManager = $entity_type_manager;
     $this->editorManager = $editor_manager;
+    $this->fieldManager = $field_manager;
     $this->currentUser = $current_user;
   }
 

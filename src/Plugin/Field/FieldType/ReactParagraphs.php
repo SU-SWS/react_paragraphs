@@ -2,7 +2,6 @@
 
 namespace Drupal\react_paragraphs\Plugin\Field\FieldType;
 
-use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\entity_reference_revisions\Plugin\Field\FieldType\EntityReferenceRevisionsItem;
 
