@@ -134,7 +134,7 @@ class ReactParagraphsResource extends ResourceBase {
           [
             $form[$field_name],
             $field_config,
-            $data[$field_name]
+            $data[$field_name],
           ]
         );
       }
