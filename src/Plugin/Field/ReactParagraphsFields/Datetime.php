@@ -25,6 +25,8 @@ class Datetime extends ReactParagraphsFieldsBase {
     $info = parent::getFieldInfo($field_element, $field_config);
     $info['type'] = $field_config->getFieldStorageDefinition()
       ->getSetting('datetime_type');
+
+    $this->moduleHandler->invokeAll("react_paragraphs_getfieldinfo_alter", [$field_element, $field_config,  $info]);
     return $info;
   }
 

@@ -3,6 +3,7 @@
 namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\field\FieldConfigInterface;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -34,6 +35,7 @@ class View extends ReactParagraphsFieldsBase {
       $configuration,
       $plugin_id,
       $plugin_definition,
+      $container->get('module_handler'),
       $container->get('entity_type.manager')
     );
   }
@@ -41,8 +43,8 @@ class View extends ReactParagraphsFieldsBase {
   /**
    * {@inheritDoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ModuleHandlerInterface $moduleHandler, EntityTypeManagerInterface $entity_type_manager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $moduleHandler);
     $this->entityTypeManager = $entity_type_manager;
   }
 
@@ -85,6 +87,7 @@ class View extends ReactParagraphsFieldsBase {
       }
     }
 
+    $this->moduleHandler->invokeAll("react_paragraphs_getfieldinfo_alter", [$field_element, $field_config,  $info]);
     return $info;
   }
 

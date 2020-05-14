@@ -65,6 +65,7 @@ class Select extends ReactParagraphsFieldsBase {
     }
     $info['options'] = $options;
 
+    $this->moduleHandler->invokeAll("react_paragraphs_getfieldinfo_alter", [$field_element, $field_config,  $info]);
     return $info;
   }
 

@@ -66,6 +66,8 @@ class Ckeditor extends ReactParagraphsFieldsBase {
     if (is_array($allowed_formats) && !empty(array_filter($allowed_formats))) {
       $info['allowed_formats'] = array_intersect_key($info['allowed_formats'], array_filter($allowed_formats));
     }
+
+    $this->moduleHandler->invokeAll("react_paragraphs_getfieldinfo_alter", [$field_element, $field_config,  $info]);
     return $info;
   }
 

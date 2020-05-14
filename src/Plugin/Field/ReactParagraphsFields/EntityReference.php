@@ -57,6 +57,8 @@ class EntityReference extends ReactParagraphsFieldsBase implements ContainerFact
     if (isset($field_element['widget']['media_library_selection'])) {
       $this->addMediaLibraryInfo($info, $field_config);
     }
+
+    $this->moduleHandler->invokeAll("react_paragraphs_getfieldinfo_alter", [$field_element, $field_config,  $info]);
     return $info;
   }
 

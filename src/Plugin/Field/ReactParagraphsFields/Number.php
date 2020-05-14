@@ -28,6 +28,8 @@ class Number extends ReactParagraphsFieldsBase {
     $info['scale'] = $field_config->getFieldStorageDefinition()->getSetting('scale');
     $info['min'] = $field_config->getSetting('min');
     $info['max'] = $field_config->getSetting('max');
+
+    $this->moduleHandler->invokeAll("react_paragraphs_getfieldinfo_alter", [$field_element, $field_config,  $info]);
     return $info;
   }
 

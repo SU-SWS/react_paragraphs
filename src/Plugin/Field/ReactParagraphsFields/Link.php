@@ -33,6 +33,8 @@ class Link extends ReactParagraphsFieldsBase {
       $info['autocomplete'] = Url::fromRoute($route, $route_params)->toString();
       $info['target_type'] = $route_params['target_type'];
     }
+
+    $this->moduleHandler->invokeAll("react_paragraphs_getfieldinfo_alter", [$field_element, $field_config,  $info]);
     return $info;
   }
 

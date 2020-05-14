@@ -40,6 +40,8 @@ class Text extends ReactParagraphsFieldsBase {
         $info['text_type'] = 'text';
         break;
     }
+
+    $this->moduleHandler->invokeAll("react_paragraphs_getfieldinfo_alter", [$field_element, $field_config,  $info]);
     return $info;
   }
 
