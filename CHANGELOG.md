@@ -1,5 +1,14 @@
 # React Paragraphs
 
+8.x-1.8
+--------------------------------------------------------------------------------
+_Release Date: 2020-05-15_
+
+- Use alter method and fixed the object in the react field (#46) (98db612)
+- D8CORE-000: Allow post getFieldInfo altering. (#44) (45d397d)
+- D8CORE-1943: Fix the link widget and how it handles the suggestions and absolute urls (#41) (99c21bb)
+- D8CORE-1823: Fix link widget when the user inputs <front> (#40) (06e1d6e)
+
 8.x-1.7
 --------------------------------------------------------------------------------
 _Release Date: 2020-04-16_
