@@ -48,6 +48,9 @@ export class ViewFieldWidget extends Component {
 
   getDisplayOptions(viewId) {
     if (viewId !== '_none') {
+      if (typeof this.props.settings.displays[viewId] === 'object') {
+        return Object.keys(this.props.settings.displays[viewId]).map(key => this.props.settings.displays[viewId][key])
+      }
       return this.props.settings.displays[viewId];
     }
     return [];

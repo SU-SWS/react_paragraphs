@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\field\FieldConfigInterface;
@@ -66,12 +67,15 @@ class ReactParagraphsResourceTest extends UnitTestCase {
     ]);
     $plugin_manager->method('createInstance')->willReturn($plugin);
 
+    $module_handler = $this->createMock(ModuleHandlerInterface::class);
+
     $container = new ContainerBuilder();
     $container->setParameter('serializer.formats', []);
     $container->set('logger.factory', $logger_factory);
     $container->set('entity_type.manager', $entity_type_manager);
     $container->set('entity.form_builder', $form_builder);
     $container->set('plugin.manager.react_paragraphs_fields', $plugin_manager);
+    $container->set('module_handler', $module_handler);
 
     $this->resource = ReactParagraphsResource::create($container, [], '', []);
   }
