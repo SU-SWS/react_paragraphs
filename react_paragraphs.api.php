@@ -36,4 +36,5 @@ function hook_react_paragraphs_getfieldinfo_post_alter(array $field_element, Fie
   // Add something.
   $info['my_field']['values'] = ['foo', 'bar'];
 
+  return $info;
 }
