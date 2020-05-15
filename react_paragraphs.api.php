@@ -14,19 +14,19 @@ use Drupal\Field\Entity\FieldConfig;
  *
  * @codeCoverageIgnore
  *
+ * @param array $info
+ *   The array of data being passed to the react widget.
  * @param array $field_element
  *   The form field element that is being transformed into react data.
  * @param \Drupal\Field\Entity\FieldConfig $field_config
  *   The field configuration object.
- * @param array $info
- *   The array of data being passed to the react widget.
  *
  * @see \Drupal\react_paragraphs\Plugin\rest\resource\ReactParagraphsResource::get
  */
-function hook_react_paragraphs_getfieldinfo_post_alter(array $field_element, FieldConfig $field_config, array $info) {
+function hook_react_paragraphs_form_field_data_alter(array &$info, array $field_element, FieldConfig $field_config) {
 
   // Only alter data for the news_views view field.
-  if ($field_config->get('field_name') !== "field_foo") {
+  if ($field_config->getName() !== "field_foo") {
     return;
   }
 
@@ -35,5 +35,4 @@ function hook_react_paragraphs_getfieldinfo_post_alter(array $field_element, Fie
 
   // Add something.
   $info['my_field']['values'] = ['foo', 'bar'];
-
 }
