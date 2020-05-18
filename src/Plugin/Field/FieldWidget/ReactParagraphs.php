@@ -274,8 +274,10 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       return $this->createEntity($entity_type, $bundle, $field_data);
     }
 
+    /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
     $entity = $this->entityTypeManager->getStorage($entity_type)
       ->load($entity_id);
+    $entity->setNewRevision();
 
     $fields = $this->fieldManager->getFieldDefinitions($entity_type, $bundle);
     foreach ($fields as $field_name => $field_definition) {

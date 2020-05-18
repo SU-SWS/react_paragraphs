@@ -25,6 +25,35 @@ function react_paragraphs_theme($existing, $type, $theme, $path) {
 /**
  * Implements hook_theme_suggestions_HOOK().
  */
+function react_paragraphs_theme_suggestions_field(array $variables) {
+  $suggestions = [];
+  if (
+    $variables['element']['#entity_type'] == 'paragraphs_row' &&
+    $variables['element']['#field_type'] == 'entity_reference_revisions'
+  ) {
+    $suggestions[] = 'field__react_paragraphs_row';
+  }
+  return $suggestions;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function react_paragraphs_preprocess_field__react_paragraphs_row(&$variables) {
+  $variables['attributes']['class'][] = 'react-paragraphs-row ';
+  $variables['#attached']['library'][] = 'react_paragraphs/field_formatter';
+
+  foreach ($variables['items'] as &$item) {
+    /** @var \Drupal\paragraphs\ParagraphInterface $paragraph */
+    $paragraph = $item['content']['#paragraph'];
+    $width = $paragraph->getBehaviorSetting('react', 'width');
+    $item['attributes']['data-react-columns'] = $width;
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
 function react_paragraphs_theme_suggestions_paragraphs_row(array $variables) {
   $suggestions = [];
   $entity = $variables['elements']['#paragraphs_row'];
