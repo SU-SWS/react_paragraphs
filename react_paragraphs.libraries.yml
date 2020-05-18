@@ -7,16 +7,13 @@ field_widget:
     js/build/react_paragraphs.app.min.js: {  }
     js/build/react_paragraphs.vendor.min.js: {  }
   dependencies:
+    - core/drupal.dialog.ajax
+    - core/drupal.dropbutton
     - core/drupalSettings
     - core/jquery
-    - filter/drupal.filter.admin
     - editor/drupal.editor
-    - core/drupal.dialog.ajax
-    - media_library/ui
+    - filter/drupal.filter.admin
     - views/views.ajax
-    - dropzonejs/dropzonejs
-    - dropzonejs/integration
-    - core/drupal.dropbutton
 
 field_formatter:
   version: VERSION

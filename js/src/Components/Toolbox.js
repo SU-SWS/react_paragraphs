@@ -1,7 +1,7 @@
 import React from 'react';
 import {Droppable, Draggable} from "react-beautiful-dnd";
 import styled from 'styled-components'
-import {DrupalContext} from "../WidgetManager";
+import {WidgetContext} from "../Contexts/WidgetManager";
 import {FlexDiv} from "./Atoms/FlexDiv";
 
 const ToolboxWrapper = styled.div`
@@ -78,8 +78,8 @@ const Tool = ({weight, id, label, icon}) => {
   }
 
   return (
-    <DrupalContext.Consumer>
-      {drupalContext =>
+    <WidgetContext.Consumer>
+      {widgetContext =>
 
         <Draggable
           draggableId={id}
@@ -90,7 +90,7 @@ const Tool = ({weight, id, label, icon}) => {
               ref={provided.innerRef}
               {...provided.draggableProps}
               {...provided.dragHandleProps}
-              onDoubleClick={(e) => drupalContext.addToolToBottom(id, e)}
+              onDoubleClick={(e) => widgetContext.addToolToBottom(id, e)}
               id={`tool-${id}`}
             >
               <img src={icon} alt="" role="presentation"/>
@@ -101,7 +101,7 @@ const Tool = ({weight, id, label, icon}) => {
         </Draggable>
 
       }
-    </DrupalContext.Consumer>
+    </WidgetContext.Consumer>
   )
 
 };

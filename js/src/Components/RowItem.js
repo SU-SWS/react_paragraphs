@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Draggable} from "react-beautiful-dnd";
 import styled from 'styled-components';
 import {ParagraphForm} from "./ParagraphForm";
-import {DrupalContext} from "../WidgetManager";
+import {WidgetContext} from "../Contexts/WidgetManager";
 import {AdminTitleField} from "./Widgets/AdminTitleField";
 import {DropButtons} from "./DropButtons"
 import {ConfirmDialog} from "./Atoms/ConfirmDialog";
@@ -46,7 +46,7 @@ const ItemIcon = styled.img`
 `;
 
 
-export const Paragraph = ({item, ...props}) => {
+export const RowItem = ({item, ...props}) => {
 
   const [modalOpen, setModalOpen] = useState(typeof item.isNew === 'undefined' ? false : true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -75,8 +75,8 @@ export const Paragraph = ({item, ...props}) => {
       isDragDisabled={!props.isDraggable}
     >
       {(provided, snapshot) =>
-        <DrupalContext.Consumer>
-          {drupalContext =>
+        <WidgetContext.Consumer>
+          {widgetContext =>
             <ParagraphWrapper
               ref={provided.innerRef}
               {...provided.draggableProps}
@@ -86,7 +86,7 @@ export const Paragraph = ({item, ...props}) => {
               itemWidth={item.width}
             >
               <span className="img-helper"></span>
-              {getItemIcon(drupalContext.tools)}
+              {getItemIcon(widgetContext.tools)}
               {item.admin_title}
 
               <DropButtons
@@ -110,21 +110,12 @@ export const Paragraph = ({item, ...props}) => {
                 ]}
               />
 
-              <FormDialog
-                title={`Edit ${props.typeLabel} > "${item.admin_title}"`}
+              <ParagraphForm
                 open={modalOpen}
-                onClose={() => setModalOpen(false)}
-              >
-                <AdminTitleField
-                  textField={modalOpen}
-                  item={item}
-                  onChange={drupalContext.onAdminTitleChange.bind(undefined, item.id)}
-                />
-                <ParagraphForm
-                  item={item}
-                  drupalContext={drupalContext}
-                />
-              </FormDialog>
+                item={item}
+                onClose={setModalOpen}
+                widgetContext={widgetContext}
+              />
 
               <ConfirmDialog
                 open={deleteConfirmOpen}
@@ -133,13 +124,13 @@ export const Paragraph = ({item, ...props}) => {
                 onCancel={() => setDeleteConfirmOpen(false)}
                 onConfirm={() => {
                   setDeleteConfirmOpen(false);
-                  drupalContext.removeParagraph(props.id)
+                  widgetContext.removeRowItem(props.id)
                 }}
               />
 
             </ParagraphWrapper>
           }
-        </DrupalContext.Consumer>
+        </WidgetContext.Consumer>
       }
     </Draggable>
   )

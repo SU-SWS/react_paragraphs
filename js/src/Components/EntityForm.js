@@ -13,7 +13,7 @@ import {ViewFieldWidget} from "./Widgets/ViewFieldWidget";
 import {Loader} from "./Atoms/Loader";
 import styled from "styled-components";
 
-export const EntityForm = ({entityType, bundle, entity, onFieldChange, drupalContext}) => {
+export const EntityForm = ({entityType, bundle, entity, onFieldChange, widgetContext}) => {
 
   const widgetComponents = {
     text: TextWidget,
@@ -29,7 +29,8 @@ export const EntityForm = ({entityType, bundle, entity, onFieldChange, drupalCon
     viewfield: ViewFieldWidget
   };
 
-  const formFields = drupalContext.getEntityForm(entityType, bundle);
+  const formFields = widgetContext.getEntityForm(entityType, bundle);
+
   if (typeof formFields === 'undefined') {
     return <Loader/>;
   }

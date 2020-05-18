@@ -2,10 +2,10 @@ import React from 'react';
 import {DragDropContext, Droppable} from 'react-beautiful-dnd';
 import {Row} from './Row';
 import {Toolbox} from "./Toolbox";
-import {WidgetManager, DrupalContext} from "../WidgetManager";
+import {WidgetManager, WidgetContext} from "../Contexts/WidgetManager";
 import {FlexDiv} from "./Atoms/FlexDiv";
 
-export const FieldWidget = ({inputId, fieldName, items, tools, itemsPerRow, resizableItems, rowBundle}) => {
+export const Field = ({inputId, fieldName, items, tools, itemsPerRow, resizableItems, rowBundle}) => {
 
   return (
     <WidgetManager
@@ -17,13 +17,13 @@ export const FieldWidget = ({inputId, fieldName, items, tools, itemsPerRow, resi
       rowBundle={rowBundle}
     >
       <FlexDiv alignItems={'flex-start'}>
-        <DrupalContext.Consumer>
-          {drupalContext => (
+        <WidgetContext.Consumer>
+          {widgetContext => (
             <DragDropContext
-              onBeforeCapture={drupalContext.onBeforeCapture}
-              onDragStart={drupalContext.onDragStart}
-              onDragEnd={drupalContext.onDragEnd}
-              onDragUpdate={drupalContext.onDragUpdate}
+              onBeforeCapture={widgetContext.onBeforeCapture}
+              onDragStart={widgetContext.onDragStart}
+              onDragEnd={widgetContext.onDragEnd}
+              onDragUpdate={widgetContext.onDragUpdate}
             >
               <div style={{
                 width: 'calc(100% - 200px)',
@@ -39,16 +39,16 @@ export const FieldWidget = ({inputId, fieldName, items, tools, itemsPerRow, resi
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                     >
-                      {drupalContext.state.rowOrder.map((rowId, index) => (
+                      {widgetContext.state.rowOrder.map((rowId, index) => (
                         <Row
                           key={rowId}
                           id={rowId}
                           index={index}
                           itemsPerRow={itemsPerRow}
                           resizableItems={resizableItems}
-                          onRemoveRow={drupalContext.removeRow}
-                          onlyRow={drupalContext.state.rowOrder.length === 1}
-                          {...drupalContext.state.rows[rowId]}
+                          onRemoveRow={widgetContext.removeRow}
+                          onlyRow={widgetContext.state.rowOrder.length === 1}
+                          {...widgetContext.state.rows[rowId]}
                         />
                       ))}
                       {provided.placeholder}
@@ -59,16 +59,17 @@ export const FieldWidget = ({inputId, fieldName, items, tools, itemsPerRow, resi
                 <button
                   type="button"
                   className="button"
-                  onClick={drupalContext.addRow}
+                  onClick={widgetContext.addRow}
                   style={{marginTop: '30px'}}
                 >
                   Add New Row
                 </button>
               </div>
+
               <Toolbox tools={tools}/>
             </DragDropContext>
           )}
-        </DrupalContext.Consumer>
+        </WidgetContext.Consumer>
       </FlexDiv>
     </WidgetManager>
   )

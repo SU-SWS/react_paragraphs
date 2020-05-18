@@ -1,14 +1,12 @@
 import React, {Component} from "react";
 import {v4 as uuidv4} from 'uuid';
 
-export const DrupalContext = React.createContext({});
+export const WidgetContext = React.createContext({});
 
 export class WidgetManager extends Component {
 
   functions = {
-    updateParagraph: this.updateParagraph.bind(this),
-    updateRow: this.updateRow.bind(this),
-    removeParagraph: this.removeParagraph.bind(this),
+    removeRowItem: this.removeRowItem.bind(this),
     onBeforeCapture: this.onBeforeCapture.bind(this),
     onDragEnd: this.onDragEnd.bind(this),
     addRow: this.addRow.bind(this),
@@ -17,10 +15,11 @@ export class WidgetManager extends Component {
     onAdminTitleChange: this.onAdminTitleChange.bind(this),
     addToolToBottom: this.addToolToBottom.bind(this),
     onDragStart: this.onDragStart.bind(this),
-    getFormFields: this.getFormFields.bind(this),
+    getToolInformation: this.getToolInformation.bind(this),
     getEntityForm: this.getEntityForm.bind(this),
-    loadEntity: this.loadEntity.bind(this),
-    getToolInformation: this.getToolInformation.bind(this)
+    updateRowEntity: this.updateRowEntity.bind(this),
+    updateRowItemEntity: this.updateRowItemEntity.bind(this),
+    loadEntity: this.loadEntity.bind(this)
   };
 
   apiUrls = {
@@ -34,37 +33,37 @@ export class WidgetManager extends Component {
 
     // Local development url.
     if (typeof window.drupalSettings.user === 'undefined') {
-      this.apiUrls.baseDomain = 'http://docroot.cardinalsites.loc/';
+      this.apiUrls.baseDomain = localBaseDomain;
     }
     let rows = {};
     let rowOrder = [];
 
-    this.props.items.map((row, rowIndex) => {
-      const rowId = 'row-' + rowIndex;
-      rowOrder[rowIndex] = rowId;
-      rows[rowId] = {
-        id: rowId,
-        items: {},
-        itemsOrder: [],
-        isDropDisabled: true,
-        entity: row.row.entity,
-        target_id: row.row.target_id
-      }
-
-      row.rowItems.map((rowItem, itemIndex) => {
-        const itemId = 'item-' + rowItem.target_id;
-        rows[rowId].itemsOrder[itemIndex] = itemId;
-        rows[rowId].items[itemId] = {
-          id: itemId,
-          target_id: rowItem.target_id,
-          index: itemIndex,
-          width: rowItem.settings.width,
-          admin_title: rowItem.settings.admin_title,
-          entity: rowItem.entity,
-          loadedEntity: false,
-        };
-      })
-    })
+    // this.props.items.map((row, rowIndex) => {
+    //   const rowId = 'row-' + rowIndex;
+    //   rowOrder[rowIndex] = rowId;
+    //   rows[rowId] = {
+    //     id: rowId,
+    //     items: {},
+    //     itemsOrder: [],
+    //     isDropDisabled: true,
+    //     entity: row.row.entity,
+    //     target_id: row.row.target_id
+    //   }
+    //
+    //   row.rowItems.map((rowItem, itemIndex) => {
+    //     const itemId = 'item-' + rowItem.target_id;
+    //     rows[rowId].itemsOrder[itemIndex] = itemId;
+    //     rows[rowId].items[itemId] = {
+    //       id: itemId,
+    //       target_id: rowItem.target_id,
+    //       index: itemIndex,
+    //       width: rowItem.settings.width,
+    //       admin_title: rowItem.settings.admin_title,
+    //       entity: rowItem.entity,
+    //       loadedEntity: false,
+    //     };
+    //   })
+    // })
 
     if (rowOrder.length === 0) {
       rowOrder.push('row-0');
@@ -101,21 +100,6 @@ export class WidgetManager extends Component {
     jQuery(formItemsField).closest('.form-item').trigger('formUpdated');
   }
 
-  loadEntity(itemId) {
-    const rowId = this.state.rowOrder.find(row => this.state.rows[row].itemsOrder.includes(itemId));
-    const url = this.apiUrls.baseDomain + this.apiUrls.paragraphApi;
-    const item = this.state.rows[rowId].items[itemId];
-
-    fetch(url.replace('{entity_id}', item.target_id))
-      .then(response => response.json())
-      .then(entityData => {
-        const newState = {...this.state};
-        newState.rows[rowId].items[itemId].entity = entityData;
-        delete newState.rows[rowId].items[itemId].loadedEntity;
-        this.setState(newState);
-      })
-  }
-
   componentDidUpdate(prevProps, prevState, snapshot) {
     const formItemsField = document.getElementById(this.props.inputId);
     if (formItemsField) {
@@ -142,27 +126,7 @@ export class WidgetManager extends Component {
     this.triggerFormUpdated();
   }
 
-  updateRow(rowId, fieldName, newValues) {
-    const newState = {...this.state}
-    newState.rows[rowId].entity[fieldName] = newValues;
-    this.setState(newState);
-  }
-
-  updateParagraph(item, fieldName, newValues) {
-    const newRows = {...this.state.rows};
-
-    this.state.rowOrder.map(rowId => {
-      if (typeof newRows[rowId].items[item.id] !== 'undefined') {
-
-        newRows[rowId].items[item.id].entity[fieldName] = newValues;
-        this.setState({rows: newRows});
-        return;
-      }
-    });
-    this.triggerFormUpdated();
-  }
-
-  removeParagraph(itemId) {
+  removeRowItem(itemId) {
     const rowId = this.state.rowOrder.find(rowId => this.state.rows[rowId].itemsOrder.includes(itemId));
     const newState = {...this.state};
 
@@ -270,7 +234,8 @@ export class WidgetManager extends Component {
         // The last row is not full of items, but the items in the row require
         // all columns for that row. We need a new row.
         needsNewRow = !this.canDropInRow(item.draggableId, lastRowId, null);
-      } catch (e) {
+      }
+      catch (e) {
         // Nothing to do here.
       }
     }
@@ -429,14 +394,15 @@ export class WidgetManager extends Component {
    * @param result
    */
   moveNewItemIntoRow(result) {
-    const newItem = this.createNewItem(result.draggableId, result.destination.index, 12);
+    const newItem = this.createNewRowItem(result.draggableId, result.destination.index, 12);
 
     const newState = {...this.state};
     newState.rows[result.destination.droppableId].itemsOrder.splice(newItem.index, 0, newItem.id);
     newState.rows[result.destination.droppableId].items[newItem.id] = newItem;
 
     this.resetRowItemWidths(result.destination.droppableId, newState);
-    // After settings the state, the children will re-render. We can then remove the indicator that the item is new.
+    // After settings the state, the children will re-render. We can then
+    // remove the indicator that the item is new.
     this.setState(newState, () => {
       const newState = {...this.state};
       delete newState.rows[result.destination.droppableId].items[newItem.id].isNew;
@@ -475,7 +441,7 @@ export class WidgetManager extends Component {
    * @param width
    * @returns {{width: *, index: *, id: string}}
    */
-  createNewItem(machine_name, index, width) {
+  createNewRowItem(machine_name, index, width) {
     const uuid = uuidv4();
     return {
       id: "new-" + uuid,
@@ -499,33 +465,6 @@ export class WidgetManager extends Component {
     this.setState(newState);
   }
 
-  /**
-   * Get entity form data from the cached api response or a new fetch.
-   * @param item
-   * @returns {*}
-   */
-  getFormFields(item) {
-    let url = this.apiUrls.baseDomain + this.apiUrls.formApi;
-    const itemBundle = item.entity.type[0].target_id;
-    url = url.replace('{entity_type_id}', 'paragraph').replace('{bundle}', itemBundle);
-
-    // We've already gotten this form once, return that one.
-    if (typeof this.state.cachedForms[itemBundle] !== 'undefined') {
-      return this.state.cachedForms[itemBundle];
-    }
-
-    fetch(url)
-      .then(response => response.json())
-      .then(jsonData => this.setState(prevState => ({
-        ...prevState,
-        cachedForms: {
-          ...prevState.cachedForms,
-          [itemBundle]: jsonData
-        }
-      })))
-      .catch(e => console.error(e));
-  }
-
   getEntityForm(entityType, bundle) {
     let url = this.apiUrls.baseDomain + this.apiUrls.formApi;
     url = url.replace('{entity_type_id}', entityType).replace('{bundle}', bundle);
@@ -545,9 +484,44 @@ export class WidgetManager extends Component {
       .catch(e => console.error(e));
   }
 
+  updateRowEntity(rowId, fieldName, newValues) {
+    const newState = {...this.state}
+    newState.rows[rowId].entity[fieldName] = newValues;
+    this.setState(newState);
+  }
+
+  updateRowItemEntity(item, fieldName, newValues) {
+    const newRows = {...this.state.rows};
+
+    this.state.rowOrder.map(rowId => {
+      if (typeof newRows[rowId].items[item.id] !== 'undefined') {
+
+        newRows[rowId].items[item.id].entity[fieldName] = newValues;
+        this.setState({rows: newRows});
+        return;
+      }
+    });
+    this.triggerFormUpdated();
+  }
+
+  loadEntity(itemId) {
+    const rowId = this.state.rowOrder.find(row => this.state.rows[row].itemsOrder.includes(itemId));
+    const url = this.apiUrls.baseDomain + this.apiUrls.paragraphApi;
+    const item = this.state.rows[rowId].items[itemId];
+
+    fetch(url.replace('{entity_id}', item.target_id))
+      .then(response => response.json())
+      .then(entityData => {
+        const newState = {...this.state};
+        newState.rows[rowId].items[itemId].entity = entityData;
+        delete newState.rows[rowId].items[itemId].loadedEntity;
+        this.setState(newState);
+      })
+  }
+
   render() {
     return (
-      <DrupalContext.Provider
+      <WidgetContext.Provider
         value={{
           props: this.props,
           state: this.state,
@@ -556,7 +530,7 @@ export class WidgetManager extends Component {
           ...this.functions
         }}>
         {this.props.children}
-      </DrupalContext.Provider>
+      </WidgetContext.Provider>
     )
 
   }
