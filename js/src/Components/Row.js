@@ -40,13 +40,13 @@ const RowWrapper = styled.div`
   }
 `;
 
-export const Row = (props) => {
+export const Row = ({id, index, isDropDisabled, itemsOrder, items, itemsPerRow, onlyRow, onRemoveRow, entity, loadedEntity}) => {
   let rowIsDragging;
 
   return (
     <Draggable
-      draggableId={props.id}
-      index={props.index}
+      draggableId={id}
+      index={index}
     >
       {(provided, snapshot) => (
         <RowWrapper
@@ -55,7 +55,7 @@ export const Row = (props) => {
           isDragging={snapshot.isDragging}
         >
           {rowIsDragging = snapshot.isDragging}
-          <FlexDiv className="inner-row-wrapper" id={props.id}>
+          <FlexDiv className="inner-row-wrapper" id={id}>
             <div className="move-row-handle" {...provided.dragHandleProps}>
               <span className="visually-hidden">
                 Move Row
@@ -64,10 +64,10 @@ export const Row = (props) => {
 
             <div style={{flex: 1}}>
               <Droppable
-                droppableId={props.id}
+                droppableId={id}
                 direction="horizontal"
                 type="item"
-                isDropDisabled={props.isDropDisabled}
+                isDropDisabled={isDropDisabled}
               >
                 {(provided, snapshot) => (
                   <ItemsContainer
@@ -75,23 +75,23 @@ export const Row = (props) => {
                     {...provided.droppableProps}
                     isDraggingOver={snapshot.isDraggingOver}
                     rowIsDragging={rowIsDragging}
-                    hasItems={props.itemsOrder.length > 0}
+                    hasItems={itemsOrder.length > 0}
                   >
 
                     <React.Fragment>
-                      {props.itemsOrder.map((itemId, index) => (
+                      {itemsOrder.map((itemId, index) => (
                         <RowItem
                           key={itemId}
                           id={itemId}
                           index={index}
-                          item={props.items[itemId]}
-                          isDraggable={props.itemsPerRow > 1}
+                          item={items[itemId]}
+                          isDraggable={itemsPerRow > 1}
                           isDraggingOverRow={snapshot.isDraggingOver}
                         />
                       ))}
 
-                      {props.itemsOrder.length === 0 &&
-                      <HelpTextPlaceholder allowedNumber={props.itemsPerRow}/>
+                      {itemsOrder.length === 0 &&
+                      <HelpTextPlaceholder allowedNumber={itemsPerRow}/>
                       }
                       {provided.placeholder}
                     </React.Fragment>
@@ -102,10 +102,11 @@ export const Row = (props) => {
             </div>
           </FlexDiv>
           <RowActions
-            onlyRow={props.onlyRow}
-            onRemoveRow={props.onRemoveRow}
-            rowId={props.id}
-            entity={props.entity}
+            onlyRow={onlyRow}
+            onRemoveRow={onRemoveRow}
+            rowId={id}
+            entity={entity}
+            loadedEntity={loadedEntity}
           />
         </RowWrapper>
       )}

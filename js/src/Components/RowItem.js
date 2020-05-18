@@ -3,10 +3,8 @@ import {Draggable} from "react-beautiful-dnd";
 import styled from 'styled-components';
 import {ParagraphForm} from "./ParagraphForm";
 import {WidgetContext} from "../Contexts/WidgetManager";
-import {AdminTitleField} from "./Widgets/AdminTitleField";
 import {DropButtons} from "./DropButtons"
 import {ConfirmDialog} from "./Atoms/ConfirmDialog";
-import {FormDialog} from "./Atoms/FormDialog";
 
 const ParagraphWrapper = styled.div`
   margin: 5px;
@@ -46,7 +44,7 @@ const ItemIcon = styled.img`
 `;
 
 
-export const RowItem = ({item, ...props}) => {
+export const RowItem = ({item,id, isDraggable, index}) => {
 
   const [modalOpen, setModalOpen] = useState(typeof item.isNew === 'undefined' ? false : true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -70,9 +68,9 @@ export const RowItem = ({item, ...props}) => {
 
   return (
     <Draggable
-      draggableId={props.id}
-      index={props.index}
-      isDragDisabled={!props.isDraggable}
+      draggableId={id}
+      index={index}
+      isDragDisabled={!isDraggable}
     >
       {(provided, snapshot) =>
         <WidgetContext.Consumer>
@@ -82,7 +80,7 @@ export const RowItem = ({item, ...props}) => {
               {...provided.draggableProps}
               {...provided.dragHandleProps}
               isDragging={snapshot.isDragging}
-              id={props.id}
+              id={id}
               itemWidth={item.width}
             >
               <span className="img-helper"></span>
@@ -124,7 +122,7 @@ export const RowItem = ({item, ...props}) => {
                 onCancel={() => setDeleteConfirmOpen(false)}
                 onConfirm={() => {
                   setDeleteConfirmOpen(false);
-                  widgetContext.removeRowItem(props.id)
+                  widgetContext.removeRowItem(id)
                 }}
               />
 

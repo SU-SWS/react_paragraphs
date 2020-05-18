@@ -19,13 +19,14 @@ export class WidgetManager extends Component {
     getEntityForm: this.getEntityForm.bind(this),
     updateRowEntity: this.updateRowEntity.bind(this),
     updateRowItemEntity: this.updateRowItemEntity.bind(this),
-    loadEntity: this.loadEntity.bind(this)
+    loadRow: this.loadRow.bind(this),
+    loadRowItem: this.loadRowItem.bind(this)
   };
 
   apiUrls = {
     baseDomain: location.origin + drupalSettings.path.baseUrl,
     formApi: 'api/react-paragraphs/{entity_type_id}/{bundle}',
-    paragraphApi: 'entity/paragraph/{entity_id}'
+    entityApi: 'entity/{entity_type_id}/{entity_id}',
   };
 
   constructor(props) {
@@ -38,32 +39,33 @@ export class WidgetManager extends Component {
     let rows = {};
     let rowOrder = [];
 
-    // this.props.items.map((row, rowIndex) => {
-    //   const rowId = 'row-' + rowIndex;
-    //   rowOrder[rowIndex] = rowId;
-    //   rows[rowId] = {
-    //     id: rowId,
-    //     items: {},
-    //     itemsOrder: [],
-    //     isDropDisabled: true,
-    //     entity: row.row.entity,
-    //     target_id: row.row.target_id
-    //   }
-    //
-    //   row.rowItems.map((rowItem, itemIndex) => {
-    //     const itemId = 'item-' + rowItem.target_id;
-    //     rows[rowId].itemsOrder[itemIndex] = itemId;
-    //     rows[rowId].items[itemId] = {
-    //       id: itemId,
-    //       target_id: rowItem.target_id,
-    //       index: itemIndex,
-    //       width: rowItem.settings.width,
-    //       admin_title: rowItem.settings.admin_title,
-    //       entity: rowItem.entity,
-    //       loadedEntity: false,
-    //     };
-    //   })
-    // })
+    this.props.items.map((row, rowIndex) => {
+      const rowId = 'row-' + rowIndex;
+      rowOrder[rowIndex] = rowId;
+      rows[rowId] = {
+        id: rowId,
+        items: {},
+        itemsOrder: [],
+        isDropDisabled: true,
+        entity: row.row.entity,
+        target_id: row.row.target_id,
+        loadedEntity: false,
+      }
+
+      row.rowItems.map((rowItem, itemIndex) => {
+        const itemId = 'item-' + rowItem.target_id;
+        rows[rowId].itemsOrder[itemIndex] = itemId;
+        rows[rowId].items[itemId] = {
+          id: itemId,
+          target_id: rowItem.target_id,
+          index: itemIndex,
+          width: rowItem.settings.width,
+          admin_title: rowItem.settings.admin_title,
+          entity: rowItem.entity,
+          loadedEntity: false,
+        };
+      })
+    })
 
     if (rowOrder.length === 0) {
       rowOrder.push('row-0');
@@ -504,19 +506,33 @@ export class WidgetManager extends Component {
     this.triggerFormUpdated();
   }
 
-  loadEntity(itemId) {
-    const rowId = this.state.rowOrder.find(row => this.state.rows[row].itemsOrder.includes(itemId));
-    const url = this.apiUrls.baseDomain + this.apiUrls.paragraphApi;
-    const item = this.state.rows[rowId].items[itemId];
-
-    fetch(url.replace('{entity_id}', item.target_id))
-      .then(response => response.json())
+  loadRow(rowId) {
+    this.loadEntity('paragraphs_row', this.state.rows[rowId].target_id)
       .then(entityData => {
-        const newState = {...this.state};
-        newState.rows[rowId].items[itemId].entity = entityData;
-        delete newState.rows[rowId].items[itemId].loadedEntity;
+        const newState = {...this.state}
+        this.state.rows[rowId].entity = entityData;
+        delete this.state.rows[rowId].loadedEntity;
         this.setState(newState);
-      })
+      });
+  }
+
+  loadRowItem(itemId) {
+    const rowId = this.state.rowOrder.find(rowId => this.state.rows[rowId].itemsOrder.find(rowItemId => this.state.rows[rowId].items[rowItemId].target_id === itemId));
+    const rowItemId = this.state.rows[rowId].itemsOrder.find(rowItemId => this.state.rows[rowId].items[rowItemId].target_id === itemId)
+
+    const promise = this.loadEntity('paragraph', itemId);
+    promise.then(entityData => {
+      const newState = {...this.state}
+      newState.rows[rowId].items[rowItemId].entity = entityData;
+      delete newState.rows[rowId].items[rowItemId].loadedEntity;
+      this.setState(newState);
+    });
+  }
+
+  loadEntity(entityType, entityId) {
+    const url = this.apiUrls.baseDomain + this.apiUrls.entityApi;
+    return fetch(url.replace('{entity_type_id}', entityType).replace('{entity_id}', entityId))
+      .then(response => response.json());
   }
 
   render() {

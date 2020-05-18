@@ -1,11 +1,12 @@
 import React from 'react';
+import IconButton from '@material-ui/core/IconButton';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import {WidgetContext} from "../../Contexts/WidgetManager";
 import {RowForm} from "../RowForm";
 import {ConfirmDialog} from "./ConfirmDialog";
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import styled from 'styled-components';
 
-export const RowActions = (props) => {
+export const RowActions = ({onlyRow, rowId, entity, loadedEntity, onRemoveRow}) => {
 
   const [formDialogOpen, setFormDialogOpen] = React.useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
@@ -19,36 +20,45 @@ export const RowActions = (props) => {
     >
       <Kabob onClick={() => setActionsOpen(!actionsOpen)}/>
       <ActionsContainer style={{display: actionsOpen ? 'block' : 'none'}}>
-        <button
-          type="button"
-          className="button"
-          onClick={() => {
-            setActionsOpen(false)
-            setFormDialogOpen(true)
-          }}
-        >
-          Edit Row
-        </button>
-
-        <button
-          type="button"
-          className="button"
-          disabled={props.onlyRow}
-          onClick={() => {
-            setActionsOpen(false);
-            setDeleteModalOpen(true)
-          }}
-        >
-          Delete Row
-        </button>
+        <div>
+          <button
+            type="button"
+            className="button"
+            onClick={() => {
+              setActionsOpen(false)
+              setFormDialogOpen(true)
+            }}
+          >
+            Edit Row
+          </button>
+        </div>
+        <div>
+          <button
+            type="button"
+            className="button"
+            disabled={onlyRow}
+            onClick={() => {
+              setActionsOpen(false);
+              setDeleteModalOpen(true)
+            }}
+          >
+            Delete Row
+          </button>
+        </div>
       </ActionsContainer>
 
-      <RowForm
-        open={formDialogOpen}
-        onClose={() => setFormDialogOpen(false)}
-        rowId={props.rowId}
-        entity={props.entity}
-      />
+      <WidgetContext.Consumer>
+        {widgetContext =>
+          <RowForm
+            open={formDialogOpen}
+            onClose={() => setFormDialogOpen(false)}
+            rowId={rowId}
+            entity={entity}
+            loadedEntity={loadedEntity}
+            widgetContext={widgetContext}
+          />
+        }
+      </WidgetContext.Consumer>
 
       <ConfirmDialog
         open={deleteModalOpen}
@@ -57,7 +67,7 @@ export const RowActions = (props) => {
         onCancel={() => setDeleteModalOpen(false)}
         onConfirm={() => {
           setDeleteModalOpen(false);
-          props.onRemoveRow(props.id)
+          onRemoveRow(rowId)
         }}
       />
     </div>
@@ -88,7 +98,7 @@ const Kabob = ({onClick}) => {
       edge="end"
       onClick={onClick}
     >
-      <MenuIcon/>
+      <MoreVertIcon/>
     </IconButton>
   )
 }

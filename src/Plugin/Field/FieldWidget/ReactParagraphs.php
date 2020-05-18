@@ -92,7 +92,6 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       '#attached' => $attachments,
       '#attributes' => ['id' => "$element_id-input"],
     ];
-    dpm(json_encode($attachments['drupalSettings']['reactParagraphs']));
     return $element;
   }
 
@@ -127,7 +126,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    * {@inheritdoc}
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
-    if(!empty($this->rowData)){
+    if (!empty($this->rowData)) {
       return $this->rowData;
     }
 
@@ -144,27 +143,43 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
 
     foreach ($react_data['rowOrder'] as $row_delta => $row_id) {
       $row_data = $react_data['rows'][$row_id];
+      $row_data['entity'][$items_field_name] = [];
 
       foreach ($row_data['itemsOrder'] as $item_id) {
         $item = $row_data['items'][$item_id];
-        $row_data['entity'][$items_field_name][] = ['entity' => $this->getRowItemEntity($item['entity'], $item['width'], $item['admin_title'])];
+        $item_entity = $this->getRowItemEntity($item['entity'], $item['width'], $item['admin_title'], $item['target_id'] ?? NULL);
+        $row_data['entity'][$items_field_name][] = [
+          'entity' => $item_entity,
+          'target_id' => $item_entity->id(),
+          'target_revision_id' => $item_entity->getRevisionId(),
+        ];
       }
 
-      $return_data[] = ['entity' => $this->getRowEntity($row_data['entity'])];
+      $row = $this->getRowEntity($row_data['entity'], $row_data['target_id'] ?? NULL);
+      $return_data[] = [
+        'entity' => $row,
+        'target_id' => $row->id(),
+        'target_revision_id' => $row->getRevisionId(),
+      ];
     }
     $this->rowData = $return_data;
     return $this->rowData;
   }
 
-  protected function getRowEntity(array $field_data) {
-    return $this->getEntity('paragraphs_row', $this->getRowBundle(), $field_data);
+  protected function getRowEntity(array $field_data, $entity_id) {
+    $entity = $this->getEntity('paragraphs_row', $this->getRowBundle(), $field_data, $entity_id);
+    $entity->save();
+    return $entity;
   }
 
-  protected function getRowItemEntity(array $field_data, $width, $admin_label) {
+  protected function getRowItemEntity(array $field_data, $width, $admin_label, $entity_id) {
     /** @var \Drupal\paragraphs\ParagraphInterface $row_item */
-    $row_item = $this->getEntity('paragraph', $field_data['type'][0]['target_id'], $field_data);
-    $row_item->getBehaviorSetting('react', 'width', $width);
-    $row_item->getBehaviorSetting('react', 'label', $admin_label);
+    $row_item = $this->getEntity('paragraph', $field_data['type'][0]['target_id'], $field_data, $entity_id);
+    $row_item->setBehaviorSettings('react', [
+      'width' => $width,
+      'label' => $admin_label,
+    ]);
+    $row_item->save();
     return $row_item;
   }
 
@@ -173,7 +188,24 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     return reset($settings['target_bundles']);
   }
 
-  protected function getEntity($entity_type, $bundle, array $field_data) {
+  protected function getEntity($entity_type, $bundle, array $field_data, $entity_id) {
+    if (!$entity_id) {
+      return $this->createEntity($entity_type, $bundle, $field_data);
+    }
+
+    $entity = $this->entityTypeManager->getStorage($entity_type)
+      ->load($entity_id);
+
+    $fields = $this->fieldManager->getFieldDefinitions($entity_type, $bundle);
+    foreach ($fields as $field_name => $field_definition) {
+      if (isset($field_data[$field_name]) && $field_definition instanceof FieldConfigInterface) {
+        $entity->set($field_name, $field_data[$field_name]);
+      }
+    }
+    return $entity;
+  }
+
+  protected function createEntity($entity_type, $bundle, array $field_data) {
     $entity_definition = $this->entityTypeManager->getDefinition($entity_type);
     $bundle_key = $entity_definition->getKey('bundle');
     $storage = $this->entityTypeManager->getStorage($entity_type);
