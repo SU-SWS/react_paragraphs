@@ -7,12 +7,12 @@ use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\paragraphs\ParagraphsBehaviorBase;
 
 /**
- * Class ReactBehavior
+ * A paragraphs behavior plugin to provide width and admin label storage.
  *
  * @ParagraphsBehavior(
  *   id = "react",
  *   label = "React Paragraphs",
- *   description = "STuff i'm not sure"
+ *   description = "Some storage capabilities for react paragraphs widget."
  * )
  */
 class ReactBehavior extends ParagraphsBehaviorBase {
@@ -21,10 +21,7 @@ class ReactBehavior extends ParagraphsBehaviorBase {
    * {@inheritDoc}
    */
   public function view(array &$build, Paragraph $paragraph, EntityViewDisplayInterface $display, $view_mode) {
-    if ($width = $paragraph->getBehaviorSetting('react', 'width')) {
-      $build['#attributes']['data-react-columns'] = $width;
-      $build['#attached']['library'][] = 'react_paragraphs/field_formatter';
-    }
+    // Nothing to modify on the paragraph itself.
   }
 
 }

@@ -97,9 +97,13 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
 
 
   /**
+   * Get the field on the paragraphs row that will hold the items.
+   *
    * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
+   *   Paragraphs row field definition.
    *
    * @return \Drupal\field\FieldConfigInterface
+   *   Field on the paragraphs row.
    */
   protected static function getRowItemsField(FieldDefinitionInterface $field_definition) {
     $target_bundles = $field_definition->getSetting('handler_settings')['target_bundles'];
@@ -107,7 +111,8 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
     $field_manager = \Drupal::service('entity_field.manager');
     $fields = $field_manager->getFieldDefinitions('paragraphs_row', reset($target_bundles));
 
-    // Secondly, the row bundle must have a paragraph field on it.
+    // Grab the first field that is a paragraphs reference field. There should
+    // never be more than one. Maybe we can provide configurable options later.
     foreach ($fields as $field) {
       if (
         $field instanceof FieldConfigInterface &&
