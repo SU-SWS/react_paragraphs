@@ -5,12 +5,19 @@
  * react_paragraphs.install
  */
 
-use Drupal\Core\Config\Entity\ConfigEntityType;
-use Drupal\Core\Entity\ContentEntityType;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\react_paragraphs\Entity\ParagraphsRowType;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\react_paragraphs\Entity\ParagraphsRow;
+use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\Core\Entity\Entity\EntityViewDisplay;
+use Drupal\layout_builder\SectionListInterface;
+use Drupal\Core\Entity\Entity\EntityFormDisplay;
+use Drupal\rest\Entity\RestResourceConfig;
+use Drupal\rest\RestResourceConfigInterface;
 
 /**
- * Install new entity types.
+ * Install and create new entity types.
  */
 function react_paragraphs_update_8200() {
   $entity_type = \Drupal::entityTypeManager()->getDefinition('paragraphs_row_type');
@@ -18,4 +25,271 @@ function react_paragraphs_update_8200() {
 
   $entity_type = \Drupal::entityTypeManager()->getDefinition('paragraphs_row');
   \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type);
+
+  /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager */
+  $entityFieldManager = \Drupal::service('entity_field.manager');
+  $react_fields = $entityFieldManager->getFieldMapByFieldType('react_paragraphs');
+
+  foreach ($react_fields as $entity_type => $fields) {
+    foreach ($fields as $field_name => $bundles_info) {
+
+      foreach ($bundles_info['bundles'] as $bundle) {
+        /** @var \Drupal\field\FieldConfigInterface $old_field */
+        $old_field = FieldConfig::loadByName($entity_type, $bundle, $field_name);
+        $paragraph_row_bundle = "{$entity_type}_{$bundle}_row";
+
+        ParagraphsRowType::create([
+          'id' => $paragraph_row_bundle,
+          'label' => "$bundle Row",
+        ])->save();
+        $field_storage = FieldStorageConfig::create([
+          'field_name' => $field_name,
+          'entity_type' => 'paragraphs_row',
+          'type' => 'entity_reference_revisions',
+          'cardinality' => -1,
+          'settings' => ['target_type' => 'paragraph'],
+        ]);
+        $field_storage->save();
+
+        FieldConfig::create([
+          'field_storage' => $field_storage,
+          'bundle' => $paragraph_row_bundle,
+          'label' => $old_field->label(),
+          'description' => $old_field->getDescription(),
+          'settings' => [
+            'handler' => 'default:paragraph',
+            'handler_settings' => $old_field->getSetting('handler_settings'),
+          ],
+        ])->save();
+
+        _react_paragraphs_update_8200_create_row_displays($paragraph_row_bundle, $field_name);
+      }
+    }
+  }
+}
+
+function _react_paragraphs_update_8200_create_row_displays($bundle, $field_name) {
+  /** @var \Drupal\Core\Entity\Display\EntityViewDisplayInterface $view_display */
+  $view_display = EntityViewDisplay::create([
+    'targetEntityType' => 'paragraphs_row',
+    'bundle' => $bundle,
+    'mode' => 'default',
+    'status' => TRUE,
+  ]);
+  $settings = [
+    'type' => 'entity_reference_revisions_entity_view',
+    'label' => 'hidden',
+    'settings' => ['view_mode' => 'default', 'link' => ''],
+  ];
+  $view_display->setComponent($field_name, $settings);
+  $view_display->removeComponent('user_id');
+  $view_display->save();
+}
+
+/**
+ * Update display modes.
+ */
+function react_paragraphs_update_8201() {
+  drupal_flush_all_caches();
+  /** @var \Drupal\layout_builder\Entity\LayoutEntityDisplayInterface[] $displays */
+  $displays = EntityViewDisplay::loadMultiple();
+  foreach ($displays as $display) {
+    if ($display->getThirdPartySetting('layout_builder', 'enabled')) {
+      _react_paragraphs_update_8201_update_display($display);
+    }
+  }
+
+  if (\Drupal::moduleHandler()->moduleExists('layout_library')) {
+    $layouts = \Drupal::entityTypeManager()->getStorage('layout')->loadMultiple();
+    array_walk($layouts, '_react_paragraphs_update_8201_update_display');
+  }
+}
+
+function _react_paragraphs_update_8201_update_display(SectionListInterface $display) {
+  $display_edited = FALSE;
+  foreach ($display->getSections() as $section) {
+    foreach ($section->getComponents() as $component) {
+      $component_config = $component->get('configuration');
+      if (!empty($component_config['formatter']['type']) && $component_config['formatter']['type'] == 'react_paragraphs') {
+        $component_config['formatter']['type'] = 'entity_reference_revisions_entity_view';
+        $display_edited = TRUE;
+        $component->setConfiguration($component_config);
+      }
+    }
+  }
+
+  if ($display_edited) {
+    $display->save();
+  }
+}
+
+
+/**
+ * Migrate Field data around.
+ */
+function react_paragraphs_update_8202(&$sandbox) {
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  if (!isset($sandbox['count'])) {
+    $sandbox['entities'] = _react_paragraphs_update_8202_get_entities();
+    $sandbox['count'] = count($sandbox['entities']);
+  }
+
+  $entity_ids = array_splice($sandbox['entities'], 0, 25);
+
+  foreach ($entity_ids as $item) {
+    list($entity_type, $id, $field_name) = explode(':', $item);
+    $entity = $entity_type_manager->getStorage($entity_type)->load($id);
+
+    $rows = [];
+    foreach ($entity->get($field_name)->getValue() as $field_item) {
+      $field_item['settings'] = json_decode($field_item['settings'], TRUE);
+      $rows[$field_item['settings']['row']][] = $field_item;
+    }
+
+    $entity_row_field_data = [];
+
+    foreach ($rows as $row_delta => $row_info) {
+      $row_items = [];
+
+      foreach ($row_info as $row_item) {
+        /** @var \Drupal\paragraphs\ParagraphInterface $paragraph */
+        $paragraph = Paragraph::load($row_item['target_id']);
+        $paragraph->setBehaviorSettings('react', [
+          'width' => $row_item['settings']['width'],
+          'label' => $row_item['settings']['admin_title'],
+        ]);
+        $paragraph->save();
+        $row_items[] = [
+          'target_id' => $paragraph->id(),
+          'target_revision_id' => $paragraph->getRevisionId(),
+        ];
+      }
+
+      /** @var \Drupal\react_paragraphs\Entity\ParagraphsRowInterface $row */
+      $row = ParagraphsRow::create(['type' => "{$entity_type}_{$entity->bundle()}_row"]);
+      $row->set($field_name, $row_items)->save();
+      $entity_row_field_data[] = [
+        'target_id' => $row->id(),
+        'target_revision_id' => $row->getRevisionId(),
+      ];
+    }
+
+    $entity->set($field_name, $entity_row_field_data);
+    $entity->save();
+  }
+  $sandbox['#finished'] = empty($sandbox['entities']) ? 1 : ($sandbox['count'] - count($sandbox['entities'])) / $sandbox['count'];
+}
+
+function _react_paragraphs_update_8202_get_entities() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager */
+  $entityFieldManager = \Drupal::service('entity_field.manager');
+  $react_fields = $entityFieldManager->getFieldMapByFieldType('react_paragraphs');
+  $entities = [];
+  foreach ($react_fields as $entity_type => $fields) {
+    foreach (array_keys($fields) as $field_name) {
+      $entity_ids = $entity_type_manager->getStorage($entity_type)
+        ->getQuery()
+        ->condition($field_name, 0, '>')
+        ->execute();
+
+      foreach ($entity_ids as $entity_id) {
+        $entities["$entity_type:$entity_id:$field_name"] = "$entity_type:$entity_id:$field_name";
+      }
+    }
+  }
+  asort($entities);
+  return array_values($entities);
+}
+
+/**
+ * Modify the field storage and field configs.
+ */
+function react_paragraphs_update_8203() {
+  /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager */
+  $entityFieldManager = \Drupal::service('entity_field.manager');
+  $react_fields = $entityFieldManager->getFieldMapByFieldType('react_paragraphs');
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  $database = \Drupal::database();
+  $config_factory = \Drupal::configFactory();
+
+  foreach ($react_fields as $entity_type => $fields) {
+    $storage = $entity_type_manager->getStorage($entity_type);
+
+    foreach ($fields as $field_name => $bundles_info) {
+      /** @var \Drupal\field\FieldStorageConfigInterface $field_storage */
+      $field_storage = FieldStorageConfig::load("$entity_type.$field_name");
+
+      $tables[] = $storage->getTableMapping()->getFieldTableName($field_name);
+      $tables[] = $storage->getTableMapping()->getDedicatedRevisionTableName($field_storage);
+      $table_data = [];
+
+      foreach ($tables as $table) {
+        $database->schema()->dropField($table, "{$field_name}_settings");
+
+        $query = $database->select($table, 't')->fields('t')->execute();
+        while ($row = $query->fetchAssoc()) {
+          $table_data[$table][] = $row;
+        }
+        $database->truncate($table)->execute();
+      }
+
+      $config_factory->getEditable("field.storage.$entity_type.$field_name")
+        ->set('type', 'entity_reference_revisions')
+        ->set('settings.target_type', 'paragraphs_row')
+        ->set('module', 'entity_reference_revisions')
+        ->set('cardinality', -1)
+        ->save();
+      FieldStorageConfig::load("$entity_type.$field_name")->save();
+
+      foreach ($bundles_info['bundles'] as $bundle) {
+        $paragraph_row_bundle = "{$entity_type}_{$bundle}_row";
+
+        $config_factory->getEditable("field.field.$entity_type.$bundle.$field_name")
+          ->set('field_type', 'entity_reference_revisions')
+          ->set('settings.handler', 'default:paragraphs_row')
+          ->set('settings.handler_settings.target_bundles', [$paragraph_row_bundle => $paragraph_row_bundle])
+          ->save();
+
+        $field = FieldConfig::loadByName($entity_type, $bundle, $field_name);
+        $field->set('field_type', 'entity_reference_revisions');
+        $field->save();
+
+
+        /** @var \Drupal\Core\Entity\Display\EntityFormDisplayInterface $form_display */
+        $form_display = EntityFormDisplay::load("$entity_type.$bundle.default");
+        $form_display->removeComponent($field_name);
+        $form_display->setComponent($field_name, [
+          'type' => 'react_paragraphs',
+          'settings' => ['resizable' => FALSE],
+        ]);
+        $form_display->save();
+      }
+
+      foreach ($table_data as $table => $rows) {
+        foreach ($rows as $row) {
+          $database->insert($table)->fields($row)->execute();
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Create new rest resource.
+ */
+function react_paragraphs_update_8204() {
+  RestResourceConfig::create([
+    'id' => 'entity.paragraphs_row',
+    'plugin_id' => 'entity:paragraphs_row',
+    'granularity' => RestResourceConfigInterface::RESOURCE_GRANULARITY,
+    'configuration' => [
+      'methods' => ['GET'],
+      'formats' => ['json'],
+      'authentication' => ['cookie'],
+    ],
+  ])->save();
 }
