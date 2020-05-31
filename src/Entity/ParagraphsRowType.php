@@ -3,6 +3,7 @@
 namespace Drupal\react_paragraphs\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
+use Drupal\paragraphs\Entity\ParagraphsType;
 
 /**
  * Defines the Paragraphs Row type entity.
@@ -24,7 +25,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *   },
  *   config_prefix = "paragraphs_row_type",
  *   admin_permission = "administer site configuration",
- *   bundle_of = "paragraphs_row",
+ *   bundle_of = "paragraph_row",
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label",
@@ -39,20 +40,6 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *   }
  * )
  */
-class ParagraphsRowType extends ConfigEntityBundleBase implements ParagraphsRowTypeInterface {
-
-  /**
-   * The Paragraphs Row type ID.
-   *
-   * @var string
-   */
-  protected $id;
-
-  /**
-   * The Paragraphs Row type label.
-   *
-   * @var string
-   */
-  protected $label;
+class ParagraphsRowType extends ParagraphsType implements ParagraphsRowTypeInterface {
 
 }

@@ -2,74 +2,11 @@
 
 namespace Drupal\react_paragraphs\Entity;
 
-use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Entity\RevisionLogInterface;
-use Drupal\Core\Entity\EntityChangedInterface;
-use Drupal\Core\Entity\EntityPublishedInterface;
-use Drupal\user\EntityOwnerInterface;
+use Drupal\paragraphs\ParagraphInterface;
 
 /**
- * Provides an interface for defining Paragraphs Row entities.
- *
- * @ingroup react_paragraphs
+ * Provides an interface for defining Paragraph Row entities.
  */
-interface ParagraphsRowInterface extends ContentEntityInterface, RevisionLogInterface, EntityChangedInterface, EntityPublishedInterface, EntityOwnerInterface {
-
-  /**
-   * Gets the Paragraphs Row creation timestamp.
-   *
-   * @return int
-   *   Creation timestamp of the Paragraphs Row.
-   */
-  public function getCreatedTime();
-
-  /**
-   * Sets the Paragraphs Row creation timestamp.
-   *
-   * @param int $timestamp
-   *   The Paragraphs Row creation timestamp.
-   *
-   * @return \Drupal\react_paragraphs\Entity\ParagraphsRowInterface
-   *   The called Paragraphs Row entity.
-   */
-  public function setCreatedTime($timestamp);
-
-  /**
-   * Gets the Paragraphs Row revision creation timestamp.
-   *
-   * @return int
-   *   The UNIX timestamp of when this revision was created.
-   */
-  public function getRevisionCreationTime();
-
-  /**
-   * Sets the Paragraphs Row revision creation timestamp.
-   *
-   * @param int $timestamp
-   *   The UNIX timestamp of when this revision was created.
-   *
-   * @return \Drupal\react_paragraphs\Entity\ParagraphsRowInterface
-   *   The called Paragraphs Row entity.
-   */
-  public function setRevisionCreationTime($timestamp);
-
-  /**
-   * Gets the Paragraphs Row revision author.
-   *
-   * @return \Drupal\user\UserInterface
-   *   The user entity for the revision author.
-   */
-  public function getRevisionUser();
-
-  /**
-   * Sets the Paragraphs Row revision author.
-   *
-   * @param int $uid
-   *   The user ID of the revision author.
-   *
-   * @return \Drupal\react_paragraphs\Entity\ParagraphsRowInterface
-   *   The called Paragraphs Row entity.
-   */
-  public function setRevisionUserId($uid);
+interface ParagraphsRowInterface extends ParagraphInterface {
 
 }

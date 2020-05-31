@@ -208,7 +208,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   protected function getRowEntity(array $field_data, $entity_id) {
-    $entity = $this->getEntity('paragraphs_row', $this->getRowBundle(), $field_data, $entity_id);
+    $entity = $this->getEntity('paragraph_row', $this->getRowBundle(), $field_data, $entity_id);
     $entity->save();
     return $entity;
   }

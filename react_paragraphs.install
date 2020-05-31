@@ -8,7 +8,7 @@
 use Drupal\field\Entity\FieldConfig;
 use Drupal\react_paragraphs\Entity\ParagraphsRowType;
 use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\react_paragraphs\Entity\ParagraphsRow;
+use Drupal\react_paragraphs\Entity\ParagraphRow;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\Core\Entity\Entity\EntityViewDisplay;
 use Drupal\layout_builder\SectionListInterface;
@@ -17,18 +17,24 @@ use Drupal\rest\Entity\RestResourceConfig;
 use Drupal\rest\RestResourceConfigInterface;
 
 /**
- * Install and create new entity types.
+ * Install new entity types.
  */
 function react_paragraphs_update_8200() {
-  $entity_type = \Drupal::entityTypeManager()->getDefinition('paragraphs_row_type');
+  $entity_type = \Drupal::entityTypeManager()
+    ->getDefinition('paragraphs_row_type');
   \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type);
 
-  $entity_type = \Drupal::entityTypeManager()->getDefinition('paragraphs_row');
+  $entity_type = \Drupal::entityTypeManager()
+    ->getDefinition('paragraph_row');
   \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type);
+}
 
-  /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager */
-  $entityFieldManager = \Drupal::service('entity_field.manager');
-  $react_fields = $entityFieldManager->getFieldMapByFieldType('react_paragraphs');
+/**
+ * Create new entity types with fields configs.
+ */
+function react_paragraphs_update_8201() {
+  $react_fields = \Drupal::service('entity_field.manager')
+    ->getFieldMapByFieldType('react_paragraphs');
 
   foreach ($react_fields as $entity_type => $fields) {
     foreach ($fields as $field_name => $bundles_info) {
@@ -38,20 +44,26 @@ function react_paragraphs_update_8200() {
         $old_field = FieldConfig::loadByName($entity_type, $bundle, $field_name);
         $paragraph_row_bundle = "{$entity_type}_{$bundle}_row";
 
-        ParagraphsRowType::create([
+        $config_name = "react_paragraphs.paragraphs_row_type.$paragraph_row_bundle";
+        $values = _react_paragraphs_update_8201_get_storage_config($config_name, [
           'id' => $paragraph_row_bundle,
           'label' => "$bundle Row",
-        ])->save();
-        $field_storage = FieldStorageConfig::create([
+        ]);
+
+        ParagraphsRowType::create($values)->save();
+
+        $config_name = "field.storage.paragraph_row.$field_name";
+        $values = _react_paragraphs_update_8201_get_storage_config($config_name, [
           'field_name' => $field_name,
-          'entity_type' => 'paragraphs_row',
+          'entity_type' => 'paragraph_row',
           'type' => 'entity_reference_revisions',
           'cardinality' => -1,
           'settings' => ['target_type' => 'paragraph'],
         ]);
+        $field_storage = FieldStorageConfig::create($values);
         $field_storage->save();
 
-        FieldConfig::create([
+        $values = [
           'field_storage' => $field_storage,
           'bundle' => $paragraph_row_bundle,
           'label' => $old_field->label(),
@@ -60,18 +72,45 @@ function react_paragraphs_update_8200() {
             'handler' => 'default:paragraph',
             'handler_settings' => $old_field->getSetting('handler_settings'),
           ],
-        ])->save();
+        ];
 
-        _react_paragraphs_update_8200_create_row_displays($paragraph_row_bundle, $field_name);
+        $config_name = "field.field.paragraph_row.$paragraph_row_bundle.$field_name";
+        $values = _react_paragraphs_update_8201_get_storage_config($config_name, $values);
+        FieldConfig::create($values)->save();
+
+        _react_paragraphs_update_8201_create_row_displays($paragraph_row_bundle, $field_name);
       }
     }
   }
 }
 
-function _react_paragraphs_update_8200_create_row_displays($bundle, $field_name) {
+/**
+ * Get the config array data if the config exists in the file system.
+ *
+ * @param string $name
+ *   Config name.
+ * @param mixed $default
+ *   The default value if nothing exist in the file system.
+ *
+ * @return array|mixed
+ *   Config data or the default value.
+ */
+function _react_paragraphs_update_8201_get_storage_config($name, $default = NULL) {
+  /** @var \Drupal\config_filter\Config\FilteredStorage $storage */
+  $storage = \Drupal::service('config.storage.sync');
+  return $storage->read($name) ?? $default;
+}
+
+/**
+ * @param string $bundle
+ * @param string $field_name
+ *
+ * @throws \Drupal\Core\Entity\EntityStorageException
+ */
+function _react_paragraphs_update_8201_create_row_displays($bundle, $field_name) {
   /** @var \Drupal\Core\Entity\Display\EntityViewDisplayInterface $view_display */
   $view_display = EntityViewDisplay::create([
-    'targetEntityType' => 'paragraphs_row',
+    'targetEntityType' => 'paragraph_row',
     'bundle' => $bundle,
     'mode' => 'default',
     'status' => TRUE,
@@ -89,23 +128,25 @@ function _react_paragraphs_update_8200_create_row_displays($bundle, $field_name)
 /**
  * Update display modes.
  */
-function react_paragraphs_update_8201() {
+function react_paragraphs_update_8203() {
   drupal_flush_all_caches();
   /** @var \Drupal\layout_builder\Entity\LayoutEntityDisplayInterface[] $displays */
   $displays = EntityViewDisplay::loadMultiple();
   foreach ($displays as $display) {
     if ($display->getThirdPartySetting('layout_builder', 'enabled')) {
-      _react_paragraphs_update_8201_update_display($display);
+      _react_paragraphs_update_8203_update_display($display);
     }
   }
 
   if (\Drupal::moduleHandler()->moduleExists('layout_library')) {
-    $layouts = \Drupal::entityTypeManager()->getStorage('layout')->loadMultiple();
+    $layouts = \Drupal::entityTypeManager()
+      ->getStorage('layout')
+      ->loadMultiple();
     array_walk($layouts, '_react_paragraphs_update_8201_update_display');
   }
 }
 
-function _react_paragraphs_update_8201_update_display(SectionListInterface $display) {
+function _react_paragraphs_update_8203_update_display(SectionListInterface $display) {
   $display_edited = FALSE;
   foreach ($display->getSections() as $section) {
     foreach ($section->getComponents() as $component) {
@@ -123,22 +164,21 @@ function _react_paragraphs_update_8201_update_display(SectionListInterface $disp
   }
 }
 
-
 /**
  * Migrate Field data around.
  */
-function react_paragraphs_update_8202(&$sandbox) {
+function react_paragraphs_update_8205(&$sandbox) {
   $entity_type_manager = \Drupal::entityTypeManager();
 
   if (!isset($sandbox['count'])) {
-    $sandbox['entities'] = _react_paragraphs_update_8202_get_entities();
+    $sandbox['entities'] = _react_paragraphs_update_8205_get_entities();
     $sandbox['count'] = count($sandbox['entities']);
   }
 
   $entity_ids = array_splice($sandbox['entities'], 0, 25);
 
   foreach ($entity_ids as $item) {
-    list($entity_type, $id, $field_name) = explode(':', $item);
+    [$entity_type, $id, $field_name] = explode(':', $item);
     $entity = $entity_type_manager->getStorage($entity_type)->load($id);
 
     $rows = [];
@@ -167,7 +207,12 @@ function react_paragraphs_update_8202(&$sandbox) {
       }
 
       /** @var \Drupal\react_paragraphs\Entity\ParagraphsRowInterface $row */
-      $row = ParagraphsRow::create(['type' => "{$entity_type}_{$entity->bundle()}_row"]);
+      $row = ParagraphRow::create([
+        'type' => "{$entity_type}_{$entity->bundle()}_row",
+        'parent' => $id,
+        'parent_type' => $entity->getEntityTypeId(),
+        'parent_field_name' => $field_name,
+      ]);
       $row->set($field_name, $row_items)->save();
       $entity_row_field_data[] = [
         'target_id' => $row->id(),
@@ -181,7 +226,16 @@ function react_paragraphs_update_8202(&$sandbox) {
   $sandbox['#finished'] = empty($sandbox['entities']) ? 1 : ($sandbox['count'] - count($sandbox['entities'])) / $sandbox['count'];
 }
 
-function _react_paragraphs_update_8202_get_entities() {
+/**
+ * Get the list of entities that need to be migrated.
+ *
+ * @return array
+ *   Array of entity type, bundle and fields to migrate data.
+ *
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+ */
+function _react_paragraphs_update_8205_get_entities() {
   $entity_type_manager = \Drupal::entityTypeManager();
 
   /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager */
@@ -207,7 +261,7 @@ function _react_paragraphs_update_8202_get_entities() {
 /**
  * Modify the field storage and field configs.
  */
-function react_paragraphs_update_8203() {
+function react_paragraphs_update_8207() {
   /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager */
   $entityFieldManager = \Drupal::service('entity_field.manager');
   $react_fields = $entityFieldManager->getFieldMapByFieldType('react_paragraphs');
@@ -224,7 +278,8 @@ function react_paragraphs_update_8203() {
       $field_storage = FieldStorageConfig::load("$entity_type.$field_name");
 
       $tables[] = $storage->getTableMapping()->getFieldTableName($field_name);
-      $tables[] = $storage->getTableMapping()->getDedicatedRevisionTableName($field_storage);
+      $tables[] = $storage->getTableMapping()
+        ->getDedicatedRevisionTableName($field_storage);
       $table_data = [];
 
       foreach ($tables as $table) {
@@ -239,7 +294,7 @@ function react_paragraphs_update_8203() {
 
       $config_factory->getEditable("field.storage.$entity_type.$field_name")
         ->set('type', 'entity_reference_revisions')
-        ->set('settings.target_type', 'paragraphs_row')
+        ->set('settings.target_type', 'paragraph_row')
         ->set('module', 'entity_reference_revisions')
         ->set('cardinality', -1)
         ->save();
@@ -250,7 +305,7 @@ function react_paragraphs_update_8203() {
 
         $config_factory->getEditable("field.field.$entity_type.$bundle.$field_name")
           ->set('field_type', 'entity_reference_revisions')
-          ->set('settings.handler', 'default:paragraphs_row')
+          ->set('settings.handler', 'default:paragraph_row')
           ->set('settings.handler_settings.target_bundles', [$paragraph_row_bundle => $paragraph_row_bundle])
           ->save();
 
@@ -281,10 +336,10 @@ function react_paragraphs_update_8203() {
 /**
  * Create new rest resource.
  */
-function react_paragraphs_update_8204() {
+function react_paragraphs_update_8210() {
   RestResourceConfig::create([
-    'id' => 'entity.paragraphs_row',
-    'plugin_id' => 'entity:paragraphs_row',
+    'id' => 'entity.paragraph_row',
+    'plugin_id' => 'entity:paragraph_row',
     'granularity' => RestResourceConfigInterface::RESOURCE_GRANULARITY,
     'configuration' => [
       'methods' => ['GET'],

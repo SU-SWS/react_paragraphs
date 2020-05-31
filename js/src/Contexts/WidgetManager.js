@@ -507,7 +507,7 @@ export class WidgetManager extends Component {
   }
 
   loadRow(rowId) {
-    this.loadEntity('paragraphs_row', this.state.rows[rowId].target_id)
+    this.loadEntity('paragraph_row', this.state.rows[rowId].target_id)
       .then(entityData => {
         const newState = {...this.state}
         this.state.rows[rowId].entity = entityData;

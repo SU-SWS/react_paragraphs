@@ -14,10 +14,10 @@ use Drupal\field\Entity\FieldConfig;
  */
 function react_paragraphs_theme($existing, $type, $theme, $path) {
   $theme = [];
-  $theme['paragraphs_row'] = [
+  $theme['paragraph_row'] = [
     'render element' => 'elements',
     'file' => 'paragraphs_row.page.inc',
-    'template' => 'paragraphs_row',
+    'template' => 'paragraph_row',
   ];
   return $theme;
 }
@@ -28,10 +28,10 @@ function react_paragraphs_theme($existing, $type, $theme, $path) {
 function react_paragraphs_theme_suggestions_field(array $variables) {
   $suggestions = [];
   if (
-    $variables['element']['#entity_type'] == 'paragraphs_row' &&
+    $variables['element']['#entity_type'] == 'paragraph_row' &&
     $variables['element']['#field_type'] == 'entity_reference_revisions'
   ) {
-    $suggestions[] = 'field__react_paragraphs_row';
+    $suggestions[] = 'field__react_paragraph_row';
   }
   return $suggestions;
 }
@@ -39,7 +39,7 @@ function react_paragraphs_theme_suggestions_field(array $variables) {
 /**
  * Implements hook_preprocess_HOOK().
  */
-function react_paragraphs_preprocess_field__react_paragraphs_row(&$variables) {
+function react_paragraphs_preprocess_field__react_paragraph_row(&$variables) {
   $variables['attributes']['class'][] = 'react-paragraphs-row ';
   $variables['#attached']['library'][] = 'react_paragraphs/field_formatter';
 
@@ -54,15 +54,15 @@ function react_paragraphs_preprocess_field__react_paragraphs_row(&$variables) {
 /**
  * Implements hook_theme_suggestions_HOOK().
  */
-function react_paragraphs_theme_suggestions_paragraphs_row(array $variables) {
+function react_paragraphs_theme_suggestions_paragraph_row(array $variables) {
   $suggestions = [];
-  $entity = $variables['elements']['#paragraphs_row'];
+  $entity = $variables['elements']['#paragraph_row'];
   $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
 
-  $suggestions[] = 'paragraphs_row__' . $sanitized_view_mode;
-  $suggestions[] = 'paragraphs_row__' . $entity->bundle();
-  $suggestions[] = 'paragraphs_row__' . $entity->bundle() . '__' . $sanitized_view_mode;
-  $suggestions[] = 'paragraphs_row__' . $entity->id();
-  $suggestions[] = 'paragraphs_row__' . $entity->id() . '__' . $sanitized_view_mode;
+  $suggestions[] = 'paragraph_row__' . $sanitized_view_mode;
+  $suggestions[] = 'paragraph_row__' . $entity->bundle();
+  $suggestions[] = 'paragraph_row__' . $entity->bundle() . '__' . $sanitized_view_mode;
+  $suggestions[] = 'paragraph_row__' . $entity->id();
+  $suggestions[] = 'paragraph_row__' . $entity->id() . '__' . $sanitized_view_mode;
   return $suggestions;
 }

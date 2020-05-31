@@ -109,7 +109,7 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
     $target_bundles = $field_definition->getSetting('handler_settings')['target_bundles'];
     /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $field_manager */
     $field_manager = \Drupal::service('entity_field.manager');
-    $fields = $field_manager->getFieldDefinitions('paragraphs_row', reset($target_bundles));
+    $fields = $field_manager->getFieldDefinitions('paragraph_row', reset($target_bundles));
 
     // Grab the first field that is a paragraphs reference field. There should
     // never be more than one. Maybe we can provide configurable options later.
@@ -150,7 +150,7 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
     // First the field must be targeting the paragraphs row entity type & only
     // one bundle chosen.
     if (
-      $field_definition->getSetting('handler') == 'default:paragraphs_row' &&
+      $field_definition->getSetting('handler') == 'default:paragraph_row' &&
       count($field_definition->getSetting('handler_settings')['target_bundles']) == 1
     ) {
       return !empty(self::getRowItemsField($field_definition));
