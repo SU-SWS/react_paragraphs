@@ -33,7 +33,7 @@ export class WidgetManager extends Component {
     super(props);
 
     // Local development url.
-    if (typeof window.drupalSettings.user === 'undefined') {
+    if (typeof window.drupalSettings.user === 'undefined' && typeof localBaseDomain !== 'undefined') {
       this.apiUrls.baseDomain = localBaseDomain;
     }
     let rows = {};
@@ -228,7 +228,7 @@ export class WidgetManager extends Component {
     let needsNewRow = false;
 
     // The last row is maxed out with items, a new row is needed.
-    if (this.state.rows[lastRowId].itemsOrder.length >= this.props.maxItemsPerRow) {
+    if (this.state.rows[lastRowId].itemsOrder.length > 0) {
       needsNewRow = true;
     }
     else {

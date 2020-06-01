@@ -11,8 +11,11 @@ field_widget:
     - core/drupal.dropbutton
     - core/drupalSettings
     - core/jquery
+    - dropzonejs/dropzonejs
+    - dropzonejs/integration
     - editor/drupal.editor
     - filter/drupal.filter.admin
+    - media_library/ui
     - views/views.ajax
 
 field_formatter:
