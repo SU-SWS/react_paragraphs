@@ -98,7 +98,7 @@ function react_paragraphs_update_8201() {
 function _react_paragraphs_update_8201_get_storage_config($name, $default = NULL) {
   /** @var \Drupal\config_filter\Config\FilteredStorage $storage */
   $storage = \Drupal::service('config.storage.sync');
-  return $storage->read($name) ?? $default;
+  return $storage->read($name) ?: $default;
 }
 
 /**
@@ -142,7 +142,7 @@ function react_paragraphs_update_8203() {
     $layouts = \Drupal::entityTypeManager()
       ->getStorage('layout')
       ->loadMultiple();
-    array_walk($layouts, '_react_paragraphs_update_8201_update_display');
+    array_walk($layouts, '_react_paragraphs_update_8203_update_display');
   }
 }
 
