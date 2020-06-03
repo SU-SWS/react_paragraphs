@@ -59,7 +59,6 @@ export const ParagraphForm = ({item, drupalContext, ...props}) => {
         }
         return (
           <FieldContainer key={`widget-${item.id}-${fieldName}`}>
-
             <WidgetName
               fieldId={`${item.id}-${fieldName}`}
               onFieldChange={drupalContext.updateParagraph.bind(undefined, item, fieldName)}

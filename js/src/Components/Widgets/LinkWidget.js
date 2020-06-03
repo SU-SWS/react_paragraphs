@@ -202,7 +202,6 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
           id={`${fieldId}-title-${delta}`}
           label="Link text"
           value={fieldValues[delta].title}
-          //onChange={e => onFieldChange([{title: e.target.value, uri: defaultValue[delta].uri}])}
           onChange={e => alterValues({title: e.target.value, uri: fieldValues[delta].uri, delta: delta})}
           variant="outlined"
           required={typeof fieldValues[delta].uri !== 'undefined' && fieldValues[delta].uri.length >= 1}
