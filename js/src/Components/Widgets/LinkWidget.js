@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
@@ -7,24 +8,20 @@ import {FormHelperText} from "@material-ui/core";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
-
   let timeout;
-  //let delta;
   const [urlSuggestions, setSuggestions] = useState([]);
   const [fieldValues, setValues] = useState(defaultValue);
-
   const defaultFieldValue = Array.from(fieldValues);
 
-  function alterValues(props) {
+  const alterValues = (props) => {
     const newState = Array.from(fieldValues);
     newState[props.delta].title = props.title;
     newState[props.delta].uri = props.uri;
     setValues(newState);
     onFieldChange(fieldValues);
-    console.log(fieldValues);
   }
 
-  function addAnother() {
+  const addAnother = () => {
     const newState = fieldValues.concat({
       uri: '',
       title: '',
@@ -148,8 +145,6 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
    * When the textfield on the URI blurs, that's when we want to trigger the field change and pass it up to the manager.
    */
   const onUriBlur = (e, delta) => {
-    console.log('blurring delta: ' + delta);
-    console.log(delta);
     alterValues({
       title: fieldValues[delta].title,
       uri: getUriFromString(e.target.value),
@@ -158,7 +153,22 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   }
 
   /**
-   * to support cardinality, we may need to display more than one link field.
+   * To support cardinality, we will need an "Add another" button.
+   */
+  const addAnotherButton = (cardinality) => {
+    if ((cardinality == -1) || (cardinality < fieldValues.length )) {
+      return (
+      <div>
+        <Button variant="outlined" style={{marginBottom: '20px'}} onClick={addAnother}>
+          Add Another Link
+        </Button>
+      </div>
+      );
+    }
+  }
+
+  /**
+   * To support cardinality, we may need to display more than one link field.
    */
   const linkFields = fieldValues.map((link, delta) =>
     <div style={{marginBottom: '20px'}} key={delta}>
@@ -169,7 +179,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
           options={urlSuggestions}
           renderOption={option => <div>{option.label}</div>}
           getOptionLabel={option => typeof option.label !== 'undefined' ? option.label : getUriAsDisplayableString(option)}
-          onChange={(e) => suggestionPicked(e, delta)}
+          onChange={(e, newValue) => suggestionPicked(e, newValue, delta)}
           value={getUriAsDisplayableString(fieldValues[delta].uri)}
           renderInput={params => (
             <TextField
@@ -210,6 +220,8 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
       </FormLabel>
 
       {linkFields}
+
+      {addAnotherButton(settings.cardinality)}
 
       {settings.help.length > 1 &&
       <FormHelperText>{settings.help}</FormHelperText>
