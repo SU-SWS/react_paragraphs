@@ -9,8 +9,23 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
   let timeout;
+  let initialCondition = defaultValue;
+  if (initialCondition === undefined){
+    initialCondition = [];
+    initialCondition.push(emptyLinkValue());
+  }
+
   const [urlSuggestions, setSuggestions] = useState([]);
-  const [fieldValues, setValues] = useState(defaultValue);
+  const [fieldValues, setValues] = useState(initialCondition);
+
+  function emptyLinkValue() {
+    return {
+      uri: '',
+      title: '',
+      options: [],
+      target_uuid: false
+    };
+  }
 
   const alterValues = (props) => {
     const newState = Array.from(fieldValues);
@@ -21,12 +36,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   }
 
   const addAnother = () => {
-    const newState = fieldValues.concat({
-      uri: '',
-      title: '',
-      options: [],
-      target_uuid: false
-    });
+    const newState = fieldValues.concat(emptyLinkValue());
     setValues(newState);
   }
 
