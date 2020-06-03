@@ -11,7 +11,6 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   let timeout;
   const [urlSuggestions, setSuggestions] = useState([]);
   const [fieldValues, setValues] = useState(defaultValue);
-  const defaultFieldValue = Array.from(fieldValues);
 
   const alterValues = (props) => {
     const newState = Array.from(fieldValues);
