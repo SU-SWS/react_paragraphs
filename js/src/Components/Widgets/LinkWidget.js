@@ -9,12 +9,30 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
 
   let timeout;
+  //let delta;
   const [urlSuggestions, setSuggestions] = useState([]);
+  const [fieldValues, setValues] = useState(defaultValue);
 
-  const defaultFieldValue = {
-    uri: defaultValue && defaultValue.length ? defaultValue[0].uri : '',
-    title: defaultValue && defaultValue.length ? defaultValue[0].title : ''
-  };
+  const defaultFieldValue = Array.from(fieldValues);
+
+  function alterValues(props) {
+    const newState = Array.from(fieldValues);
+    newState[props.delta].title = props.title;
+    newState[props.delta].uri = props.uri;
+    setValues(newState);
+    onFieldChange(fieldValues);
+    console.log(fieldValues);
+  }
+
+  function addAnother() {
+    const newState = fieldValues.concat({
+      uri: '',
+      title: '',
+      options: [],
+      target_uuid: false
+    });
+    setValues(newState);
+  }
 
   /**
    * When the uri changes, use a timer like a debounce and fetch some suggestions from the linkit module.
@@ -118,38 +136,41 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   /**
    * A suggestion was picked, pass that up to the manager to store the value.
    */
-  const suggestionPicked = (e, selectedValue) => {
-    onFieldChange([{
-      title: defaultFieldValue.title,
-      uri: getUriFromString(selectedValue === null ? '' : selectedValue.value)
-    }]);
+  const suggestionPicked = (e, selectedValue, delta) => {
+    alterValues({
+      title: fieldValues[delta].title,
+      uri: getUriFromString(selectedValue === null ? '' : selectedValue.value),
+      delta: delta
+    });
   };
 
   /**
    * When the textfield on the URI blurs, that's when we want to trigger the field change and pass it up to the manager.
    */
-  const onUriBlur = (e) => {
-    onFieldChange([{
-      title: defaultFieldValue.title,
-      uri: getUriFromString(e.target.value)
-    }]);
+  const onUriBlur = (e, delta) => {
+    console.log('blurring delta: ' + delta);
+    console.log(delta);
+    alterValues({
+      title: fieldValues[delta].title,
+      uri: getUriFromString(e.target.value),
+      delta: delta
+    });
   }
 
-  return (
-    <FormGroup>
-      <FormLabel component="legend">
-        {settings.label}
-      </FormLabel>
-
-      <FormControl style={{marginBottom: '20px'}}>
+  /**
+   * to support cardinality, we may need to display more than one link field.
+   */
+  const linkFields = fieldValues.map((link, delta) =>
+    <div style={{marginBottom: '20px'}} key={delta}>
+        <FormControl style={{marginBottom: '20px'}}>
         <Autocomplete
           freeSolo
-          id={`${fieldId}-uri`}
+          id={`${fieldId}-uri-${delta}`}
           options={urlSuggestions}
           renderOption={option => <div>{option.label}</div>}
           getOptionLabel={option => typeof option.label !== 'undefined' ? option.label : getUriAsDisplayableString(option)}
-          onChange={suggestionPicked}
-          value={getUriAsDisplayableString(defaultFieldValue.uri)}
+          onChange={(e) => suggestionPicked(e, delta)}
+          value={getUriAsDisplayableString(fieldValues[delta].uri)}
           renderInput={params => (
             <TextField
               {...params}
@@ -157,9 +178,9 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
               label="URL"
               variant="outlined"
               helperText="Start typing the title of a piece of content to select it. You can also enter an internal path such as /foo/bar or an external URL such as http://example.com. Enter <front> to link to the front page."
-              onChange={e => uriChanged(e.target.value)}
+              onChange={(e) => uriChanged(e.target.value)}
               required={settings.required}
-              onBlur={onUriBlur}
+              onBlur={(e) => onUriBlur(e, delta)}
             />
           )}
         />
@@ -168,16 +189,27 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
       {settings.title !== 0 &&
       <FormControl style={{paddingBottom: '10px'}}>
         <TextField
-          id={`${fieldId}-title`}
+          id={`${fieldId}-title-${delta}`}
           label="Link text"
-          value={defaultFieldValue.title}
-          onChange={e => onFieldChange([{title: e.target.value, uri: defaultFieldValue.uri}])}
+          value={fieldValues[delta].title}
+          //onChange={e => onFieldChange([{title: e.target.value, uri: defaultValue[delta].uri}])}
+          onChange={e => alterValues({title: e.target.value, uri: fieldValues[delta].uri, delta: delta})}
           variant="outlined"
-          required={typeof defaultFieldValue.uri !== 'undefined' && defaultFieldValue.uri.length >= 1}
+          required={typeof fieldValues[delta].uri !== 'undefined' && fieldValues[delta].uri.length >= 1}
           fullWidth
         />
       </FormControl>
       }
+    </div>
+  );
+
+  return (
+    <FormGroup>
+      <FormLabel component="legend">
+        {settings.label}
+      </FormLabel>
+
+      {linkFields}
 
       {settings.help.length > 1 &&
       <FormHelperText>{settings.help}</FormHelperText>
