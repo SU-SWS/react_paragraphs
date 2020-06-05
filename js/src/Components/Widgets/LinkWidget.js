@@ -28,7 +28,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   }
 
   const alterValues = (values) => {
-    const newState = Array.from(fieldValues);
+    const newState = [...fieldValues];
     newState[values.delta].title = values.title;
     newState[values.delta].uri = values.uri;
     setValues(newState);
