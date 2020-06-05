@@ -27,10 +27,10 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     };
   }
 
-  const alterValues = (props) => {
+  const alterValues = (values) => {
     const newState = Array.from(fieldValues);
-    newState[props.delta].title = props.title;
-    newState[props.delta].uri = props.uri;
+    newState[values.delta].title = values.title;
+    newState[values.delta].uri = values.uri;
     setValues(newState);
     onFieldChange(fieldValues);
   }
@@ -164,8 +164,8 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   /**
    * To support cardinality, we will need an "Add another" button.
    */
-  const addAnotherButton = (cardinality) => {
-    if ((cardinality == -1) || (cardinality < fieldValues.length )) {
+  const addAnotherButton = () => {
+    if ((settings.cardinality == -1) || (settings.cardinality > fieldValues.length )) {
       return (
       <div>
         <Button variant="outlined" style={{marginBottom: '20px'}} onClick={addAnother}>
