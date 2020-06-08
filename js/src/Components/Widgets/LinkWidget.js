@@ -11,7 +11,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   let timeout;
   let initialCondition = defaultValue;
   const [urlSuggestions, setSuggestions] = useState([]);
-  const [fieldValues, setValues] = useState(initialCondition);
+
   const emptyLinkValue = {
       uri: '',
       title: '',
@@ -23,6 +23,8 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     initialCondition = [];
     initialCondition.push(emptyLinkValue);
   }
+
+  const [fieldValues, setValues] = useState(initialCondition);
 
   const alterValues = (values) => {
     const newState = [...fieldValues];
