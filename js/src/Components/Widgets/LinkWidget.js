@@ -178,24 +178,25 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   }
 
   /**
-   * If we add more links, we need a way of removing them, but never remove link 0.
+   * If we add more links, we need a way of removing them.
    */
   const removeLinkButton = (delta) => {
-    if (delta > 0){
-      return (
-        <Button variant="outlined" style={{margin: '10px'}} onClick={() => removeLink(delta)} >
-          Remove
-        </Button>
-      );
-    }
+    return (
+      <Button variant="outlined" style={{margin: '10px'}} onClick={() => removeLink(delta)} >
+        Remove
+      </Button>
+    );
   }
 
   /**
    * Handler for removing a link.
    */
   const removeLink = (delta) => {
-    if (fieldValues[delta] !== undefined){
-      let removed = fieldValues.splice(delta, 1);
+    if (typeof fieldValues[delta] !== undefined){
+      fieldValues.splice(delta, 1);
+      if (fieldValues.length < 1) {
+        addAnother();
+      }
       onFieldChange(fieldValues);
     }
   }
