@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
@@ -161,9 +160,13 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     if ((settings.cardinality == -1) || (settings.cardinality > fieldValues.length )) {
       return (
       <div>
-        <Button variant="outlined" style={{marginBottom: '20px'}} onClick={addAnother}>
-          Add Another Link
-        </Button>
+        <input
+          type="submit"
+          className="button"
+          onClick={addAnother}
+          value="Add Another Link"
+          style={{margin: "10px"}}
+        />
       </div>
       );
     }
@@ -182,9 +185,13 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
    */
   const removeLinkButton = (delta) => {
     return (
-      <Button variant="outlined" style={{margin: '10px'}} onClick={() => removeLink(delta)} >
-        Remove
-      </Button>
+      <input
+          type="submit"
+          className="button"
+          onClick={() => removeLink(delta)}
+          value="Remove"
+          style={{margin: "10px"}}
+        />
     );
   }
 
