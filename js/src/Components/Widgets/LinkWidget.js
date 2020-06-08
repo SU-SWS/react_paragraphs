@@ -10,34 +10,25 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
   let timeout;
   let initialCondition = defaultValue;
-  if (initialCondition === undefined){
-    initialCondition = [];
-    initialCondition.push(emptyLinkValue());
-  }
-
   const [urlSuggestions, setSuggestions] = useState([]);
   const [fieldValues, setValues] = useState(initialCondition);
-
-  function emptyLinkValue() {
-    return {
+  const emptyLinkValue = {
       uri: '',
       title: '',
       options: [],
       target_uuid: false
-    };
+  };
+
+  if (initialCondition === undefined){
+    initialCondition = [];
+    initialCondition.push(emptyLinkValue);
   }
 
   const alterValues = (values) => {
     const newState = [...fieldValues];
     newState[values.delta].title = values.title;
     newState[values.delta].uri = values.uri;
-    setValues(newState);
-    onFieldChange(fieldValues);
-  }
-
-  const addAnother = () => {
-    const newState = fieldValues.concat(emptyLinkValue());
-    setValues(newState);
+    onFieldChange(newState);
   }
 
   /**
@@ -177,6 +168,37 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   }
 
   /**
+   * Handler for the addAnotherButton
+   */
+  const addAnother = () => {
+    const newState = fieldValues.concat(emptyLinkValue);
+    setValues(newState);
+  }
+
+  /**
+   * If we add more links, we need a way of removing them, but never remove link 0.
+   */
+  const removeLinkButton = (delta) => {
+    if (delta > 0){
+      return (
+        <Button variant="outlined" style={{margin: '10px'}} onClick={() => removeLink(delta)} >
+          Remove
+        </Button>
+      );
+    }
+  }
+
+  /**
+   * Handler for removing a link.
+   */
+  const removeLink = (delta) => {
+    if (fieldValues[delta] !== undefined){
+      let removed = fieldValues.splice(delta, 1);
+      onFieldChange(fieldValues);
+    }
+  }
+
+  /**
    * To support cardinality, we may need to display more than one link field.
    */
   const linkFields = fieldValues.map((link, delta) =>
@@ -218,6 +240,9 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
         />
       </FormControl>
       }
+
+    {removeLinkButton(delta)}
+
     </div>
   );
 
