@@ -162,6 +162,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
       <div>
         <button
           type="button"
+          class="button"
           onClick="{addAnother}"
           style={{margin: "10px"}}>
             Add Another Link
@@ -187,6 +188,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
       return (
         <button
           type="button"
+          class="button"
           onClick={() => removeLink(delta)}
           style={{margin: "10px"}}>
             Remove
