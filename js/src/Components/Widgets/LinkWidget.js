@@ -184,15 +184,17 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
    * If we add more links, we need a way of removing them.
    */
   const removeLinkButton = (delta) => {
-    return (
-      <input
-          type="submit"
-          className="button"
-          onClick={() => removeLink(delta)}
-          value="Remove"
-          style={{margin: "10px"}}
-        />
-    );
+    if (fieldValues.length > 1){
+      return (
+        <input
+            type="submit"
+            className="button"
+            onClick={() => removeLink(delta)}
+            value="Remove"
+            style={{margin: "10px"}}
+          />
+      );
+    }
   }
 
   /**
