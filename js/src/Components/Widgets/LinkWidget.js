@@ -160,13 +160,12 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     if ((settings.cardinality == -1) || (settings.cardinality > fieldValues.length )) {
       return (
       <div>
-        <input
-          type="submit"
-          className="button"
-          onClick={addAnother}
-          value="Add Another Link"
-          style={{margin: "10px"}}
-        />
+        <button
+          type="button"
+          onClick="{addAnother}"
+          style={{margin: "10px"}}>
+            Add Another Link
+        </button>
       </div>
       );
     }
@@ -186,13 +185,12 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   const removeLinkButton = (delta) => {
     if (fieldValues.length > 1){
       return (
-        <input
-            type="submit"
-            className="button"
-            onClick={() => removeLink(delta)}
-            value="Remove"
-            style={{margin: "10px"}}
-          />
+        <button
+          type="button"
+          onClick={() => removeLink(delta)}
+          style={{margin: "10px"}}>
+            Remove
+        </button>
       );
     }
   }
