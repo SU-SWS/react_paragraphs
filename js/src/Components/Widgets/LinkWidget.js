@@ -163,7 +163,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
         <button
           type="button"
           class="button"
-          onClick="{addAnother}"
+          onClick={addAnother}
           style={{margin: "10px"}}>
             Add Another Link
         </button>
