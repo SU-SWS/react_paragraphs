@@ -13,9 +13,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
 
   const emptyLinkValue = {
       uri: '',
-      title: '',
-      options: [],
-      target_uuid: false
+      title: ''
   };
 
   if (initialCondition === undefined){
