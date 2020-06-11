@@ -12,8 +12,8 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   const [urlSuggestions, setSuggestions] = useState([]);
 
   const emptyLinkValue = {
-      uri: '',
-      title: ''
+    uri: '',
+    title: ''
   };
 
   if (initialCondition === undefined){
