@@ -16,7 +16,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     title: ''
   };
 
-  if (initialCondition === undefined){
+  if (initialCondition === undefined || initialCondition.length === 0){
     initialCondition = [];
     initialCondition.push(emptyLinkValue);
   }
