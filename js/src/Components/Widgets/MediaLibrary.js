@@ -116,7 +116,7 @@ export class MediaLibrary extends Component {
           )}
         </FlexDiv>
 
-        {this.props.settings.cardinality > this.state.selectedMedia.length &&
+        {(this.props.settings.cardinality === -1 || this.props.settings.cardinality > this.state.selectedMedia.length) &&
         <input
           type="submit"
           className="button"
