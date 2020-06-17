@@ -1,5 +1,13 @@
 # React Paragraphs
 
+8.x-1.9
+--------------------------------------------------------------------------------
+_Release Date: 2020-06-17_
+
+- Allow unlimited media library cardinality (#50) (32b4d27)
+- fixed link widget when the initial value is empty (e3b3d13)
+- D8CORE-2106 Allowed higher cardinality for link fields (#48) (b26e62a)
+
 8.x-1.8
 --------------------------------------------------------------------------------
 _Release Date: 2020-05-15_
