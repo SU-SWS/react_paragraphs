@@ -10,6 +10,9 @@ import styled from 'styled-components';
 
 export class CkeditorWidget extends Component {
 
+  /**
+   * Constructor.
+   */
   constructor(props) {
     super(props);
     this.widgetRef = React.createRef();
@@ -17,9 +20,9 @@ export class CkeditorWidget extends Component {
     this.state = {
       showSummary: false,
       summaryText: 'Edit Summary',
-      value: this.props.defaultValue && this.props.defaultValue.length ? this.props.defaultValue[0].value : '',
-      format: this.props.defaultValue && this.props.defaultValue.length ? this.props.defaultValue[0].format : Object.keys(this.props.settings.allowed_formats)[0],
-      summary: this.props.defaultValue && this.props.defaultValue.length ? this.props.defaultValue[0].summary : '',
+      value: this.getDefaultValue('value'),
+      format: this.getDefaultValue('format', Object.keys(this.props.settings.allowed_formats)[0]),
+      summary: this.getDefaultValue('summary'),
     };
 
     this.onEditorChange = this.onEditorChange.bind(this);
@@ -28,6 +31,24 @@ export class CkeditorWidget extends Component {
     this.updateState = this.updateState.bind(this);
   }
 
+  /**
+   * Get the default value without the value being null or undefined.
+   *
+   * @param key
+   *   Key of the default value to obtain.
+   * @param defaultValue
+   *   The fallback value to use.
+   *
+   * @returns {string|*}
+   */
+  getDefaultValue(key, defaultValue = '') {
+    const value = this.props.defaultValue && this.props.defaultValue.length ? this.props.defaultValue[0][key] : defaultValue;
+    return (value === null || value === undefined) ? defaultValue : value;
+  }
+
+  /**
+   * After the component mounts, apply the ckeditor.
+   */
   componentDidMount() {
     try {
       // Apply listeners to the ckeditor text area field. When the ckeditor
@@ -39,6 +60,9 @@ export class CkeditorWidget extends Component {
     }
   }
 
+  /**
+   * Remove listeners before the component is about the be removed.
+   */
   componentWillUnmount() {
     try {
       Drupal.behaviors.editor.detach(this.widgetRef.current, window.drupalSettings, 'destroy');
@@ -48,14 +72,25 @@ export class CkeditorWidget extends Component {
     }
   }
 
+  /**
+   * Add the ckeditor listeners for the various actions that occur when editing.
+   */
   addListeners() {
     // UnlockSnapshot is an event that is triggered when a button in the toolbar
     // or media is added to the wysiwyg. Key is the only event triggered when
     // the ckeditor is in "view source" mode.
     CKEDITOR.instances[`${this.props.fieldId}-text-area`].on('unlockSnapshot', this.onEditorChange);
-    CKEDITOR.instances[`${this.props.fieldId}-text-area`].on("key", this.onEditorChange);
+    CKEDITOR.instances[`${this.props.fieldId}-text-area`].on('key', this.onEditorChange);
   }
 
+  /**
+   * After a user changes something in the UI, pass it up to the widget manager.
+   *
+   * @param key
+   *   The key value to change.
+   * @param value
+   *   Changed value.
+   */
   updateState(key, value) {
     const newState = {...this.state};
     newState[key] = value;
@@ -79,6 +114,12 @@ export class CkeditorWidget extends Component {
     this.props.onFieldChange(newValue);
   }
 
+  /**
+   * After the ckeditor has changed, use timeout to reduce the activity.
+   *
+   * @param snapshot
+   *   Ckeditor event snapshot.
+   */
   onEditorChange(snapshot) {
     clearTimeout(this.editorTimeout);
 
@@ -86,15 +127,17 @@ export class CkeditorWidget extends Component {
     // This reduces the unnecessary calls since there are multiple event
     // listeners on the ckeditor area.
     this.editorTimeout = setTimeout(() => {
-
-      // Make sure there is some data in the wysiwyg and its different than what
-      // we already have stored.
-      if (snapshot.editor.getData().length && snapshot.editor.getData() !== this.state.value) {
+      // Make sure there the data in the wysiwyg is different than what we
+      // already have stored.
+      if (snapshot.editor.getData() !== this.state.value) {
         this.updateState('value', snapshot.editor.getData());
       }
     }, 200);
   }
 
+  /**
+   * If the settings allow a summary, provide a textfield for that.
+   */
   getSummaryInput() {
     // The field is not configured to accept a summary.
     if (!this.props.settings.summary) {
@@ -117,6 +160,9 @@ export class CkeditorWidget extends Component {
     )
   }
 
+  /**
+   * Rendering the component.
+   */
   render() {
     return (
       <FormGroup ref={this.widgetRef}>
