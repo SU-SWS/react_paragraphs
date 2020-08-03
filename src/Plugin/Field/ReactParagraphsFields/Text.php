@@ -25,6 +25,8 @@ class Text extends ReactParagraphsFieldsBase {
    */
   public function getFieldInfo(array $field_element, FieldConfigInterface $field_config) {
     $info = parent::getFieldInfo($field_element, $field_config);
+    $info['max_length'] = $field_config->getFieldStorageDefinition()
+      ->getSetting('max_length') ?: 0;
 
     $info['formatted'] = FALSE;
     switch ($field_config->getType()) {
