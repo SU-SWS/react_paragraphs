@@ -4,6 +4,11 @@ import FormGroup from '@material-ui/core/FormGroup';
 
 export const TextWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
 
+  let maxLength = 254
+  if (typeof settings.max_length !== 'undefined' && settings.max_length > 0) {
+    maxLength = settings.max_length;
+  }
+
   return (
     <FormGroup>
       <TextField
@@ -17,7 +22,7 @@ export const TextWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
         required={settings.required}
         type={settings.text_type}
         onChange={e => onFieldChange([{value: e.target.value}])}
-        inputProps={{maxLength: settings.text_type !== 'textarea' ? 254 : null}}
+        inputProps={{maxLength: settings.text_type !== 'textarea' ? maxLength : null}}
         fullWidth
       />
     </FormGroup>
