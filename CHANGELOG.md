@@ -1,5 +1,25 @@
 # React Paragraphs
 
+8.x-1.11
+--------------------------------------------------------------------------------
+_Release Date: 2020-08-07_
+
+- D8CORE-2225 Pass max length setting down to the widget (#57) (ed7fcc4)
+
+8.x-1.10
+--------------------------------------------------------------------------------
+_Release Date: 2020-07-13_
+
+- D8CORE-2329 Fix CKEditor widget when a user deletes all text (#53) (5b6133c)
+
+8.x-1.9
+--------------------------------------------------------------------------------
+_Release Date: 2020-06-17_
+
+- Allow unlimited media library cardinality (#50) (32b4d27)
+- fixed link widget when the initial value is empty (e3b3d13)
+- D8CORE-2106 Allowed higher cardinality for link fields (#48) (b26e62a)
+
 8.x-1.8
 --------------------------------------------------------------------------------
 _Release Date: 2020-05-15_
