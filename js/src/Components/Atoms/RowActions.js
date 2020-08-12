@@ -4,48 +4,52 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import {WidgetContext} from "../../Contexts/WidgetManager";
 import {RowForm} from "../RowForm";
 import {ConfirmDialog} from "./ConfirmDialog";
-import styled from 'styled-components';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 export const RowActions = ({onlyRow, rowId, entity, loadedEntity, onRemoveRow}) => {
 
   const [formDialogOpen, setFormDialogOpen] = React.useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const [actionsOpen, setActionsOpen] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const openActions = (e) => {
+    setActionsOpen(true)
+    setAnchorEl(e.currentTarget);
+  }
+
+  const closeActions = () => {
+    setActionsOpen(false);
+    setAnchorEl(null);
+  }
 
   return (
     <div
       className="row-actions"
       style={{position: 'relative'}}
-      onMouseLeave={() => setActionsOpen(false)}
     >
-      <Kabob onClick={() => setActionsOpen(!actionsOpen)}/>
-      <ActionsContainer style={{display: actionsOpen ? 'block' : 'none'}}>
-        <div>
-          <button
-            type="button"
-            className="button"
-            onClick={() => {
-              setActionsOpen(false)
-              setFormDialogOpen(true)
-            }}
-          >
-            Edit Row
-          </button>
-        </div>
-        <div>
-          <button
-            type="button"
-            className="button"
-            disabled={onlyRow}
-            onClick={() => {
-              setActionsOpen(false);
-              setDeleteModalOpen(true)
-            }}
-          >
-            Delete Row
-          </button>
-        </div>
-      </ActionsContainer>
+      <IconButton
+        aria-label="more"
+        aria-controls="long-menu"
+        aria-haspopup="true"
+        onClick={openActions}
+      >
+        <MoreVertIcon/>
+      </IconButton>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={actionsOpen}
+        onClose={closeActions}
+      >
+        <MenuItem onClick={() => setFormDialogOpen(true)}>
+          Edit Row
+        </MenuItem>
+        <MenuItem onClick={() => setDeleteModalOpen(true)}>
+          Delete Row
+        </MenuItem>
+      </Menu>
 
       <WidgetContext.Consumer>
         {widgetContext =>
@@ -71,34 +75,5 @@ export const RowActions = ({onlyRow, rowId, entity, loadedEntity, onRemoveRow}) 
         }}
       />
     </div>
-  )
-}
-
-const ActionsContainer = styled.div`
-  position: absolute;
-  background: #fff;
-  border: 1px solid #000;
-  box-shadow: 3px 4px 4px #ccc;
-  top: 0;
-  right: 0;
-  padding: 10px;
-  border-radius: 5px;
-
-  button {
-    display:block;
-    white-space: nowrap;
-  }
-`
-
-const Kabob = ({onClick}) => {
-  return (
-    <IconButton
-      color="inherit"
-      aria-label="Open row actions"
-      edge="end"
-      onClick={onClick}
-    >
-      <MoreVertIcon/>
-    </IconButton>
   )
 }
