@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import {WidgetContext} from "../../Contexts/WidgetManager";
@@ -9,10 +9,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 export const RowActions = ({onlyRow, rowId, entity, loadedEntity, onRemoveRow}) => {
 
-  const [formDialogOpen, setFormDialogOpen] = React.useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
-  const [actionsOpen, setActionsOpen] = React.useState(false);
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [formDialogOpen, setFormDialogOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const openActions = (e) => {
     setActionsOpen(true)

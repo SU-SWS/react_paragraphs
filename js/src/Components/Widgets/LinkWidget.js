@@ -1,26 +1,21 @@
 import React, {useState} from 'react';
+import {FormHelperText} from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
-import {FormHelperText} from "@material-ui/core";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
   let timeout;
   let initialCondition = defaultValue;
-  const [urlSuggestions, setSuggestions] = useState([]);
-
-  const emptyLinkValue = {
-    uri: '',
-    title: ''
-  };
-
-  if (initialCondition === undefined || initialCondition.length === 0){
-    initialCondition = [];
-    initialCondition.push(emptyLinkValue);
+  try {
+    initialCondition.length;
+  }catch (e) {
+    initialCondition = [{uri: '', title: ''}];
   }
 
+  const [urlSuggestions, setSuggestions] = useState([]);
   const [fieldValues, setValues] = useState(initialCondition);
 
   const alterValues = (values) => {
@@ -174,7 +169,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
    * Handler for the addAnotherButton
    */
   const addAnother = () => {
-    const newState = fieldValues.concat(emptyLinkValue);
+    const newState = fieldValues.concat({uri: '', title: ''});
     setValues(newState);
   }
 
