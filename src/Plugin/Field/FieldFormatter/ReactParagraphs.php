@@ -2,11 +2,7 @@
 
 namespace Drupal\react_paragraphs\Plugin\Field\FieldFormatter;
 
-use Drupal\Component\Utility\Html;
-use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Template\Attribute;
 use Drupal\entity_reference_revisions\Plugin\Field\FieldFormatter\EntityReferenceRevisionsEntityFormatter;
-use Drupal\paragraphs\ParagraphInterface;
 
 /**
  * Plugin implementation of the 'react_paragraphs' formatter.

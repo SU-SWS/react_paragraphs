@@ -2,7 +2,6 @@
 
 namespace Drupal\react_paragraphs\Entity;
 
-use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\paragraphs\Entity\ParagraphsType;
 
 /**
