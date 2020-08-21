@@ -7,7 +7,9 @@ use Drupal\entity_reference_revisions\Plugin\Field\FieldFormatter\EntityReferenc
 /**
  * Plugin implementation of the 'react_paragraphs' formatter.
  *
- * @deprecated Use EntityReferenceRevisionsEntityFormatter instead.
+ * This plugin is deprecated and is only used for upgrade process. It will be
+ * Marked as deprecated and removed in a later release.
+ *
  * @FieldFormatter(
  *   id = "react_paragraphs",
  *   label = @Translation("DEPRECATED: React Paragraphs"),

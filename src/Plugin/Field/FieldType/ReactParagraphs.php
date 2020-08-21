@@ -9,10 +9,10 @@ use Drupal\entity_reference_revisions\Plugin\Field\FieldType\EntityReferenceRevi
 /**
  * Plugin implementation of the 'react_paragraphs' field type.
  *
- * @deprecated Use Paragraphs type row with the react paragraphs field widget.
- * @codeCoverageIgnore This will be removed in the next major release.
+ * This plugin is deprecated and is only used for upgrade process. It will be
+ * Marked as deprecated and removed in a later release.
  *
- * This plugin only exists for upgrade hooks.
+ * @codeCoverageIgnore This will be removed in the next major release.
  *
  * @FieldType(
  *   id = "react_paragraphs",
