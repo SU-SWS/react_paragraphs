@@ -85,7 +85,7 @@ workflows:
   weekly:
     jobs:
       - run-coverage
-      - run-codeception
+#      - run-codeception
     triggers:
       - schedule:
           cron: "0 0 * * 0"
@@ -96,4 +96,4 @@ workflows:
   tests:
     jobs:
       - run-coverage
-      - run-codeception
+#      - run-codeception
