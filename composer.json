@@ -2,7 +2,7 @@
     "name": "su-sws/react_paragraphs",
     "description": "An advanced UI for editing paragraphs in Drupal.",
     "type": "drupal-custom-module",
-    "license": "GPL-2.0+",
+    "license": "GPL-2.0-or-later",
     "minimum-stability": "dev",
     "authors": [
         {
@@ -17,6 +17,7 @@
         }
     ],
     "require": {
+        "drupal/core": "^8.8 || ^9.0",
         "drupal/paragraphs": "^1.1"
     },
     "autoload-dev": {

@@ -10,6 +10,7 @@ use Drupal\entity_reference_revisions\Plugin\Field\FieldType\EntityReferenceRevi
  * Plugin implementation of the 'react_paragraphs' field type.
  *
  * @deprecated Use Paragraphs type row with the react paragraphs field widget.
+ * @codeCoverageIgnore This will be removed in the next major release.
  *
  * This plugin only exists for upgrade hooks.
  *

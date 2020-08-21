@@ -19,6 +19,8 @@ class ReactBehavior extends ParagraphsBehaviorBase {
 
   /**
    * {@inheritDoc}
+   *
+   * @codeCoverageIgnore Nothing to review.
    */
   public function view(array &$build, Paragraph $paragraph, EntityViewDisplayInterface $display, $view_mode) {
     // Nothing to modify on the paragraph itself.

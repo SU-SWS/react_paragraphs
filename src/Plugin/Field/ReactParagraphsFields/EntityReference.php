@@ -73,8 +73,9 @@ class EntityReference extends ReactParagraphsFieldsBase implements ContainerFact
    */
   protected function addMediaLibraryInfo(array &$info, FieldConfigInterface $field_config) {
     $info['widget_type'] = 'media_library';
+    $bundles = $field_config->getSetting('handler_settings')['target_bundles'] ?? [];
     $target_bundles = $this->entityTypeManager->getStorage('media_type')
-      ->loadMultiple($field_config->getSetting('handler_settings')['target_bundles']);
+      ->loadMultiple($bundles);
     $info['target_bundles'] = array_map(function ($bundle) {
       return $bundle->label();
     }, $target_bundles);
