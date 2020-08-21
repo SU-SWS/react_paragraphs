@@ -5,10 +5,6 @@
  * react_paragraphs.module
  */
 
-use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
-use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\field\Entity\FieldConfig;
-
 /**
  * Implements hook_theme().
  */

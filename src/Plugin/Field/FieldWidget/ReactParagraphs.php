@@ -120,8 +120,9 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
 
       /** @var \Drupal\paragraphs\ParagraphInterface $row_item */
       // Loop through the items within the row and populate the data.
-      foreach ($row_entity->get($row_item_field->getName())
-                 ->referencedEntities() as $item_delta => $row_item) {
+      $ref_items = $row_entity->get($row_item_field->getName())
+        ->referencedEntities();
+      foreach ($ref_items as $item_delta => $row_item) {
         $all_items[$row_delta]['rowItems'][$item_delta] = [
           'target_id' => $row_item->id(),
           'entity' => ['type' => [['target_id' => $row_item->bundle()]]],
@@ -223,6 +224,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    * @param string $admin_label
    *   Administrative label.
    * @param int|null $entity_id
+   *   Entity id.
    *
    * @return \Drupal\paragraphs\ParagraphInterface
    *   Entity with modified field values.

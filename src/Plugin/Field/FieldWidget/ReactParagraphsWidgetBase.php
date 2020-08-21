@@ -44,6 +44,8 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
   protected $editorManager;
 
   /**
+   * Field manager service.
+   *
    * @var \Drupal\Core\Entity\EntityFieldManagerInterface
    */
   protected $fieldManager;
@@ -85,7 +87,6 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
     $this->currentUser = $current_user;
   }
 
-
   /**
    * {@inheritdoc}
    */
@@ -94,7 +95,6 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
     $settings['resizable'] = FALSE;
     return $settings;
   }
-
 
   /**
    * Get the field on the paragraphs row that will hold the items.

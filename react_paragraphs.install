@@ -102,8 +102,12 @@ function _react_paragraphs_update_8201_get_storage_config($name, $default = NULL
 }
 
 /**
+ * Create displays for the new paragraph rows..
+ *
  * @param string $bundle
+ *   Paragraph row bundle id.
  * @param string $field_name
+ *   Field machine name.
  *
  * @throws \Drupal\Core\Entity\EntityStorageException
  */
@@ -146,6 +150,12 @@ function react_paragraphs_update_8203() {
   }
 }
 
+/**
+ * Update the display settings to use the normal display formatter.
+ *
+ * @param \Drupal\layout_builder\SectionListInterface $display
+ *   Display section object.
+ */
 function _react_paragraphs_update_8203_update_display(SectionListInterface $display) {
   $display_edited = FALSE;
   foreach ($display->getSections() as $section) {
@@ -189,7 +199,7 @@ function react_paragraphs_update_8205(&$sandbox) {
 
     $entity_row_field_data = [];
 
-    foreach ($rows as $row_delta => $row_info) {
+    foreach ($rows as $row_info) {
       $row_items = [];
 
       foreach ($row_info as $row_item) {
@@ -312,7 +322,6 @@ function react_paragraphs_update_8207() {
         $field = FieldConfig::loadByName($entity_type, $bundle, $field_name);
         $field->set('field_type', 'entity_reference_revisions');
         $field->save();
-
 
         /** @var \Drupal\Core\Entity\Display\EntityFormDisplayInterface $form_display */
         $form_display = EntityFormDisplay::load("$entity_type.$bundle.default");

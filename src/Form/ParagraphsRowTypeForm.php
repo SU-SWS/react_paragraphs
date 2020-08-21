@@ -35,6 +35,7 @@ class ParagraphsRowTypeForm extends ParagraphsTypeForm {
       case 'entity.paragraphs_type.collection':
         $form_state->setRedirect('entity.paragraphs_row_type.collection');
         break;
+
       case 'entity.paragraph.field_ui_fields':
         $route_info = FieldUI::getOverviewRouteInfo('paragraph_row', $this->entity->id());
         $form_state->setRedirectUrl($route_info);
