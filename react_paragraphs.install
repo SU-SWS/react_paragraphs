@@ -279,11 +279,17 @@ function react_paragraphs_update_8207() {
 
   $database = \Drupal::database();
   $config_factory = \Drupal::configFactory();
-
+  /** @var \Drupal\Core\KeyValueStore\KeyValueFactoryInterface $key_value_factory */
+  $key_value_factory = \Drupal::service('keyvalue');
   foreach ($react_fields as $entity_type => $fields) {
     $storage = $entity_type_manager->getStorage($entity_type);
+    $key_value = $key_value_factory->get('entity.definitions.bundle_field_map')
+      ->get($entity_type);
 
     foreach ($fields as $field_name => $bundles_info) {
+      if (isset($key_value[$field_name])) {
+        $key_value[$field_name]['type'] = 'entity_reference_revisions';
+      }
       /** @var \Drupal\field\FieldStorageConfigInterface $field_storage */
       $field_storage = FieldStorageConfig::load("$entity_type.$field_name");
 
@@ -339,7 +345,10 @@ function react_paragraphs_update_8207() {
         }
       }
     }
+    $key_value_factory->get('entity.definitions.bundle_field_map')
+      ->set($entity_type, $key_value);
   }
+  \Drupal::cache()->delete('entity_field_map');
 }
 
 /**
