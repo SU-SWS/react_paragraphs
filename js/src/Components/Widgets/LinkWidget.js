@@ -9,9 +9,15 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
   let timeout;
   let initialCondition = defaultValue;
+
   try {
-    initialCondition.length;
-  }catch (e) {
+    // Checking for the length of 0 will catch any null, non-arrays, or empty
+    // arrays. This ensures the initial state is always in a good structure.
+    if (initialCondition.length === 0) {
+      throw 'Default condition failed';
+    }
+  }
+  catch (e) {
     initialCondition = [{uri: '', title: ''}];
   }
 
@@ -26,7 +32,8 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   }
 
   /**
-   * When the uri changes, use a timer like a debounce and fetch some suggestions from the linkit module.
+   * When the uri changes, use a timer like a debounce and fetch some
+   * suggestions from the linkit module.
    */
   const uriChanged = (newUri) => {
     clearTimeout(timeout);
@@ -136,7 +143,8 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   };
 
   /**
-   * When the textfield on the URI blurs, that's when we want to trigger the field change and pass it up to the manager.
+   * When the textfield on the URI blurs, that's when we want to trigger the
+   * field change and pass it up to the manager.
    */
   const onUriBlur = (e, delta) => {
     alterValues({
