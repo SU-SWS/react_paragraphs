@@ -19,11 +19,11 @@ use Drupal\paragraphs\Entity\ParagraphsType;
  *       "delete" = "Drupal\react_paragraphs\Form\ParagraphsRowTypeDeleteForm"
  *     },
  *     "route_provider" = {
- *       "html" = "Drupal\react_paragraphs\ParagraphsRowTypeHtmlRouteProvider",
+ *       "html" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",
  *     },
  *   },
  *   config_prefix = "paragraphs_row_type",
- *   admin_permission = "administer site configuration",
+ *   admin_permission = "administer paragraphs row types",
  *   bundle_of = "paragraph_row",
  *   entity_keys = {
  *     "id" = "id",
@@ -31,7 +31,6 @@ use Drupal\paragraphs\Entity\ParagraphsType;
  *     "uuid" = "uuid"
  *   },
  *   links = {
- *     "canonical" = "/admin/structure/paragraphs_row_type/{paragraphs_row_type}",
  *     "add-form" = "/admin/structure/paragraphs_row_type/add",
  *     "edit-form" = "/admin/structure/paragraphs_row_type/{paragraphs_row_type}/edit",
  *     "delete-form" = "/admin/structure/paragraphs_row_type/{paragraphs_row_type}/delete",

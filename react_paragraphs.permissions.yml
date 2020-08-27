@@ -1,31 +1,3 @@
-add paragraphs row entities:
-  title: 'Create new Paragraphs Row entities'
-
-administer paragraphs row entities:
-  title: 'Administer Paragraphs Row entities'
-  description: 'Allow to access the administration form to configure Paragraphs Row entities.'
-  restrict access: true
-
-delete paragraphs row entities:
-  title: 'Delete Paragraphs Row entities'
-
-edit paragraphs row entities:
-  title: 'Edit Paragraphs Row entities'
-
-view published paragraphs row entities:
-  title: 'View published Paragraphs Row entities'
-
-view unpublished paragraphs row entities:
-  title: 'View unpublished Paragraphs Row entities'
-
-view all paragraphs row revisions:
-  title: 'View all Paragraphs Row revisions'
-
-revert all paragraphs row revisions:
-  title: 'Revert all Paragraphs Row revisions'
-  description: 'Role requires permission <em>view Paragraphs Row revisions</em> and <em>edit rights</em> for paragraphs row entities in question or <em>administer paragraphs row entities</em>.'
-
-delete all paragraphs row revisions:
-  title: 'Delete all revisions'
-  description: 'Role requires permission to <em>view Paragraphs Row revisions</em> and <em>delete rights</em> for paragraphs row entities in question or <em>administer paragraphs row entities</em>.'
-
+administer paragraphs row types:
+  title: 'Administer Paragraphs Row types'
+  description: 'Allow to define the existing Paragraphs Row types and their Fields'
