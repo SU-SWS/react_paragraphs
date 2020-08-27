@@ -36,7 +36,7 @@ function react_paragraphs_theme_suggestions_field(array $variables) {
  * Implements hook_preprocess_HOOK().
  */
 function react_paragraphs_preprocess_field__react_paragraph_row(&$variables) {
-  $variables['attributes']['class'][] = 'react-paragraphs-row ';
+  $variables['attributes']['class'][] = 'react-paragraphs-row';
   $variables['#attached']['library'][] = 'react_paragraphs/field_formatter';
 
   foreach ($variables['items'] as &$item) {
