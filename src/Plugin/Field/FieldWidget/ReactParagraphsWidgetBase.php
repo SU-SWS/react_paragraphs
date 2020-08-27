@@ -102,7 +102,7 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
    * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
    *   Paragraphs row field definition.
    *
-   * @return \Drupal\field\FieldConfigInterface
+   * @return \Drupal\field\FieldConfigInterface|null
    *   Field on the paragraphs row.
    */
   protected static function getRowItemsField(FieldDefinitionInterface $field_definition) {

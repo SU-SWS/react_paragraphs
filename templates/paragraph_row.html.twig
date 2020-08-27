@@ -15,8 +15,8 @@
  * @ingroup themeable
  */
 #}
-<div{{ attributes.addClass('paragraph_row') }}>
-  {% if content %}
+{% if content %}
+  <div{{ attributes.addClass('paragraph_row') }}>
     {{- content -}}
-  {% endif %}
-</div>
+  </div>
+{% endif %}
