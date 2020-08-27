@@ -113,10 +113,26 @@ export class WidgetManager extends Component {
     }
   }
 
+  /**
+   * Get the object related tot he give tool.
+   *
+   * @param toolId
+   *   Tool machine name.
+   *
+   * @returns {*}
+   */
   getToolInformation(toolId) {
     return this.props.tools.find(tool => tool.id === toolId);
   }
 
+  /**
+   * After the user changes the admin label on an item, save it in state.
+   *
+   * @param itemId
+   *   Item identifier or uuid.
+   * @param title
+   *   New admin label.
+   */
   onAdminTitleChange(itemId, title) {
     const newState = {...this.state};
     newState.rowOrder.map(rowId => {
@@ -128,6 +144,12 @@ export class WidgetManager extends Component {
     this.triggerFormUpdated();
   }
 
+  /**
+   * Remove the given item from a row.
+   *
+   * @param itemId
+   *   Row identifier.
+   */
   removeRowItem(itemId) {
     const rowId = this.state.rowOrder.find(rowId => this.state.rows[rowId].itemsOrder.includes(itemId));
     const newState = {...this.state};
@@ -139,6 +161,14 @@ export class WidgetManager extends Component {
     this.triggerFormUpdated();
   }
 
+  /**
+   * Add the given tool to the bottom with an empty row.
+   *
+   * @param item_name
+   *   Tool machine name.
+   * @param e
+   *   Event.
+   */
   addToolToBottom(item_name, e) {
     const rowOrder = this.state.rowOrder.filter(item => item != null);
 
@@ -171,6 +201,12 @@ export class WidgetManager extends Component {
     this.triggerFormUpdated();
   };
 
+  /**
+   * Add a new row to the bottom.
+   *
+   * @param callback
+   *   Callable function for after the state updates.
+   */
   addRow(callback) {
     const newState = {...this.state};
     newState.rowCount++;
@@ -194,6 +230,12 @@ export class WidgetManager extends Component {
     this.triggerFormUpdated();
   }
 
+  /**
+   * Remove an entire row.
+   *
+   * @param rowId
+   *   Item identifier or uuid.
+   */
   removeRow(rowId) {
     const newState = {...this.state};
     delete newState.rows[rowId];
@@ -251,6 +293,7 @@ export class WidgetManager extends Component {
    * When the drag is initiated.
    *
    * @param dragItem
+   *   The object info of the item being dragged.
    *
    * @link https://github.com/atlassian/react-beautiful-dnd/blob/master/docs/guides/responders.md#ondragstart
    */
@@ -457,6 +500,14 @@ export class WidgetManager extends Component {
     }
   }
 
+  /**
+   * Set the width of the item based on column widths.
+   *
+   * @param itemId
+   *   Item identifier or uuid.
+   * @param newWidth
+   *   New number of columns to save.
+   */
   setItemWidth(itemId, newWidth) {
     const newState = {...this.state};
     newState.rowOrder.map(rowId => {
@@ -467,6 +518,17 @@ export class WidgetManager extends Component {
     this.setState(newState);
   }
 
+  /**
+   * Call the API to fetch the entity form data.
+   *
+   * @param entityType
+   *   Entity type machine name.
+   * @param bundle
+   *   Entity bundle machine name.
+   *
+   * @returns {*}
+   *   The structured entity form object.
+   */
   getEntityForm(entityType, bundle) {
     let url = this.apiUrls.baseDomain + this.apiUrls.formApi;
     url = url.replace('{entity_type_id}', entityType).replace('{bundle}', bundle);
@@ -486,12 +548,32 @@ export class WidgetManager extends Component {
       .catch(e => console.error(e));
   }
 
+  /**
+   * Update the fieldable row with new field values.
+   *
+   * @param rowId
+   *   Row identifier.
+   * @param fieldName
+   *   Field machine name.
+   * @param newValues
+   *   New values for the field.
+   */
   updateRowEntity(rowId, fieldName, newValues) {
     const newState = {...this.state}
     newState.rows[rowId].entity[fieldName] = newValues;
     this.setState(newState);
   }
 
+  /**
+   * Update the fieldable row item within a row with new field values.
+   *
+   * @param item
+   *   The old item object.
+   * @param fieldName
+   *   Field machine name.
+   * @param newValues
+   *   New values for the field.
+   */
   updateRowItemEntity(item, fieldName, newValues) {
     const newRows = {...this.state.rows};
 
@@ -506,6 +588,12 @@ export class WidgetManager extends Component {
     this.triggerFormUpdated();
   }
 
+  /**
+   * Call the API and get the information about the row entity.
+   *
+   * @param rowId
+   *   Row identifier.
+   */
   loadRow(rowId) {
     this.loadEntity('paragraph_row', this.state.rows[rowId].target_id)
       .then(entityData => {
@@ -516,6 +604,12 @@ export class WidgetManager extends Component {
       });
   }
 
+  /**
+   * Call the API and get the information about the paragraph entity.
+   *
+   * @param itemId
+   *   Item identifier or uuid.
+   */
   loadRowItem(itemId) {
     const rowId = this.state.rowOrder.find(rowId => this.state.rows[rowId].itemsOrder.find(rowItemId => this.state.rows[rowId].items[rowItemId].target_id === itemId));
     const rowItemId = this.state.rows[rowId].itemsOrder.find(rowItemId => this.state.rows[rowId].items[rowItemId].target_id === itemId)
@@ -529,12 +623,26 @@ export class WidgetManager extends Component {
     });
   }
 
+  /**
+   * Call the API and fetch the entity data.
+   *
+   * @param entityType
+   *   Entity type machine name.
+   * @param entityId
+   *   Entity id.
+   *
+   * @returns {Promise<Response>}
+   *   Promise of the entity object.
+   */
   loadEntity(entityType, entityId) {
     const url = this.apiUrls.baseDomain + this.apiUrls.entityApi;
     return fetch(url.replace('{entity_type_id}', entityType).replace('{entity_id}', entityId))
       .then(response => response.json());
   }
 
+  /**
+   * Renders the context widget.
+   */
   render() {
     return (
       <WidgetContext.Provider

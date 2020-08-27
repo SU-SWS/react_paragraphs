@@ -132,13 +132,13 @@ function _react_paragraphs_update_8201_create_row_displays($bundle, $field_name)
 /**
  * Update display modes.
  */
-function react_paragraphs_update_8203() {
+function react_paragraphs_update_8202() {
   drupal_flush_all_caches();
   /** @var \Drupal\layout_builder\Entity\LayoutEntityDisplayInterface[] $displays */
   $displays = EntityViewDisplay::loadMultiple();
   foreach ($displays as $display) {
     if ($display->getThirdPartySetting('layout_builder', 'enabled')) {
-      _react_paragraphs_update_8203_update_display($display);
+      _react_paragraphs_update_8202_update_display($display);
     }
   }
 
@@ -146,7 +146,7 @@ function react_paragraphs_update_8203() {
     $layouts = \Drupal::entityTypeManager()
       ->getStorage('layout')
       ->loadMultiple();
-    array_walk($layouts, '_react_paragraphs_update_8203_update_display');
+    array_walk($layouts, '_react_paragraphs_update_8202_update_display');
   }
 }
 
@@ -156,7 +156,7 @@ function react_paragraphs_update_8203() {
  * @param \Drupal\layout_builder\SectionListInterface $display
  *   Display section object.
  */
-function _react_paragraphs_update_8203_update_display(SectionListInterface $display) {
+function _react_paragraphs_update_8202_update_display(SectionListInterface $display) {
   $display_edited = FALSE;
   foreach ($display->getSections() as $section) {
     foreach ($section->getComponents() as $component) {
@@ -177,11 +177,11 @@ function _react_paragraphs_update_8203_update_display(SectionListInterface $disp
 /**
  * Migrate Field data around.
  */
-function react_paragraphs_update_8205(&$sandbox) {
+function react_paragraphs_update_8203(&$sandbox) {
   $entity_type_manager = \Drupal::entityTypeManager();
 
   if (!isset($sandbox['count'])) {
-    $sandbox['entities'] = _react_paragraphs_update_8205_get_entities();
+    $sandbox['entities'] = _react_paragraphs_update_8203_get_entities();
     $sandbox['count'] = count($sandbox['entities']);
   }
 
@@ -245,7 +245,7 @@ function react_paragraphs_update_8205(&$sandbox) {
  * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
  * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
  */
-function _react_paragraphs_update_8205_get_entities() {
+function _react_paragraphs_update_8203_get_entities() {
   $entity_type_manager = \Drupal::entityTypeManager();
 
   /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager */
@@ -271,7 +271,7 @@ function _react_paragraphs_update_8205_get_entities() {
 /**
  * Modify the field storage and field configs.
  */
-function react_paragraphs_update_8207() {
+function react_paragraphs_update_8204() {
   /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager */
   $entityFieldManager = \Drupal::service('entity_field.manager');
   $react_fields = $entityFieldManager->getFieldMapByFieldType('react_paragraphs');
@@ -354,7 +354,7 @@ function react_paragraphs_update_8207() {
 /**
  * Create new rest resource.
  */
-function react_paragraphs_update_8210() {
+function react_paragraphs_update_8205() {
   RestResourceConfig::create([
     'id' => 'entity.paragraph_row',
     'plugin_id' => 'entity:paragraph_row',
