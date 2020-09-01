@@ -20,9 +20,12 @@
   -->
   <title>React App</title>
   <link rel="stylesheet" href="https://amptesting.sites.stanford.edu/core/misc/dropbutton/dropbutton.css"/>
-  <link rel="stylesheet" href="https://amptesting.sites.stanford.edu/core/themes/stable/css/core/dropbutton/dropbutton.css?q6wkff"/>
-  <link rel="stylesheet" href="https://amptesting.sites.stanford.edu/core/themes/classy/css/components/dropbutton.css?q6wkff"/>
-  <link rel="stylesheet" href="https://amptesting.sites.stanford.edu/core/themes/seven/css/components/dropbutton.component.css"/>
+  <link rel="stylesheet"
+        href="https://amptesting.sites.stanford.edu/core/themes/stable/css/core/dropbutton/dropbutton.css?q6wkff"/>
+  <link rel="stylesheet"
+        href="https://amptesting.sites.stanford.edu/core/themes/classy/css/components/dropbutton.css?q6wkff"/>
+  <link rel="stylesheet"
+        href="https://amptesting.sites.stanford.edu/core/themes/seven/css/components/dropbutton.component.css"/>
 <link rel="shortcut icon" href="/favicon.ico"><link href="/css/react_paragraphs.field_widget.css" rel="stylesheet"><link href="/css/react_paragraphs.field_formatter.css" rel="stylesheet"></head>
 <body>
 
@@ -74,6 +77,7 @@
 
 </style>
 
+<script>const localBaseDomain = 'http://web.drupal8.loc/';</script>
 <script type="application/json" data-drupal-selector="drupal-settings-json">
   {
     "path": {
@@ -86,41 +90,52 @@
       {
         "fieldId": "root",
         "inputId": "root-input",
-        "entityId": 999,
-        "fieldName": "field_react_paragraphs",
-        "itemsPerRow": 4,
-        "resizableItems": false,
-        "tools": {
-          "stanford_card": {
-            "label": "Card",
-            "icon": "https:\/\/cdn0.iconfinder.com\/data\/icons\/business-concepts-3\/399\/Superhero-512.png",
-            "minWidth": 3,
-            "maxWidth": 12
-          },
-          "stanford_wysiwyg": {
+        "rowBundle": "page_row",
+        "tools": [
+          {
+            "id": "text_area",
             "label": "Text Area",
+            "description": "",
             "icon": null,
-            "minWidth": 1,
-            "maxWidth": 12
-          },
-          "stanford_banner": {
-            "label": "Banner",
-            "icon": null,
-            "minWidth": 6,
-            "maxWidth": 12
-          },
-          "view": {
-            "label": "View",
-            "icon": null,
-            "minWidth": 1,
-            "maxWidth": 12
+            "minWidth": 1
           }
-        },
+        ],
         "items": [
-        ]
+          {
+            "row": {
+              "target_id": "2",
+              "entity": {
+                "type": [
+                  {
+                    "target_id": "page_row"
+                  }
+                ]
+              }
+            },
+            "rowItems": [
+              {
+                "target_id": "1",
+                "entity": {
+                  "type": [
+                    {
+                      "target_id": "text_area"
+                    }
+                  ]
+                },
+                "settings": {
+                  "width": 12,
+                  "admin_title": "This is the admin title"
+                }
+              }
+            ]
+          }
+        ],
+        "itemsPerRow": 4,
+        "resizableItems": false
       }
     ]
   }
+
 
 </script>
 

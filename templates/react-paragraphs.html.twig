@@ -1,9 +1,0 @@
-{% for row in rows %}
-  <div{{ row.attributes }}>
-    {% for item in row.items %}
-      <div{{ item.attributes }}>
-        {{ item.entity }}
-      </div>
-    {% endfor %}
-  </div>
-{% endfor %}

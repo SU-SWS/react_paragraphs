@@ -1,26 +1,27 @@
 import React, {useState} from 'react';
+import {FormHelperText} from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
-import {FormHelperText} from "@material-ui/core";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
   let timeout;
   let initialCondition = defaultValue;
-  const [urlSuggestions, setSuggestions] = useState([]);
 
-  const emptyLinkValue = {
-    uri: '',
-    title: ''
-  };
-
-  if (initialCondition === undefined || initialCondition.length === 0){
-    initialCondition = [];
-    initialCondition.push(emptyLinkValue);
+  try {
+    // Checking for the length of 0 will catch any null, non-arrays, or empty
+    // arrays. This ensures the initial state is always in a good structure.
+    if (initialCondition.length === 0) {
+      throw 'Default condition failed';
+    }
+  }
+  catch (e) {
+    initialCondition = [{uri: '', title: ''}];
   }
 
+  const [urlSuggestions, setSuggestions] = useState([]);
   const [fieldValues, setValues] = useState(initialCondition);
 
   const alterValues = (values) => {
@@ -31,7 +32,8 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   }
 
   /**
-   * When the uri changes, use a timer like a debounce and fetch some suggestions from the linkit module.
+   * When the uri changes, use a timer like a debounce and fetch some
+   * suggestions from the linkit module.
    */
   const uriChanged = (newUri) => {
     clearTimeout(timeout);
@@ -141,7 +143,8 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   };
 
   /**
-   * When the textfield on the URI blurs, that's when we want to trigger the field change and pass it up to the manager.
+   * When the textfield on the URI blurs, that's when we want to trigger the
+   * field change and pass it up to the manager.
    */
   const onUriBlur = (e, delta) => {
     alterValues({
@@ -174,7 +177,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
    * Handler for the addAnotherButton
    */
   const addAnother = () => {
-    const newState = fieldValues.concat(emptyLinkValue);
+    const newState = fieldValues.concat({uri: '', title: ''});
     setValues(newState);
   }
 

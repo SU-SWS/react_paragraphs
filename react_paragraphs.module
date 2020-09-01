@@ -9,9 +9,56 @@
  * Implements hook_theme().
  */
 function react_paragraphs_theme($existing, $type, $theme, $path) {
-  return [
-    'react_paragraphs' => [
-      'variables' => ['rows' => NULL],
-    ],
+  $theme = [];
+  $theme['paragraph_row'] = [
+    'render element' => 'elements',
+    'file' => 'paragraphs_row.page.inc',
+    'template' => 'paragraph_row',
   ];
+  return $theme;
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function react_paragraphs_theme_suggestions_field(array $variables) {
+  $suggestions = [];
+  if (
+    $variables['element']['#entity_type'] == 'paragraph_row' &&
+    $variables['element']['#field_type'] == 'entity_reference_revisions'
+  ) {
+    $suggestions[] = 'field__react_paragraph_row';
+  }
+  return $suggestions;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function react_paragraphs_preprocess_field__react_paragraph_row(&$variables) {
+  $variables['attributes']['class'][] = 'react-paragraphs-row';
+  $variables['#attached']['library'][] = 'react_paragraphs/field_formatter';
+
+  foreach ($variables['items'] as &$item) {
+    /** @var \Drupal\paragraphs\ParagraphInterface $paragraph */
+    $paragraph = $item['content']['#paragraph'];
+    $width = $paragraph->getBehaviorSetting('react', 'width');
+    $item['attributes']['data-react-columns'] = $width;
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function react_paragraphs_theme_suggestions_paragraph_row(array $variables) {
+  $suggestions = [];
+  $entity = $variables['elements']['#paragraph_row'];
+  $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+
+  $suggestions[] = 'paragraph_row__' . $sanitized_view_mode;
+  $suggestions[] = 'paragraph_row__' . $entity->bundle();
+  $suggestions[] = 'paragraph_row__' . $entity->bundle() . '__' . $sanitized_view_mode;
+  $suggestions[] = 'paragraph_row__' . $entity->id();
+  $suggestions[] = 'paragraph_row__' . $entity->id() . '__' . $sanitized_view_mode;
+  return $suggestions;
 }

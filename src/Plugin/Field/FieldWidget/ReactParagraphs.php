@@ -3,14 +3,9 @@
 namespace Drupal\react_paragraphs\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\field\FieldConfigInterface;
-use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\paragraphs\ParagraphsTypeInterface;
-use Drupal\paragraphs\Plugin\EntityReferenceSelection\ParagraphSelection;
 
 /**
  * Plugin implementation of the 'react_paragraphs' widget.
@@ -19,7 +14,7 @@ use Drupal\paragraphs\Plugin\EntityReferenceSelection\ParagraphSelection;
  *   id = "react_paragraphs",
  *   label = @Translation("React Paragraphs"),
  *   field_types = {
- *     "react_paragraphs"
+ *     "entity_reference_revisions"
  *   },
  *   multiple_values = true
  * )
@@ -27,41 +22,17 @@ use Drupal\paragraphs\Plugin\EntityReferenceSelection\ParagraphSelection;
 class ReactParagraphs extends ReactParagraphsWidgetBase {
 
   /**
-   * List of paragraph types.
+   * List of previously load entities.
    *
-   * @var \Drupal\paragraphs\Entity\ParagraphsType[]
+   * @var \Drupal\Core\Entity\ContentEntityInterface[]
    */
-  protected $paragraphTypes;
-
-  /**
-   * List of previously load paragraphs.
-   *
-   * @var \Drupal\paragraphs\ParagraphInterface[]
-   */
-  protected $paragraphs = [];
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function defaultSettings() {
-    $settings = parent::defaultSettings();
-    $settings['items_per_row'] = 1;
-    $settings['resizable'] = FALSE;
-    return $settings;
-  }
+  protected $rowData = [];
 
   /**
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $form = parent::settingsForm($form, $form_state);
-    $form['items_per_row'] = [
-      '#type' => 'number',
-      '#title' => $this->t('Number of items per row'),
-      '#min' => 1,
-      '#max' => 6,
-      '#default_value' => $this->getSetting('items_per_row'),
-    ];
     $form['resizable'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Resizable items'),
@@ -75,13 +46,8 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    * {@inheritdoc}
    */
   public function settingsSummary() {
-    $string_args = [
-      '@resizable' => $this->getSetting('resizable') ? $this->t('Resizable') : '',
-      '@count' => $this->getSetting('items_per_row'),
-    ];
-
     return [
-      $this->formatPlural($this->getSetting('items_per_row'), '@resizable @count item per row', '@resizable @count items per row', $string_args),
+      $this->getSetting('resizable') ? $this->t('Resizable') : $this->t('Equal Widths'),
     ];
   }
 
@@ -97,34 +63,8 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       ],
     ];
 
-    /** @var \Drupal\paragraphs\ParagraphInterface[] $referenced_entities */
-    $referenced_entities = $items->referencedEntities();
-    $item_values = array_filter($items->getValue());
-
-    foreach ($item_values as $delta => &$item) {
-      foreach ($referenced_entities as $entity) {
-        if ($entity->id() == $item['target_id']) {
-          $item['entity']['type'][0]['target_id'] = $entity->bundle();
-          break;
-        }
-      }
-
-      if (!empty($item['settings'])) {
-        continue;
-      }
-      // In the circumstance that the items don't have settings data, just put
-      // them into a single column.
-      $item['settings'] = [
-        'row' => $delta,
-        'index' => 0,
-        'width' => 12,
-        'admin_title' => $this->getItemLabel($referenced_entities[$delta]),
-      ];
-    }
-
     // Find unique elements for the widget react container and input field.
     $element_id = Html::getUniqueId('react-' . $this->fieldDefinition->getName());
-    $input_id = Html::getUniqueId($element_id . '-input');
 
     // Get all the attachments for any CKEditor fields that could exist.
     $attachments = $this->editorManager->getAttachments(array_keys(filter_formats($this->currentUser)));
@@ -133,10 +73,14 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     // Set the javascript settings to be picked up by react.
     $attachments['drupalSettings']['reactParagraphs'][] = [
       'fieldId' => $element_id,
-      'inputId' => $input_id,
-      'tools' => $this->getTools($this->fieldDefinition),
-      'items' => $item_values,
-      'itemsPerRow' => $this->getSetting('items_per_row'),
+      'inputId' => "$element_id-input",
+      'rowBundle' => self::getRowItemsField($this->fieldDefinition)
+        ->getTargetBundle(),
+      'tools' => $this->getTools(),
+      'items' => $this->getRowItems($items),
+      'itemsPerRow' => self::getRowItemsField($this->fieldDefinition)
+        ->getFieldStorageDefinition()
+        ->getCardinality(),
       'resizableItems' => (bool) $this->getSetting('resizable'),
     ];
 
@@ -146,179 +90,240 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       '#prefix' => '<div id="' . $element_id . '"></div>',
       '#type' => 'hidden',
       '#attached' => $attachments,
-      '#attributes' => ['id' => $input_id],
-    ];;
-    $element['#attached']['library'][] = 'react_paragraphs/field_widget';
+      '#attributes' => ['id' => "$element_id-input"],
+    ];
     return $element;
   }
 
   /**
-   * Get the paragraph type bundle name from the entity id to use as the label.
+   * Get the list of rows with the nested row item data.
    *
-   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
-   *   Paragraph entity.
-   *
-   * @return string
-   *   Bundle name or the entity id.
-   *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
-   */
-  protected function getItemLabel(ContentEntityInterface $entity) {
-    if (empty($this->paragraphTypes)) {
-      $this->paragraphTypes = $this->entityTypeManager->getStorage('paragraphs_type')
-        ->loadMultiple();
-    }
-    // Get the paragraph type bundle label to be used in the widget.
-    return $this->paragraphTypes[$entity->bundle()]->label();
-  }
-
-  /**
-   * Get the available paragraph types that are allowed in this field.
-   *
-   * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
-   *   Field storage definition.
+   * @param \Drupal\Core\Field\FieldItemListInterface $items
+   *   List of row field values.
    *
    * @return array
-   *   Keyed array of tool options with label and icon urls.
-   *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   *   Keyed data of rows and items.
    */
-  protected function getTools(FieldDefinitionInterface $field_definition) {
-    $return_bundles = [];
-    $handler = $this->selectionManager->getSelectionHandler($field_definition ?: $this->fieldDefinition);
+  protected function getRowItems(FieldItemListInterface $items) {
+    $row_item_field = self::getRowItemsField($this->fieldDefinition);
+    $all_items = [];
 
-    // Get a list of paragraph types that are allowed in the current field.
-    if ($handler instanceof ParagraphSelection) {
-      $return_bundles = $handler->getSortedAllowedTypes();
+    // Loop through the rows that are referenced and load its field data.
+    foreach ($items->referencedEntities() as $row_delta => $row_entity) {
+      $all_items[$row_delta]['row'] = [
+        'target_id' => $row_entity->id(),
+        'entity' => ['type' => [['target_id' => $row_entity->bundle()]]],
+      ];
+
+      // In case a row has 0 items.
+      $all_items[$row_delta]['rowItems'] = [];
+
+      /** @var \Drupal\paragraphs\ParagraphInterface $row_item */
+      // Loop through the items within the row and populate the data.
+      $ref_items = $row_entity->get($row_item_field->getName())
+        ->referencedEntities();
+      foreach ($ref_items as $item_delta => $row_item) {
+        $all_items[$row_delta]['rowItems'][$item_delta] = [
+          'target_id' => $row_item->id(),
+          'entity' => ['type' => [['target_id' => $row_item->bundle()]]],
+          'settings' => [
+            'width' => $row_item->getBehaviorSetting('react', 'width'),
+            'admin_title' => $row_item->getBehaviorSetting('react', 'label'),
+          ],
+        ];
+      }
+
+      // Reset the data so that its a clean array.
+      $all_items[$row_delta]['rowItems'] = array_values($all_items[$row_delta]['rowItems']);
     }
-
-    // Load the paragraph types to check for icons.
-    $bundle_entities = $this->entityTypeManager->getStorage('paragraphs_type')
-      ->loadMultiple(array_keys($return_bundles));
-
-    $handler_settings = $this->getFieldSetting('handler_settings');
-    /** @var \Drupal\paragraphs\ParagraphsTypeInterface $paragraph_type */
-    foreach ($bundle_entities as $id => $paragraph_type) {
-      $return_bundles[$id]['icon'] = self::getParagraphTypeIcon($paragraph_type);
-      $return_bundles[$id]['minWidth'] = $handler_settings['widths'][$id]['min'] ?? 1;
-    }
-
-    return $return_bundles;
-  }
-
-  /**
-   * Get the url of the paragraph types icon if it exists.
-   *
-   * @param \Drupal\paragraphs\ParagraphsTypeInterface $type
-   *   Paragraphs type entity.
-   *
-   * @return string|null
-   *   Path to icon or null if non exists..
-   */
-  protected static function getParagraphTypeIcon(ParagraphsTypeInterface $type) {
-    try {
-      return $type->getIconUrl() ?: NULL;
-    }
-    catch (\Exception $e) {
-      \Drupal::logger('react_paragraphs')
-        ->error('Unable to get paragraph icon for %type', ['%type' => $type]);
-    }
+    return $all_items;
   }
 
   /**
    * {@inheritdoc}
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
+    if (!empty($this->rowData)) {
+      return $this->rowData;
+    }
+
     $react_data = json_decode(urldecode($values['container']['value']), TRUE);
+
     $return_data = [];
 
     // Nothing was added to the rows so there's nothing to do.
     if (empty($react_data['rowOrder'])) {
       return $return_data;
     }
+    // We'll use this later, it's the field on the row to save the items in.
+    $items_field_name = self::getRowItemsField($this->fieldDefinition)
+      ->getName();
 
-    // Loop through each row from react, then loop through the items in each
-    // row, build the entity, and store the row/order data into the settings.
-    foreach ($react_data['rowOrder'] as $row_number => $row_id) {
-      foreach ($react_data['rows'][$row_id]['itemsOrder'] as $item_number => $item_id) {
-        $item = $react_data['rows'][$row_id]['items'][$item_id];
+    // Loop through the rows in the order they appear from react.
+    foreach ($react_data['rowOrder'] as $row_id) {
+      $row_data = $react_data['rows'][$row_id];
+      $row_data['entity'][$items_field_name] = [];
 
-        // In case there was any incorrect data passed to the entity, we can
-        // still save all the other paragraphs.
-        try {
-          $entity = $this->getEntity($item);
-        }
-        catch (\Exception $e) {
-          $this->messenger()
-            ->addError($this->t('Unable to create the item %title in row %row. See logs for more information.', [
-              '%title' => $item['admin_title'],
-              '%row' => $row_number,
-            ]));
+      // The row is empty, we can skip it.
+      if (empty($row_data['itemsOrder'])) {
+        continue;
+      }
 
-          \Drupal::logger('react_paragraphs')
-            ->error($this->t('Unable to create entity: %error. @data'), [
-              '%error' => $e->getMessage(),
-              '%data' => htmlSpecialChars(json_encode($item)),
-            ]);
-          continue;
-        }
-
-        // Settings column blob data.
-        $settings = [
-          'row' => $row_number,
-          'index' => $item_number,
-          'width' => $item['width'],
-          'admin_title' => $item['admin_title'],
-        ];
-
-        $return_data[] = [
-          'entity' => $entity,
-          'target_id' => $entity->id(),
-          'target_revision_id' => $entity->getRevisionId(),
-          'settings' => json_encode($settings),
+      // Loop through the items within the row in the order they come. Build
+      // the item entities, and save the field values to be set on the row
+      // entity next.
+      foreach ($row_data['itemsOrder'] as $item_id) {
+        $item = $row_data['items'][$item_id];
+        $item_entity = $this->getRowItemEntity($item['entity'], $item['width'], $item['admin_title'], $item['target_id'] ?? NULL);
+        $row_data['entity'][$items_field_name][] = [
+          'entity' => $item_entity,
+          'target_id' => $item_entity->id(),
+          'target_revision_id' => $item_entity->getRevisionId(),
         ];
       }
+
+      $row = $this->getRowEntity($row_data['entity'], $row_data['target_id'] ?? NULL);
+      $return_data[] = [
+        'entity' => $row,
+        'target_id' => $row->id(),
+        'target_revision_id' => $row->getRevisionId(),
+      ];
     }
-    return $return_data;
+    $this->rowData = $return_data;
+    return $this->rowData;
   }
 
   /**
-   * Get the existing paragraph entity if it exists, or create a new one.
+   * Load or create a new paragraphs row entity.
    *
-   * @param array $item_data
-   *   Entity field data.
+   * @param array $field_data
+   *   Array of field data from the react side.
+   * @param int|null $entity_id
+   *   Entity id if its existing.
+   *
+   * @return \Drupal\Core\Entity\ContentEntityInterface
+   *   Row entity with set field values.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  protected function getRowEntity(array $field_data, $entity_id) {
+    $entity = $this->getEntity('paragraph_row', $this->getRowBundle(), $field_data, $entity_id);
+    $entity->save();
+    return $entity;
+  }
+
+  /**
+   * Load or create a paragraphs row item entity with field data.
+   *
+   * @param array $field_data
+   *   Array of field data from the react side.
+   * @param int $width
+   *   Width of the current item.
+   * @param string $admin_label
+   *   Administrative label.
+   * @param int|null $entity_id
+   *   Entity id.
    *
    * @return \Drupal\paragraphs\ParagraphInterface
-   *   Paragraph entity.
+   *   Entity with modified field values.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function getEntity(array $item_data) {
+  protected function getRowItemEntity(array $field_data, $width, $admin_label, $entity_id) {
+    /** @var \Drupal\paragraphs\ParagraphInterface $row_item */
+    $row_item = $this->getEntity('paragraph', $field_data['type'][0]['target_id'], $field_data, $entity_id);
+    $row_item->setBehaviorSettings('react', [
+      'width' => $width,
+      'label' => $admin_label,
+    ]);
+    $row_item->save();
+    return $row_item;
+  }
 
-    // The paragraph was already created/loaded. We can return that.
-    if (isset($this->paragraphs[$item_data['id']])) {
-      return $this->paragraphs[$item_data['id']];
+  /**
+   * Get the targeted paragraphs row bundle id.
+   *
+   * @return string
+   *   Bundle ID.
+   */
+  protected function getRowBundle() {
+    $settings = $this->fieldDefinition->getSetting('handler_settings');
+    return reset($settings['target_bundles']);
+  }
+
+  /**
+   * Load or create an entity with some field data populated on it.
+   *
+   * @param string $entity_type
+   *   Entity type id.
+   * @param string $bundle
+   *   Entity bundle id.
+   * @param array $field_data
+   *   Array of field data from the react side.
+   * @param int|null $entity_id
+   *   Entity ID if available.
+   *
+   * @return \Drupal\Core\Entity\ContentEntityInterface
+   *   Entity with modified field values.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
+  protected function getEntity($entity_type, $bundle, array $field_data, $entity_id = NULL) {
+    if (!$entity_id) {
+      return $this->createEntity($entity_type, $bundle, $field_data);
     }
 
-    // An existing paragraph was edited. Load that paragraph and set all the
-    // field values to the data passed in.
-    if (!empty($item_data['target_id'])) {
-      $entity = Paragraph::load($item_data['target_id']);
+    /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+    $entity = $this->entityTypeManager->getStorage($entity_type)
+      ->load($entity_id);
+    $entity->setNewRevision();
 
-      /** @var \Drupal\Core\Field\FieldDefinitionInterface $field_definition */
-      foreach ($entity->getFieldDefinitions() as $field_definition) {
-        if (isset($item_data['entity'][$field_definition->getName()]) && $field_definition instanceof FieldConfigInterface) {
-          $entity->set($field_definition->getName(), $item_data['entity'][$field_definition->getName()]);
-        }
+    $fields = $this->fieldManager->getFieldDefinitions($entity_type, $bundle);
+    foreach ($fields as $field_name => $field_definition) {
+      if (isset($field_data[$field_name]) && $field_definition instanceof FieldConfigInterface) {
+        $entity->set($field_name, $field_data[$field_name]);
       }
     }
-    else {
-      // Create a new paragraph entity. We don't need to save at this point.
-      $entity = Paragraph::create($item_data['entity']);
-    }
+    return $entity;
+  }
 
-    $this->paragraphs[$item_data['id']] = $entity;
-    return $this->paragraphs[$item_data['id']];
+  /**
+   * Create a new entity with the give field data.
+   *
+   * @param string $entity_type
+   *   Entity type ID.
+   * @param string $bundle
+   *   Bundle ID.
+   * @param array $field_data
+   *   Array of field data from the react side.
+   *
+   * @return \Drupal\Core\Entity\ContentEntityInterface
+   *   Newly created entity.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
+  protected function createEntity($entity_type, $bundle, array $field_data) {
+    $entity_definition = $this->entityTypeManager->getDefinition($entity_type);
+    $bundle_key = $entity_definition->getKey('bundle');
+    $storage = $this->entityTypeManager->getStorage($entity_type);
+
+    $entity_values = [$bundle_key => $bundle];
+    $fields = $this->fieldManager->getFieldDefinitions($entity_type, $bundle);
+    foreach ($fields as $field_name => $field_definition) {
+      if (isset($field_data[$field_name]) && $field_definition instanceof FieldConfigInterface) {
+        $entity_values[$field_name] = $field_data[$field_name];
+      }
+    }
+    /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+    $entity = $storage->create($entity_values);
+
+    // TODO: Handle validation.
+    $entity->validate();
+    return $entity;
   }
 
 }
