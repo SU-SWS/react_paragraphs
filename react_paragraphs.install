@@ -194,6 +194,11 @@ function react_paragraphs_update_8203(&$sandbox) {
     $rows = [];
     foreach ($entity->get($field_name)->getValue() as $field_item) {
       $field_item['settings'] = json_decode($field_item['settings'], TRUE);
+      // Because the serializer is gone, the settings might be a double encoded
+      // json string, so we will want to check to try and decode it again.
+      if (!is_array($field_item['settings'])) {
+        $field_item['settings'] = json_decode($field_item['settings'], TRUE);
+      }
       $rows[$field_item['settings']['row']][] = $field_item;
     }
 
