@@ -5,6 +5,7 @@ field.storage_settings.react_paragraphs:
     target_type:
       type: string
       label: 'Type of item to reference'
+
 field.field_settings.react_paragraphs:
   type: mapping
   label: 'Entity reference field settings'
@@ -30,7 +31,13 @@ field.formatter.settings.react_paragraphs:
 field.widget.settings.react_paragraphs:
   type: mapping
   mapping:
-    items_per_row:
-      type: integer
     resizable:
       type: boolean
+      label: Resizeable items
+    sizes:
+      type: sequence
+      label: Maximum columns required for each item.
+      sequence:
+        type: integer
+        label: Maximum columns required.
+

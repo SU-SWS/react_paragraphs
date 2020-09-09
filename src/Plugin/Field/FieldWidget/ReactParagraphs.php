@@ -39,6 +39,25 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       '#description' => $this->t('Each item can be resized to make customized widths.'),
       '#default_value' => $this->getSetting('resizable'),
     ];
+    $form['sizes'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Item Maximum Sizes'),
+    ];
+    foreach ($this->getTools() as $tool) {
+      $form['sizes'][$tool['id']] = [
+        '#type' => 'select',
+        '#title' => $this->t('Maximum Columns for @label', ['@label' => $tool['label']]),
+        '#default_value' => $this->getSetting('sizes')[$tool['id']] ?? 1,
+        '#options' => [
+          12 => 12,
+          6 => 6,
+          4 => 4,
+          3 => 3,
+          2 => 2,
+          1 => 1,
+        ],
+      ];
+    }
     return $form;
   }
 

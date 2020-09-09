@@ -93,6 +93,7 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
   public static function defaultSettings() {
     $settings = parent::defaultSettings();
     $settings['resizable'] = FALSE;
+    $settings['sizes'] = [];
     return $settings;
   }
 
@@ -190,7 +191,7 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
         'label' => $paragraph_type->label(),
         'description' => $paragraph_type->getDescription(),
         'icon' => self::getParagraphTypeIcon($paragraph_type),
-        'minWidth' => 1,
+        'minWidth' => (int) $this->getSetting('sizes')[$id] ?? 1,
       ];
     }
 
