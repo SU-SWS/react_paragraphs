@@ -31,11 +31,23 @@ export class WidgetManager extends Component {
 
   constructor(props) {
     super(props);
-
     // Local development url.
     if (typeof window.drupalSettings.user === 'undefined' && typeof localBaseDomain !== 'undefined') {
       this.apiUrls.baseDomain = localBaseDomain;
     }
+    // If the form was submitted and rebuilt, we will want to use the existing
+    // form data to re-build the UI.
+    if (props.existingData) {
+      this.state = {
+        rowCount: props.existingData.rowOrder.length,
+        rows: props.existingData.rows,
+        rowOrder: props.existingData.rowOrder,
+        loadedItems: 0,
+        cachedForms: {}
+      };
+      return;
+    }
+
     let rows = {};
     let rowOrder = [];
 

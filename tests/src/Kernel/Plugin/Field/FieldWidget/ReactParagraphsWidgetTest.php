@@ -123,6 +123,7 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
         ],
         'itemsPerRow' => 1,
         'resizableItems' => FALSE,
+        'existingData' => FALSE,
       ],
     ];
 
