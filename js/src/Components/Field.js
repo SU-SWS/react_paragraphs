@@ -5,7 +5,7 @@ import {Toolbox} from "./Toolbox";
 import {WidgetManager, WidgetContext} from "../Contexts/WidgetManager";
 import {FlexDiv} from "./Atoms/FlexDiv";
 
-export const Field = ({inputId, fieldName, items, tools, itemsPerRow, resizableItems, rowBundle}) => {
+export const Field = ({inputId, fieldName, items, tools, itemsPerRow, resizableItems, rowBundle, existingData}) => {
 
   return (
     <WidgetManager
@@ -15,6 +15,7 @@ export const Field = ({inputId, fieldName, items, tools, itemsPerRow, resizableI
       tools={tools}
       maxItemsPerRow={itemsPerRow}
       rowBundle={rowBundle}
+      existingData={existingData}
     >
       <FlexDiv alignItems={'flex-start'}>
         <WidgetContext.Consumer>

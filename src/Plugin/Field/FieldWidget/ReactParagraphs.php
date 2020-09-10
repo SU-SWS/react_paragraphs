@@ -3,6 +3,7 @@
 namespace Drupal\react_paragraphs\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\field\FieldConfigInterface;
@@ -70,6 +71,16 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     $attachments = $this->editorManager->getAttachments(array_keys(filter_formats($this->currentUser)));
     $attachments['library'][] = 'react_paragraphs/field_widget';
 
+    // If the user has submitted the form but there are some validation issues,
+    // the form will be rebuilt. We will want to grab the data the user has
+    // changed or entered and pass that back to the react environment. This will
+    // prevent a user from loosing all their hard work if something doesn't
+    // validate elsewhere.
+    $field_name = $this->fieldDefinition->getName();
+    $path = array_merge($form['#parents'], [$field_name, 'container', 'value']);
+    $key_exists = NULL;
+    $values = NestedArray::getValue($form_state->getUserInput(), $path, $key_exists);
+
     // Set the javascript settings to be picked up by react.
     $attachments['drupalSettings']['reactParagraphs'][] = [
       'fieldId' => $element_id,
@@ -82,6 +93,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
         ->getFieldStorageDefinition()
         ->getCardinality(),
       'resizableItems' => (bool) $this->getSetting('resizable'),
+      'existingData' => $key_exists ? json_decode(urldecode($values)) : FALSE,
     ];
 
     // The hidden input with a empty container nearby for react to attach to.
