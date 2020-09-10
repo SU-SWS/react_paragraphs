@@ -93,6 +93,7 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
   public static function defaultSettings() {
     $settings = parent::defaultSettings();
     $settings['resizable'] = FALSE;
+    $settings['sizes'] = [];
     return $settings;
   }
 
@@ -182,7 +183,7 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
     // Load the paragraph types to check for icons.
     $bundle_entities = $this->entityTypeManager->getStorage('paragraphs_type')
       ->loadMultiple(array_keys($field_bundles));
-
+    $sizes = $this->getSetting('sizes');
     /** @var \Drupal\paragraphs\ParagraphsTypeInterface $paragraph_type */
     foreach ($bundle_entities as $id => $paragraph_type) {
       $return_bundles[] = [
@@ -190,7 +191,7 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
         'label' => $paragraph_type->label(),
         'description' => $paragraph_type->getDescription(),
         'icon' => self::getParagraphTypeIcon($paragraph_type),
-        'minWidth' => 1,
+        'minWidth' => (int) ($sizes[$id] ?? 1),
       ];
     }
 

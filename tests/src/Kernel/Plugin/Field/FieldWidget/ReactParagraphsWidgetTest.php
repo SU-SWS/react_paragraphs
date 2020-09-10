@@ -142,7 +142,7 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
     $form = [];
     $form_state = new FormState();
     $settings_form = $widget->settingsForm($form, $form_state);
-    $this->assertCount(1, $settings_form);
+    $this->assertCount(2, $settings_form);
 
     $summary = $widget->settingsSummary();
     $this->assertCount(1, $summary);
