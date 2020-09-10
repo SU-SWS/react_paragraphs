@@ -9,13 +9,13 @@ export const Field = ({inputId, fieldName, items, tools, itemsPerRow, resizableI
 
   return (
     <WidgetManager
+      existingData={existingData}
       items={items}
       inputId={inputId}
       fieldName={fieldName}
       tools={tools}
       maxItemsPerRow={itemsPerRow}
       rowBundle={rowBundle}
-      existingData={existingData}
     >
       <FlexDiv alignItems={'flex-start'}>
         <WidgetContext.Consumer>
