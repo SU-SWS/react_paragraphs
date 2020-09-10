@@ -57,7 +57,7 @@ export const SelectWidget = ({fieldId, defaultValue, onFieldChange, settings}) =
         )}
 
       </Select>
-      {settings.help.length &&
+      {settings.help.length > 0 &&
       <FormHelperText>
         {settings.help}
       </FormHelperText>

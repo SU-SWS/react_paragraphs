@@ -8,6 +8,7 @@ use Drupal\file\Entity\File;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\paragraphs\Entity\ParagraphsType;
+use Drupal\react_paragraphs\Entity\ParagraphRow;
 use Drupal\search\Entity\SearchPage;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 
@@ -28,34 +29,11 @@ class ReactParagraphsFieldCronTest extends ReactParagraphsFieldTestBase {
   public function testIndexing() {
     \Drupal::service('module_installer')->install(['search']);
 
-    \Drupal::service('file_system')->copy($this->root . '/core/misc/druplicon.png', 'public://example.jpg');
-    $image = File::create(['uri' => 'public://example.jpg']);
-    $image->save();
+    $paragraph = Paragraph::create(['type' => 'row']);
+    $paragraph->save();
 
-    ParagraphsType::create([
-      'id' => 'card',
-      'label' => 'Card',
-      'icon_uuid' => $image->uuid(),
-    ])->save();
-
-    $field_storage = FieldStorageConfig::create(
-      [
-        'field_name' => 'bar',
-        'entity_type' => 'paragraph',
-        'type' => 'text',
-      ]
-    );
-    $field_storage->save();
-    FieldConfig::create([
-      'field_storage' => $field_storage,
-      'bundle' => 'card',
-    ])->save();
-
-    $paragraph1 = Paragraph::create(['type' => 'card']);
-    $paragraph1->save();
-
-    $paragraph2 = Paragraph::create(['type' => 'card']);
-    $paragraph2->save();
+    $row = ParagraphRow::create(['type' => 'card', 'foo' => ['target_id' => $paragraph->id(), 'entity' => $paragraph]]);
+    $row->save();
 
     $user = $this->createUser();
 
@@ -64,14 +42,8 @@ class ReactParagraphsFieldCronTest extends ReactParagraphsFieldTestBase {
       'title' => 'node',
       'foo' => [
         [
-          'target_id' => $paragraph1->id(),
-          'entity' => $paragraph1,
-          'settings' => '',
-        ],
-        [
-          'target_id' => $paragraph2->id(),
-          'entity' => $paragraph2,
-          'settings' => json_encode(['row' => 1, 'index' => 0, 'width' => 12, 'admin_title' => '']),
+          'target_id' => $row->id(),
+          'entity' => $row,
         ],
       ],
     ]);

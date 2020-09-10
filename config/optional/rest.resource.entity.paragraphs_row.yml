@@ -1,0 +1,17 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - paragraphs
+    - serialization
+    - user
+id: entity.paragraph_row
+plugin_id: 'entity:paragraph_row'
+granularity: resource
+configuration:
+  methods:
+    - GET
+  formats:
+    - json
+  authentication:
+    - cookie

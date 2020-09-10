@@ -1,11 +1,10 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Draggable, Droppable} from "react-beautiful-dnd";
 import styled from 'styled-components'
-import {DrupalContext} from "../WidgetManager";
-import {Paragraph} from "./Paragraph";
+import {RowItem} from "./RowItem";
 import {FlexDiv} from "./Atoms/FlexDiv";
-import {ConfirmDialog} from "./Atoms/ConfirmDialog";
 import moveIcon from '../icons/move.svg';
+import {RowActions} from "./Atoms/RowActions";
 
 const ItemsContainer = styled.div`
   display: flex;
@@ -41,99 +40,78 @@ const RowWrapper = styled.div`
   }
 `;
 
-export const Row =(props) =>  {
+export const Row = ({id, index, isDropDisabled, itemsOrder, items, itemsPerRow, onlyRow, onRemoveRow, entity, loadedEntity}) => {
+  let rowIsDragging;
 
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-    let rowIsDragging;
-
-    return (
-      <Draggable
-        draggableId={props.id}
-        index={props.index}
-      >
-        {(provided, snapshot) => (
-          <RowWrapper
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            isDragging={snapshot.isDragging}
-          >
-            {rowIsDragging = snapshot.isDragging}
-            <FlexDiv className="inner-row-wrapper" id={props.id}>
-              <div className="move-row-handle" {...provided.dragHandleProps}>
+  return (
+    <Draggable
+      draggableId={id}
+      index={index}
+    >
+      {(provided, snapshot) => (
+        <RowWrapper
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          isDragging={snapshot.isDragging}
+        >
+          {rowIsDragging = snapshot.isDragging}
+          <FlexDiv className="inner-row-wrapper" id={id}>
+            <div className="move-row-handle" {...provided.dragHandleProps}>
               <span className="visually-hidden">
                 Move Row
               </span>
-              </div>
-
-              <div style={{flex: 1}}>
-                <Droppable
-                  droppableId={props.id}
-                  direction="horizontal"
-                  type="item"
-                  isDropDisabled={props.isDropDisabled}
-                >
-                  {(provided, snapshot) => (
-                    <ItemsContainer
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      isDraggingOver={snapshot.isDraggingOver}
-                      rowIsDragging={rowIsDragging}
-                      hasItems={props.itemsOrder.length > 0}
-                    >
-                      <DrupalContext.Consumer>
-                        {drupalContext =>
-                          <React.Fragment>
-                            {props.itemsOrder.map((itemId, index) => (
-                              <Paragraph
-                                key={itemId}
-                                id={itemId}
-                                index={index}
-                                item={props.items[itemId]}
-                                isDraggable={props.itemsPerRow > 1}
-                                isDraggingOverRow={snapshot.isDraggingOver}
-                                typeLabel={drupalContext.tools[props.items[itemId].entity.type[0].target_id].label}
-                              />
-                            ))}
-
-                            {props.itemsOrder.length === 0 &&
-                            <HelpTextPlaceholder
-                              allowedNumber={props.itemsPerRow}/>
-                            }
-                            {provided.placeholder}
-                          </React.Fragment>
-                        }
-                      </DrupalContext.Consumer>
-                    </ItemsContainer>
-                  )}
-                </Droppable>
-              </div>
-            </FlexDiv>
-            <div className="row-actions">
-              <button
-                type="button"
-                className="button"
-                disabled={props.itemsOrder.length === 0 && props.onlyRow}
-                onClick={() => setDeleteModalOpen(true)}
-                style={{marginLeft: '10px', whiteSpace: 'nowrap'}}
-              >
-                Delete Row
-              </button>
-
-              <ConfirmDialog
-                open={deleteModalOpen}
-                title="Delete this row?"
-                dialog="This action can not be undone."
-                onCancel={() => setDeleteModalOpen(false)}
-                onConfirm={() => {
-                  setDeleteModalOpen(false);
-                  props.onRemoveRow(props.id)
-                }}
-              />
             </div>
-          </RowWrapper>
-        )}
-      </Draggable>
-    )
+
+            <div style={{flex: 1}}>
+              <Droppable
+                droppableId={id}
+                direction="horizontal"
+                type="item"
+                isDropDisabled={isDropDisabled}
+              >
+                {(provided, snapshot) => (
+                  <ItemsContainer
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    isDraggingOver={snapshot.isDraggingOver}
+                    rowIsDragging={rowIsDragging}
+                    hasItems={itemsOrder.length > 0}
+                  >
+
+                    <React.Fragment>
+                      {itemsOrder.map((itemId, index) => (
+                        <RowItem
+                          key={itemId}
+                          id={itemId}
+                          index={index}
+                          item={items[itemId]}
+                          isDraggable={itemsPerRow > 1}
+                          isDraggingOverRow={snapshot.isDraggingOver}
+                        />
+                      ))}
+
+                      {itemsOrder.length === 0 &&
+                      <HelpTextPlaceholder allowedNumber={itemsPerRow}/>
+                      }
+                      {provided.placeholder}
+                    </React.Fragment>
+
+                  </ItemsContainer>
+                )}
+              </Droppable>
+            </div>
+          </FlexDiv>
+          <RowActions
+            onlyRow={onlyRow}
+            onRemoveRow={onRemoveRow}
+            rowId={id}
+            entity={entity}
+            loadedEntity={loadedEntity}
+          />
+        </RowWrapper>
+      )}
+    </Draggable>
+  )
 };
 
 const HelpTextPlaceholder = ({allowedNumber = 1}) => {

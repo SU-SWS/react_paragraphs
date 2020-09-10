@@ -1,76 +1,38 @@
 import React from 'react';
-import styled from 'styled-components'
-import {TextWidget} from "./Widgets/TextWidget";
-import {LinkWidget} from "./Widgets/LinkWidget";
-import {BooleanWidget} from "./Widgets/BooleanWidget";
-import {DateWidget} from "./Widgets/DateWidget";
-import {NumberWidget} from "./Widgets/NumberWidget";
-import {SelectWidget} from "./Widgets/SelectWidget";
-import {CheckboxesWidget} from "./Widgets/CheckboxesWidget";
-import {RadiosWidget} from "./Widgets/RadiosWidget";
-import {CkeditorWidget} from "./Widgets/CkeditorWidget";
-import {MediaLibrary} from "./Widgets/MediaLibrary";
-import {ViewFieldWidget} from "./Widgets/ViewFieldWidget";
 import {Loader} from "./Atoms/Loader";
+import {EntityForm} from "./EntityForm";
+import {FormDialog} from "./Atoms/FormDialog";
+import {AdminTitleField} from "./Widgets/AdminTitleField";
 
-const FieldContainer = styled.div`
-  margin: 40px 0 0;
-`;
+export const ParagraphForm = ({item, widgetContext, open, typeLabel, onClose}) => {
 
-export const ParagraphForm = ({item, drupalContext, ...props}) => {
-
-  const widgetComponents = {
-    text: TextWidget,
-    link: LinkWidget,
-    boolean: BooleanWidget,
-    datetime: DateWidget,
-    number: NumberWidget,
-    select: SelectWidget,
-    checkboxes: CheckboxesWidget,
-    radios: RadiosWidget,
-    ckeditor: CkeditorWidget,
-    media_library: MediaLibrary,
-    viewfield: ViewFieldWidget
-  };
-
-  if (typeof item.loadedEntity !== 'undefined') {
-    drupalContext.loadEntity(item.id);
-    return <Loader/>;
-  }
-
-  const formFields = drupalContext.getFormFields(item);
-  if (typeof formFields === 'undefined') {
+  if (open && typeof item.loadedEntity !== 'undefined') {
+    widgetContext.loadRowItem(item.target_id);
     return <Loader/>;
   }
 
   return (
-    <div className="item-form">
-      {Object.keys(formFields).map(fieldName => {
-        const WidgetName = widgetComponents[formFields[fieldName].widget_type];
+    <FormDialog
+      title={`Edit ${typeLabel} > "${item.admin_title}"`}
+      open={open}
+      onClose={() => onClose(false)}
+    >
+      <AdminTitleField
+        textField={open}
+        item={item}
+        onChange={widgetContext.onAdminTitleChange.bind(undefined, item.id)}
+      />
 
-        if (WidgetName === undefined) {
-          console.error('Unable to find widget for type: ' + formFields[fieldName].widget_type);
-          return (
-            <FieldContainer key={`widget-${item.id}-${fieldName}`}>
-              Unable to provide a form for
-              field {formFields[fieldName].label}
-            </FieldContainer>
-          )
-        }
-        return (
-          <FieldContainer key={`widget-${item.id}-${fieldName}`}>
-            <WidgetName
-              fieldId={`${item.id}-${fieldName}`}
-              onFieldChange={drupalContext.updateParagraph.bind(undefined, item, fieldName)}
-              settings={formFields[fieldName]}
-              defaultValue={item.entity[fieldName]}
-              fieldName={fieldName}
-              bundle={item.entity.type[0].target_id}
-            />
-          </FieldContainer>
-        )
-      })}
-    </div>
+      <div className="item-form">
+        <EntityForm
+          entityType="paragraph"
+          bundle={item.entity.type[0].target_id}
+          entity={item.entity}
+          onFieldChange={(fieldName, newValue) => widgetContext.updateRowItemEntity(item, fieldName, newValue)}
+          widgetContext={widgetContext}
+        />
+      </div>
+    </FormDialog>
   )
 
 };

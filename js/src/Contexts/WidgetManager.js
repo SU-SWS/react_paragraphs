@@ -1,13 +1,12 @@
 import React, {Component} from "react";
 import {v4 as uuidv4} from 'uuid';
 
-export const DrupalContext = React.createContext({});
+export const WidgetContext = React.createContext({});
 
 export class WidgetManager extends Component {
 
   functions = {
-    updateParagraph: this.updateParagraph.bind(this),
-    removeParagraph: this.removeParagraph.bind(this),
+    removeRowItem: this.removeRowItem.bind(this),
     onBeforeCapture: this.onBeforeCapture.bind(this),
     onDragEnd: this.onDragEnd.bind(this),
     addRow: this.addRow.bind(this),
@@ -16,59 +15,69 @@ export class WidgetManager extends Component {
     onAdminTitleChange: this.onAdminTitleChange.bind(this),
     addToolToBottom: this.addToolToBottom.bind(this),
     onDragStart: this.onDragStart.bind(this),
-    getFormFields: this.getFormFields.bind(this),
-    loadEntity: this.loadEntity.bind(this)
+    getToolInformation: this.getToolInformation.bind(this),
+    getEntityForm: this.getEntityForm.bind(this),
+    updateRowEntity: this.updateRowEntity.bind(this),
+    updateRowItemEntity: this.updateRowItemEntity.bind(this),
+    loadRow: this.loadRow.bind(this),
+    loadRowItem: this.loadRowItem.bind(this)
   };
 
   apiUrls = {
     baseDomain: location.origin + drupalSettings.path.baseUrl,
     formApi: 'api/react-paragraphs/{entity_type_id}/{bundle}',
-    paragraphApi: 'entity/paragraph/{entity_id}'
+    entityApi: 'entity/{entity_type_id}/{entity_id}',
   };
 
   constructor(props) {
     super(props);
-
     // Local development url.
-    if (typeof window.drupalSettings.user === 'undefined') {
-      this.apiUrls.baseDomain = 'http://docroot.cardinalsites.loc/';
+    if (typeof window.drupalSettings.user === 'undefined' && typeof localBaseDomain !== 'undefined') {
+      this.apiUrls.baseDomain = localBaseDomain;
+    }
+    // If the form was submitted and rebuilt, we will want to use the existing
+    // form data to re-build the UI.
+    if (props.existingData) {
+      this.state = {
+        rowCount: props.existingData.rowOrder.length,
+        rows: props.existingData.rows,
+        rowOrder: props.existingData.rowOrder,
+        loadedItems: 0,
+        cachedForms: {}
+      };
+      return;
     }
 
     let rows = {};
     let rowOrder = [];
 
-    // Build the initial state from the given list of items.
-    this.props.items.forEach(item => {
-      const rowNumber = item.settings.row;
-      const rowId = 'row-' + rowNumber;
-
-      // Build each row data set if it hasn't already been created.
-      if (typeof (rows[rowId]) === 'undefined') {
-        rows[rowId] = {
-          id: rowId,
-          items: {},
-          itemsOrder: [],
-          isDropDisabled: true
-        };
-        rowOrder[rowNumber] = rowId;
+    this.props.items.map((row, rowIndex) => {
+      const rowId = 'row-' + rowIndex;
+      rowOrder[rowIndex] = rowId;
+      rows[rowId] = {
+        id: rowId,
+        items: {},
+        itemsOrder: [],
+        isDropDisabled: true,
+        entity: row.row.entity,
+        target_id: row.row.target_id,
+        loadedEntity: false,
       }
 
-      // Add the current item into the appropriate row.
-      const itemId = 'item-' + item.target_id;
-
-      rows[rowId].items[itemId] = {
-        id: itemId,
-        target_id: item.target_id,
-        index: item.settings.index,
-        width: item.settings.width,
-        admin_title: item.settings.admin_title,
-        entity: item.entity,
-        loadedEntity: false,
-      };
-      // todo: find a way to handle if multiple items in the same row have the
-      // same index.
-      rows[rowId].itemsOrder[item.settings.index] = itemId;
-    });
+      row.rowItems.map((rowItem, itemIndex) => {
+        const itemId = 'item-' + rowItem.target_id;
+        rows[rowId].itemsOrder[itemIndex] = itemId;
+        rows[rowId].items[itemId] = {
+          id: itemId,
+          target_id: rowItem.target_id,
+          index: itemIndex,
+          width: rowItem.settings.width,
+          admin_title: rowItem.settings.admin_title,
+          entity: rowItem.entity,
+          loadedEntity: false,
+        };
+      })
+    })
 
     if (rowOrder.length === 0) {
       rowOrder.push('row-0');
@@ -76,12 +85,12 @@ export class WidgetManager extends Component {
         id: 'row-0',
         items: {},
         itemsOrder: [],
-        isDropDisabled: true
+        isDropDisabled: true,
+        entity: {"type": [{"target_id": this.props.rowBundle}]},
+        target_id: null
       }
     }
 
-    // Set the rowCount to the size of the rowOrder before filtering. This ensures that new rows will have a row ID
-    // that is one number higher than the last row in the order.
     this.state = {
       rowCount: rowOrder.length,
       rows: rows,
@@ -89,9 +98,6 @@ export class WidgetManager extends Component {
       loadedItems: 0,
       cachedForms: {}
     };
-
-    // After constructing the form, we need to update the hidden input field so that if no changes were made, we won't
-    // have empty data upon saving.
     this.componentDidUpdate();
   }
 
@@ -108,21 +114,6 @@ export class WidgetManager extends Component {
     jQuery(formItemsField).closest('.form-item').trigger('formUpdated');
   }
 
-  loadEntity(itemId) {
-    const rowId = this.state.rowOrder.find(row => this.state.rows[row].itemsOrder.includes(itemId));
-    const url = this.apiUrls.baseDomain + this.apiUrls.paragraphApi;
-    const item = this.state.rows[rowId].items[itemId];
-
-    fetch(url.replace('{entity_id}', item.target_id))
-      .then(response => response.json())
-      .then(entityData => {
-        const newState = {...this.state};
-        newState.rows[rowId].items[itemId].entity = entityData;
-        delete newState.rows[rowId].items[itemId].loadedEntity;
-        this.setState(newState);
-      })
-  }
-
   componentDidUpdate(prevProps, prevState, snapshot) {
     const formItemsField = document.getElementById(this.props.inputId);
     if (formItemsField) {
@@ -134,6 +125,26 @@ export class WidgetManager extends Component {
     }
   }
 
+  /**
+   * Get the object related tot he give tool.
+   *
+   * @param toolId
+   *   Tool machine name.
+   *
+   * @returns {*}
+   */
+  getToolInformation(toolId) {
+    return this.props.tools.find(tool => tool.id === toolId);
+  }
+
+  /**
+   * After the user changes the admin label on an item, save it in state.
+   *
+   * @param itemId
+   *   Item identifier or uuid.
+   * @param title
+   *   New admin label.
+   */
   onAdminTitleChange(itemId, title) {
     const newState = {...this.state};
     newState.rowOrder.map(rowId => {
@@ -145,21 +156,13 @@ export class WidgetManager extends Component {
     this.triggerFormUpdated();
   }
 
-  updateParagraph(item, fieldName, newValues) {
-    const newRows = {...this.state.rows};
-
-    this.state.rowOrder.map(rowId => {
-      if (typeof newRows[rowId].items[item.id] !== 'undefined') {
-
-        newRows[rowId].items[item.id].entity[fieldName] = newValues;
-        this.setState({rows: newRows});
-        return;
-      }
-    });
-    this.triggerFormUpdated();
-  }
-
-  removeParagraph(itemId) {
+  /**
+   * Remove the given item from a row.
+   *
+   * @param itemId
+   *   Row identifier.
+   */
+  removeRowItem(itemId) {
     const rowId = this.state.rowOrder.find(rowId => this.state.rows[rowId].itemsOrder.includes(itemId));
     const newState = {...this.state};
 
@@ -170,6 +173,14 @@ export class WidgetManager extends Component {
     this.triggerFormUpdated();
   }
 
+  /**
+   * Add the given tool to the bottom with an empty row.
+   *
+   * @param item_name
+   *   Tool machine name.
+   * @param e
+   *   Event.
+   */
   addToolToBottom(item_name, e) {
     const rowOrder = this.state.rowOrder.filter(item => item != null);
 
@@ -187,7 +198,8 @@ export class WidgetManager extends Component {
 
         this.moveNewItemIntoRow(simulated_drag);
       });
-    } else {
+    }
+    else {
       const simulated_drag = {
         draggableId: item_name,
         destination: {
@@ -201,25 +213,41 @@ export class WidgetManager extends Component {
     this.triggerFormUpdated();
   };
 
+  /**
+   * Add a new row to the bottom.
+   *
+   * @param callback
+   *   Callable function for after the state updates.
+   */
   addRow(callback) {
     const newState = {...this.state};
     newState.rowCount++;
     const newRowId = 'row-' + (newState.rowCount);
     newState.rowOrder.push(newRowId);
+
     newState.rows[newRowId] = {
       id: newRowId,
       items: {},
       itemsOrder: [],
-      isDropDisabled: true
+      isDropDisabled: true,
+      entity: {"type": [{"target_id": this.props.rowBundle}]},
+      target_id: null
     };
     if (typeof callback === 'function') {
       this.setState(newState, callback);
-    } else {
+    }
+    else {
       this.setState(newState);
     }
     this.triggerFormUpdated();
   }
 
+  /**
+   * Remove an entire row.
+   *
+   * @param rowId
+   *   Item identifier or uuid.
+   */
   removeRow(rowId) {
     const newState = {...this.state};
     delete newState.rows[rowId];
@@ -254,14 +282,16 @@ export class WidgetManager extends Component {
     let needsNewRow = false;
 
     // The last row is maxed out with items, a new row is needed.
-    if (this.state.rows[lastRowId].itemsOrder.length >= this.props.maxItemsPerRow) {
+    if (this.state.rows[lastRowId].itemsOrder.length > 0) {
       needsNewRow = true;
-    } else {
+    }
+    else {
       try {
         // The last row is not full of items, but the items in the row require
         // all columns for that row. We need a new row.
         needsNewRow = !this.canDropInRow(item.draggableId, lastRowId, null);
-      } catch (e) {
+      }
+      catch (e) {
         // Nothing to do here.
       }
     }
@@ -275,6 +305,7 @@ export class WidgetManager extends Component {
    * When the drag is initiated.
    *
    * @param dragItem
+   *   The object info of the item being dragged.
    *
    * @link https://github.com/atlassian/react-beautiful-dnd/blob/master/docs/guides/responders.md#ondragstart
    */
@@ -321,7 +352,7 @@ export class WidgetManager extends Component {
 
     // Find out how many columns are required as minimums of the existing items.
     // If the minimum required columns is full, mark the row as full.
-    const requiredColumns = this.props.tools[itemBundle].minWidth;
+    const requiredColumns = this.getToolInformation(itemBundle).minWidth;
     let columnsTaken = 0;
     this.state.rows[destinationRow].itemsOrder.map(itemId => {
       const rowItemBundle = this.state.rows[destinationRow].items[itemId].entity.type[0].target_id;
@@ -338,7 +369,7 @@ export class WidgetManager extends Component {
    * @returns {number}
    */
   getRequiredMinColumns(toolId) {
-    return parseInt(this.props.tools[toolId].minWidth);
+    return parseInt(this.getToolInformation(toolId).minWidth);
   }
 
   /**
@@ -420,14 +451,15 @@ export class WidgetManager extends Component {
    * @param result
    */
   moveNewItemIntoRow(result) {
-    const newItem = this.createNewItem(result.draggableId, result.destination.index, 12);
+    const newItem = this.createNewRowItem(result.draggableId, result.destination.index, 12);
 
     const newState = {...this.state};
     newState.rows[result.destination.droppableId].itemsOrder.splice(newItem.index, 0, newItem.id);
     newState.rows[result.destination.droppableId].items[newItem.id] = newItem;
 
     this.resetRowItemWidths(result.destination.droppableId, newState);
-    // After settings the state, the children will re-render. We can then remove the indicator that the item is new.
+    // After settings the state, the children will re-render. We can then
+    // remove the indicator that the item is new.
     this.setState(newState, () => {
       const newState = {...this.state};
       delete newState.rows[result.destination.droppableId].items[newItem.id].isNew;
@@ -466,13 +498,13 @@ export class WidgetManager extends Component {
    * @param width
    * @returns {{width: *, index: *, id: string}}
    */
-  createNewItem(machine_name, index, width) {
+  createNewRowItem(machine_name, index, width) {
     const uuid = uuidv4();
     return {
       id: "new-" + uuid,
       index: index,
       width: width,
-      admin_title: this.props.tools[machine_name].label,
+      admin_title: this.getToolInformation(machine_name).label,
       isNew: true,
       entity: {
         type: [{target_id: machine_name}],
@@ -480,6 +512,14 @@ export class WidgetManager extends Component {
     }
   }
 
+  /**
+   * Set the width of the item based on column widths.
+   *
+   * @param itemId
+   *   Item identifier or uuid.
+   * @param newWidth
+   *   New number of columns to save.
+   */
   setItemWidth(itemId, newWidth) {
     const newState = {...this.state};
     newState.rowOrder.map(rowId => {
@@ -491,18 +531,21 @@ export class WidgetManager extends Component {
   }
 
   /**
-   * Get entity form data from the cached api response or a new fetch.
-   * @param item
+   * Call the API to fetch the entity form data.
+   *
+   * @param entityType
+   *   Entity type machine name.
+   * @param bundle
+   *   Entity bundle machine name.
+   *
    * @returns {*}
+   *   The structured entity form object.
    */
-  getFormFields(item) {
+  getEntityForm(entityType, bundle) {
     let url = this.apiUrls.baseDomain + this.apiUrls.formApi;
-    const itemBundle = item.entity.type[0].target_id;
-    url = url.replace('{entity_type_id}', 'paragraph').replace('{bundle}', itemBundle);
-
-    // We've already gotten this form once, return that one.
-    if (typeof this.state.cachedForms[itemBundle] !== 'undefined') {
-      return this.state.cachedForms[itemBundle];
+    url = url.replace('{entity_type_id}', entityType).replace('{bundle}', bundle);
+    if (typeof this.state.cachedForms[`${entityType}-${bundle}`] !== 'undefined') {
+      return this.state.cachedForms[`${entityType}-${bundle}`];
     }
 
     fetch(url)
@@ -511,23 +554,119 @@ export class WidgetManager extends Component {
         ...prevState,
         cachedForms: {
           ...prevState.cachedForms,
-          [itemBundle]: jsonData
+          [`${entityType}-${bundle}`]: jsonData
         }
       })))
       .catch(e => console.error(e));
   }
 
+  /**
+   * Update the fieldable row with new field values.
+   *
+   * @param rowId
+   *   Row identifier.
+   * @param fieldName
+   *   Field machine name.
+   * @param newValues
+   *   New values for the field.
+   */
+  updateRowEntity(rowId, fieldName, newValues) {
+    const newState = {...this.state}
+    newState.rows[rowId].entity[fieldName] = newValues;
+    this.setState(newState);
+  }
+
+  /**
+   * Update the fieldable row item within a row with new field values.
+   *
+   * @param item
+   *   The old item object.
+   * @param fieldName
+   *   Field machine name.
+   * @param newValues
+   *   New values for the field.
+   */
+  updateRowItemEntity(item, fieldName, newValues) {
+    const newRows = {...this.state.rows};
+
+    this.state.rowOrder.map(rowId => {
+      if (typeof newRows[rowId].items[item.id] !== 'undefined') {
+
+        newRows[rowId].items[item.id].entity[fieldName] = newValues;
+        this.setState({rows: newRows});
+        return;
+      }
+    });
+    this.triggerFormUpdated();
+  }
+
+  /**
+   * Call the API and get the information about the row entity.
+   *
+   * @param rowId
+   *   Row identifier.
+   */
+  loadRow(rowId) {
+    this.loadEntity('paragraph_row', this.state.rows[rowId].target_id)
+      .then(entityData => {
+        const newState = {...this.state}
+        this.state.rows[rowId].entity = entityData;
+        delete this.state.rows[rowId].loadedEntity;
+        this.setState(newState);
+      });
+  }
+
+  /**
+   * Call the API and get the information about the paragraph entity.
+   *
+   * @param itemId
+   *   Item identifier or uuid.
+   */
+  loadRowItem(itemId) {
+    const rowId = this.state.rowOrder.find(rowId => this.state.rows[rowId].itemsOrder.find(rowItemId => this.state.rows[rowId].items[rowItemId].target_id === itemId));
+    const rowItemId = this.state.rows[rowId].itemsOrder.find(rowItemId => this.state.rows[rowId].items[rowItemId].target_id === itemId)
+
+    const promise = this.loadEntity('paragraph', itemId);
+    promise.then(entityData => {
+      const newState = {...this.state}
+      newState.rows[rowId].items[rowItemId].entity = entityData;
+      delete newState.rows[rowId].items[rowItemId].loadedEntity;
+      this.setState(newState);
+    });
+  }
+
+  /**
+   * Call the API and fetch the entity data.
+   *
+   * @param entityType
+   *   Entity type machine name.
+   * @param entityId
+   *   Entity id.
+   *
+   * @returns {Promise<Response>}
+   *   Promise of the entity object.
+   */
+  loadEntity(entityType, entityId) {
+    const url = this.apiUrls.baseDomain + this.apiUrls.entityApi;
+    return fetch(url.replace('{entity_type_id}', entityType).replace('{entity_id}', entityId))
+      .then(response => response.json());
+  }
+
+  /**
+   * Renders the context widget.
+   */
   render() {
     return (
-      <DrupalContext.Provider
+      <WidgetContext.Provider
         value={{
+          props: this.props,
           state: this.state,
           apiUrls: this.apiUrls,
           tools: this.props.tools,
           ...this.functions
         }}>
         {this.props.children}
-      </DrupalContext.Provider>
+      </WidgetContext.Provider>
     )
 
   }

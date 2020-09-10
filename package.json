@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.7.1",
+    "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.43",
     "autoprefixer": "^9.7.4",
     "cross-env": "^7.0.2",
