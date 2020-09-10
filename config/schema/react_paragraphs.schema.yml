@@ -40,4 +40,3 @@ field.widget.settings.react_paragraphs:
       sequence:
         type: integer
         label: Maximum columns required.
-
