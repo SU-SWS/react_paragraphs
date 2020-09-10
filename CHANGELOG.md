@@ -1,5 +1,15 @@
 # React Paragraphs
 
+8.x-2.0
+--------------------------------------------------------------------------------
+_Release Date: 2020-09-10_
+
+- D8CORE-000: Keep all the users changes if the form does not validate (#62) (d201c5a)
+- D8CORE-000: Added form settings to set the maximum column widths (#61) (a7badc3)
+- D8CORE-2460: Decode double encoded json array (#60) (e988359)
+- D8CORE-000: V2 React Paragraphs (#59) (be19ff8)
+- initial 8.x-2.x branch (902bf6c)
+
 8.x-1.11
 --------------------------------------------------------------------------------
 _Release Date: 2020-08-07_
