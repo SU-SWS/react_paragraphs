@@ -262,6 +262,7 @@ function _react_paragraphs_update_8203_get_entities() {
       $entity_ids = $entity_type_manager->getStorage($entity_type)
         ->getQuery()
         ->condition($field_name, 0, '>')
+        ->accessCheck(FALSE)
         ->execute();
 
       foreach ($entity_ids as $entity_id) {
