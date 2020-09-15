@@ -1,0 +1,7 @@
+name: 'React Paragraphs Behaviors'
+type: module
+description: 'Provides behavior plugin interface for paragraphs and rows.'
+core_version_requirement: '^8.8 || ^9'
+package: 'Custom'
+dependencies:
+  - react_paragraphs:react_paragraphs

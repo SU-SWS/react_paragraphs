@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains react_paragraphs_behaviors.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function react_paragraphs_behaviors_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the react_paragraphs_behaviors module.
+    case 'help.page.react_paragraphs_behaviors':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('My Awesome Module') . '</p>';
+      return $output;
+
+    default:
+  }
+}

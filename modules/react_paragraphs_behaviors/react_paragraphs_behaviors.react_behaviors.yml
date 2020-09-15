@@ -1,0 +1,8 @@
+# Example react_behaviors plugin definitions.
+# Plugin property $defaults are defined in ReactBehaviorsPluginManager.
+first:
+  id: one
+  label: One
+second:
+  id: two
+  label: Two
