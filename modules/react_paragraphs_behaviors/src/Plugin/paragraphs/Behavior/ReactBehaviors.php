@@ -5,7 +5,6 @@ namespace Drupal\react_paragraphs_behaviors\Plugin\paragraphs\Behavior;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\paragraphs\Entity\ParagraphsType;
 use Drupal\paragraphs\ParagraphInterface;
 use Drupal\paragraphs\ParagraphsBehaviorBase;
 
@@ -42,7 +41,9 @@ class ReactBehaviors extends ParagraphsBehaviorBase {
    * {@inheritDoc}
    */
   public function view(array &$build, Paragraph $paragraph, EntityViewDisplayInterface $display, $view_mode) {
-    // todo: implement the hook that does the stuff.
+    // Nothing to do here. A theme or module can invoke the hooks
+    // hook_preprocess_HOOK or hook_ENTITY_TYPE_view_alter to manipulate the
+    // build render array based on the behavior values.
   }
 
 }
