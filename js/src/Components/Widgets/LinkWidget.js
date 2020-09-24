@@ -47,7 +47,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
       if (
         newUri.substr(0, 1) === '/' ||
         newUri.substr(0, 1) === '<' ||
-        newUri.search(/[a-z0-9]:\/\//) >= 0
+        parseUrl(newUri, 'PHP_URL_HOST')
       ) {
         setSuggestions([]);
         return;
@@ -153,24 +153,41 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
    * @returns {*}
    */
   const getUserEnteredStringAsUri = (string) => {
+    // By default, assume the entered string is an URI.
     let uri = string.trim().toLowerCase();
 
+    // Detect entity autocomplete string, map to 'entity:' URI.
     const entity_id = extractEntityIdFromAutocompleteInput(uri);
     if (entity_id !== null) {
+      // @todo Support entity types other than 'node'. Will be fixed in
+      //    https://www.drupal.org/node/2423093.
       uri = 'entity:node/' + entity_id;
     }
+    // Support linking to nothing.
     else if (['<nolink>', '<none>'].includes(string)) {
       uri = 'route:' + string;
     }
+    // Detect a schemeless string, map to 'internal:' URI.
     else if (string.length > 0 && parseUrl(string, 'PHP_URL_SCHEME') === undefined) {
+      // @todo '<front>' is valid input for BC reasons, may be removed by
+      //   https://www.drupal.org/node/2421941
+      // - '<front>' -> '/'
+      // - '<front>#foo' -> '/#foo'
       if (string.indexOf('<front>') === 0) {
         string = '/' + string.substr(7);
       }
 
+      // This validation in the normal link widget occurs on submit. We'll just
+      // force all user entered links to have the first character be valid.
       if (!['/', '?', '#'].includes(string.substr(0, 1))) {
         string = '/' + string;
       }
       uri = 'internal:' + string;
+    }
+    else if (string.length > 0 && parseUrl(string, 'PHP_URL_HOST') === window.location.host) {
+      // Drupal core does not do this. To prevent unwanted domain change issues,
+      // force all entered urls of the same domain to be relative links.
+      uri = 'internal:' + uri.substr(uri.indexOf(window.location.host) + window.location.host.length);
     }
 
     return uri;
@@ -202,18 +219,30 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
    */
   const getUriAsDisplayableString = (uri) => {
     const scheme = parseUrl(uri, 'PHP_URL_SCHEME');
+    console.log(urlSuggestions);
+    // By default, the displayable string is the URI.
     let displayable_string = uri;
 
+    // A different displayable string may be chosen in case of the 'internal:'
+    // or 'entity:' built-in schemes.
     if (scheme === 'internal') {
       let uri_reference = uri.split(':', 2)[1];
 
-      if (parseUrl(uri, 'PHP_URL_PATH') === '/') {
+      // @todo '<front>' is valid input for BC reasons, may be removed by
+      //   https://www.drupal.org/node/2421941
+      let path = parseUrl(uri, 'PHP_URL_PATH')
+      if (path === '/') {
         uri_reference = '<front>' + uri_reference.substr(1);
       }
+
       displayable_string = uri_reference;
     }
     else if (scheme === 'entity') {
       const [entity_type, entity_id] = uri.substr(7).split('/', 2);
+
+
+      // Since we can't load the entity directly here, we'll just display the
+      // entity type and id.
       displayable_string = `/${entity_type}/${entity_id}`
     }
     else if (scheme === 'route') {
