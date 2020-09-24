@@ -66,8 +66,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
    *
    * @param url
    * @param component
-   * @returns {{searchObject: {}, protocol: string, hostname: string, search:
-   *   string, port: string, host: string, hash: string, pathname: string}}
+   * @returns object|string
    */
   const parseUrl = (url, component) => {
     let query
