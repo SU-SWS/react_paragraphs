@@ -41,8 +41,9 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     // Make a new timeout set to go off in 800ms
     timeout = setTimeout(() => {
 
-      // If the user enters a url that starts with some characters, we dont want to fetch suggestions that will just
-      // be empty anyways. This includes absolute urls, <front> and relative urls.
+      // If the user enters a url that starts with some characters, we dont
+      // want to fetch suggestions that will just be empty anyways. This
+      // includes absolute urls, <front> and relative urls.
       if (
         newUri.substr(0, 1) === '/' ||
         newUri.substr(0, 1) === '<' ||
@@ -58,77 +59,168 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     }, 600);
   };
 
-  const parseUrl = (url) => {
-    let parser = document.createElement('a');
-    // Let the browser do the work
-    parser.href = url;
+  /**
+   * Similar to php parse_url function, split up the url into its parts.
+   *
+   * @see https://locutus.io/php/url/parse_url/
+   *
+   * @param url
+   * @param component
+   * @returns {{searchObject: {}, protocol: string, hostname: string, search:
+   *   string, port: string, host: string, hash: string, pathname: string}}
+   */
+  const parseUrl = (url, component) => {
+    let query
 
-    // If the user is linking to the same site they are on, force the link to
-    // be relative.
-    if (parser.protocol === window.location.protocol && parser.host === window.location.host) {
-      if (url.substr(0, 1) !== '/') {
-        parser.href = '/' + url;
-      }
-      return {
-        protocol: null,
-        pathname: decodeURIComponent(parser.pathname + parser.search + parser.hash)
-      };
+    let mode = 'php'
+
+    let key = [
+      'source',
+      'scheme',
+      'authority',
+      'userInfo',
+      'user',
+      'pass',
+      'host',
+      'port',
+      'relative',
+      'path',
+      'directory',
+      'file',
+      'query',
+      'fragment'
+    ]
+
+    // For loose we added one optional slash to post-scheme to catch file:///
+    // (should restrict this)
+    let parser = {
+      php: new RegExp([
+        '(?:([^:\\/?#]+):)?',
+        '(?:\\/\\/()(?:(?:()(?:([^:@\\/]*):?([^:@\\/]*))?@)?([^:\\/?#]*)(?::(\\d*))?))?',
+        '()',
+        '(?:(()(?:(?:[^?#\\/]*\\/)*)()(?:[^?#]*))(?:\\?([^#]*))?(?:#(.*))?)'
+      ].join('')),
+      strict: new RegExp([
+        '(?:([^:\\/?#]+):)?',
+        '(?:\\/\\/((?:(([^:@\\/]*):?([^:@\\/]*))?@)?([^:\\/?#]*)(?::(\\d*))?))?',
+        '((((?:[^?#\\/]*\\/)*)([^?#]*))(?:\\?([^#]*))?(?:#(.*))?)'
+      ].join('')),
+      loose: new RegExp([
+        '(?:(?![^:@]+:[^:@\\/]*@)([^:\\/?#.]+):)?',
+        '(?:\\/\\/\\/?)?',
+        '((?:(([^:@\\/]*):?([^:@\\/]*))?@)?([^:\\/?#]*)(?::(\\d*))?)',
+        '(((\\/(?:[^?#](?![^?#\\/]*\\.[^?#\\/.]+(?:[?#]|$)))*\\/?)?([^?#\\/]*))',
+        '(?:\\?([^#]*))?(?:#(.*))?)'
+      ].join(''))
     }
-    return {
-      protocol: parser.protocol,
-      pathname: parser.pathname + parser.search + parser.hash
-    };
+
+    let m = parser[mode].exec(url)
+    let uri = {}
+    let i = 14
+
+    while (i--) {
+      if (m[i]) {
+        uri[key[i]] = m[i]
+      }
+    }
+
+    if (component) {
+      return uri[component.replace('PHP_URL_', '').toLowerCase()]
+    }
+
+    if (mode !== 'php') {
+      let name = 'queryKey'
+
+      parser = /(?:^|&)([^&=]*)=?([^&]*)/g
+      uri[name] = {}
+      query = uri[key[12]] || ''
+      query.replace(parser, function ($0, $1, $2) {
+        if ($1) {
+          uri[name][$1] = $2
+        }
+      })
+    }
+
+    delete uri.source
+    return uri
   };
 
-  const getUriFromString = (userString) => {
-    var uri = userString.trim();
-    if (uri.length === 0) {
-      return uri;
-    }
-    const matchedEntity = userString.match(/.+\s\(([^\)]+)\)/);
-    const parsedUrl = parseUrl(userString);
+  /**
+   * Similar to the link field widget function in PHP.
+   *
+   * @see \Drupal\link\Plugin\Field\FieldWidget\LinkWidget::getUserEnteredStringAsUri()
+   *
+   * @param string
+   * @returns {*}
+   */
+  const getUserEnteredStringAsUri = (string) => {
+    let uri = string.trim().toLowerCase();
 
-    if (matchedEntity && matchedEntity.length === 2) {
-      uri = `entity:node/${matchedEntity[1]}`
+    const entity_id = extractEntityIdFromAutocompleteInput(uri);
+    if (entity_id !== null) {
+      uri = 'entity:node/' + entity_id;
     }
-    else if (parsedUrl.protocol === null) {
-      userString = parsedUrl.pathname;
-      if (userString.trim().indexOf('<front>') === 0) {
-        userString = '/' + userString.substr(7);
+    else if (['<nolink>', '<none>'].includes(string)) {
+      uri = 'route:' + string;
+    }
+    else if (string.length > 0 && parseUrl(string, 'PHP_URL_SCHEME') === undefined) {
+      if (string.indexOf('<front>') === 0) {
+        string = '/' + string.substr(7);
       }
-      userString = userString.toLowerCase();
 
-      if (!['/', '?', '#'].includes(userString.substr(0, 1))) {
-        userString = `/${userString}`
+      if (!['/', '?', '#'].includes(string.substr(0, 1))) {
+        string = '/' + string;
       }
-      uri = `internal:${userString}`;
+      uri = 'internal:' + string;
     }
 
     return uri;
   };
 
+  /**
+   * Similar to what the link field widget calls in the entity autocomplete.
+   *
+   * @see \Drupal\Core\Entity\Element\EntityAutocomplete::extractEntityIdFromAutocompleteInput()
+   *
+   * @param input
+   * @returns {null}
+   */
+  const extractEntityIdFromAutocompleteInput = (input) => {
+    let match = null;
+    if (input.match(/.+\s\(([^\)]+)\)/)) {
+      match = input.match(/.+\s\(([^\)]+)\)/)[1];
+    }
+    return match;
+  }
+
+  /**
+   * Similar to the link field widget function in php.
+   *
+   * @see \Drupal\link\Plugin\Field\FieldWidget\LinkWidget::getUriAsDisplayableString()
+   *
+   * @param uri
+   * @returns {*}
+   */
   const getUriAsDisplayableString = (uri) => {
-    const parsedUri = parseUrl(uri);
-    var displayString = uri;
+    const scheme = parseUrl(uri, 'PHP_URL_SCHEME');
+    let displayable_string = uri;
 
-    if (parsedUri.protocol === 'internal:') {
-      displayString = uri.split(':', 2)[1];
+    if (scheme === 'internal') {
+      let uri_reference = uri.split(':', 2)[1];
 
-      if (parsedUri.pathname === '/') {
-        displayString = '<front>' + uri.substr(uri.indexOf('/') + 1);
+      if (parseUrl(uri, 'PHP_URL_PATH') === '/') {
+        uri_reference = '<front>' + uri_reference.substr(1);
       }
-      else if (parsedUri.pathname.indexOf('/<front>') >= 0) {
-        // If the user inputs `<front>#some-anchor`, the saved data on the entity is saved as
-        // `internal:/<front>#some-anchor` and the pathname is `/<front>#some-anchor`. We want
-        // to clean that up for users.
-        displayString = parsedUri.pathname.substr(1);
-      }
+      displayable_string = uri_reference;
     }
-    else if (parsedUri.protocol === 'entity:') {
-      // todo: get the entity label somehow.
-      displayString = '/' + uri.split(':', 2)[1];
+    else if (scheme === 'entity') {
+      const [entity_type, entity_id] = uri.substr(7).split('/', 2);
+      displayable_string = `/${entity_type}/${entity_id}`
     }
-    return displayString;
+    else if (scheme === 'route') {
+      displayable_string = displayable_string.ltrim('route:');
+    }
+    return displayable_string;
   };
 
   /**
@@ -137,7 +229,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   const suggestionPicked = (e, selectedValue, delta) => {
     alterValues({
       title: fieldValues[delta].title,
-      uri: getUriFromString(selectedValue === null ? '' : selectedValue.value),
+      uri: getUserEnteredStringAsUri(selectedValue === null ? '' : selectedValue.value),
       delta: delta
     });
   };
@@ -149,7 +241,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
   const onUriBlur = (e, delta) => {
     alterValues({
       title: fieldValues[delta].title,
-      uri: getUriFromString(e.target.value),
+      uri: getUserEnteredStringAsUri(e.target.value),
       delta: delta
     });
   }
@@ -158,17 +250,17 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
    * To support cardinality, we will need an "Add another" button.
    */
   const addAnotherButton = () => {
-    if ((settings.cardinality == -1) || (settings.cardinality > fieldValues.length )) {
+    if ((settings.cardinality === -1) || (settings.cardinality > fieldValues.length)) {
       return (
-      <div>
-        <button
-          type="button"
-          class="button"
-          onClick={addAnother}
-          style={{margin: "10px"}}>
+        <div>
+          <button
+            type="button"
+            className="button"
+            onClick={addAnother}
+            style={{margin: "10px"}}>
             Add Another Link
-        </button>
-      </div>
+          </button>
+        </div>
       );
     }
   }
@@ -185,14 +277,14 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
    * If we add more links, we need a way of removing them.
    */
   const removeLinkButton = (delta) => {
-    if (fieldValues.length > 1){
+    if (fieldValues.length > 1) {
       return (
         <button
           type="button"
-          class="button"
+          className="button"
           onClick={() => removeLink(delta)}
           style={{margin: "10px"}}>
-            Remove
+          Remove
         </button>
       );
     }
@@ -202,7 +294,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
    * Handler for removing a link.
    */
   const removeLink = (delta) => {
-    if (typeof fieldValues[delta] !== undefined){
+    if (typeof fieldValues[delta] !== undefined) {
       fieldValues.splice(delta, 1);
       if (fieldValues.length < 1) {
         addAnother();
@@ -216,7 +308,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
    */
   const linkFields = fieldValues.map((link, delta) =>
     <div style={{marginBottom: '20px'}} key={delta}>
-        <FormControl style={{marginBottom: '20px'}}>
+      <FormControl style={{marginBottom: '20px'}}>
         <Autocomplete
           freeSolo
           id={`${fieldId}-uri-${delta}`}
@@ -246,7 +338,11 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
           id={`${fieldId}-title-${delta}`}
           label="Link text"
           value={fieldValues[delta].title}
-          onChange={e => alterValues({title: e.target.value, uri: fieldValues[delta].uri, delta: delta})}
+          onChange={e => alterValues({
+            title: e.target.value,
+            uri: fieldValues[delta].uri,
+            delta: delta
+          })}
           variant="outlined"
           required={typeof fieldValues[delta].uri !== 'undefined' && fieldValues[delta].uri.length >= 1}
           fullWidth
@@ -254,7 +350,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
       </FormControl>
       }
 
-    {removeLinkButton(delta)}
+      {removeLinkButton(delta)}
 
     </div>
   );
