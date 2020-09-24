@@ -12,8 +12,8 @@ use Drupal\paragraphs\ParagraphsBehaviorBase;
  * Class ReactBehaviors
  *
  * @ParagraphsBehavior(
- *   id = "react_pagraphs",
- *   admin_label = @Translation("React Paragrpahs"),
+ *   id = "react_paragraphs",
+ *   admin_label = @Translation("React Paragraphs"),
  *   deriver = "Drupal\react_paragraphs_behaviors\Plugin\Derivative\ReactBehaviorsDeriver"
  * )
  */

@@ -21,7 +21,6 @@ class ReactBehaviorsPluginManager extends DefaultPluginManager implements ReactB
    * @var array
    */
   protected $defaults = [
-    // Add required and optional plugin properties.
     'id' => '',
     'label' => '',
   ];
@@ -73,12 +72,12 @@ class ReactBehaviorsPluginManager extends DefaultPluginManager implements ReactB
   public function processDefinition(&$definition, $plugin_id) {
     parent::processDefinition($definition, $plugin_id);
 
-    // You can add validation of the plugin definition here.
-    if (empty($definition['id'])) {
-      throw new PluginException(sprintf('Example plugin property (%s) definition "is" is required.', $plugin_id));
+    if (empty($definition['config'])) {
+      throw new PluginException(sprintf('Plugin property (%s) definition "config" is required.', $plugin_id));
+    }
+    if (empty($definition['label'])) {
+      throw new PluginException(sprintf('Plugin property (%s) definition "label" is required.', $plugin_id));
     }
   }
-
-  // Add other methods here as defined in the ReactBehaviorsPluginManagerInterface.
 
 }

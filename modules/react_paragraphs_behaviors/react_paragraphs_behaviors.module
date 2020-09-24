@@ -15,8 +15,8 @@ function react_paragraphs_behaviors_help($route_name, RouteMatchInterface $route
     // Main module help for the react_paragraphs_behaviors module.
     case 'help.page.react_paragraphs_behaviors':
       $output = '';
-      $output .= '<h3>' . t('About') . '</h3>';
-      $output .= '<p>' . t('My Awesome Module') . '</p>';
+      $output .= '<h3>' . t('Behaviors') . '</h3>';
+      $output .= '<p>' . t('This module provide the discoverability of behavior plugins within modules and themes as defined in yml files.') . '</p>';
       return $output;
 
     default:
