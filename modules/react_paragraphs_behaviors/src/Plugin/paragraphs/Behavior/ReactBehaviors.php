@@ -9,7 +9,7 @@ use Drupal\paragraphs\ParagraphInterface;
 use Drupal\paragraphs\ParagraphsBehaviorBase;
 
 /**
- * Class ReactBehaviors
+ * Class ReactBehaviors.
  *
  * @ParagraphsBehavior(
  *   id = "react_paragraphs",

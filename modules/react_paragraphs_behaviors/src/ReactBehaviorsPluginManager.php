@@ -37,11 +37,12 @@ class ReactBehaviorsPluginManager extends DefaultPluginManager implements ReactB
    *
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
+   * @param \Drupal\Core\Extension\ThemeHandlerInterface $theme_handler
+   *   The theme handler
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend
    *   Cache backend instance to use.
    */
   public function __construct(ModuleHandlerInterface $module_handler, ThemeHandlerInterface $theme_handler, CacheBackendInterface $cache_backend) {
-    // Add more services as required.
     $this->moduleHandler = $module_handler;
     $this->themeHandler = $theme_handler;
     $this->setCacheBackend($cache_backend, 'react_behaviors', ['react_behaviors']);

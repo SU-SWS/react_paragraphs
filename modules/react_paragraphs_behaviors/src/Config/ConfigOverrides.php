@@ -8,7 +8,7 @@ use Drupal\Core\Config\StorageInterface;
 use Drupal\react_paragraphs_behaviors\ReactBehaviorsPluginManagerInterface;
 
 /**
- * Class ConfigOverrides
+ * Class ConfigOverrides.
  *
  * @package Drupal\react_behaviors\Config
  */
@@ -32,6 +32,7 @@ class ConfigOverrides implements ConfigFactoryOverrideInterface {
    * ConfigOverrides constructor.
    *
    * @param \Drupal\react_paragraphs_behaviors\ReactBehaviorsPluginManagerInterface $plugin_manager
+   *   Behavior plugin manager service.
    */
   public function __construct(ReactBehaviorsPluginManagerInterface $plugin_manager) {
     $this->pluginManager = $plugin_manager;

@@ -9,6 +9,4 @@ use Drupal\Component\Plugin\PluginManagerInterface;
  */
 interface ReactBehaviorsPluginManagerInterface extends PluginManagerInterface {
 
-    // Add getters and other public methods for react_behaviors managers.
-
 }
