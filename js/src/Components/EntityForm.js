@@ -40,8 +40,8 @@ export const EntityForm = ({entityType, bundle, entity, onFieldChange, widgetCon
 
   return (
     <div className="item-form">
-      {Object.keys(formFields).map(fieldName => {
-        const field = formFields[fieldName];
+      {Object.keys(formFields.form).map(fieldName => {
+        const field = formFields.form[fieldName];
         const WidgetName = widgetComponents[field.widget_type];
 
         if (WidgetName === undefined) {
@@ -58,7 +58,7 @@ export const EntityForm = ({entityType, bundle, entity, onFieldChange, widgetCon
             <WidgetName
               fieldId={fieldName}
               onFieldChange={onFieldChange.bind(undefined, fieldName)}
-              settings={formFields[fieldName]}
+              settings={formFields.form[fieldName]}
               defaultValue={typeof entity[fieldName] !== 'undefined' ? entity[fieldName] : null}
               fieldName={fieldName}
               bundle={bundle}

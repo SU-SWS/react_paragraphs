@@ -5,6 +5,7 @@ namespace Drupal\react_paragraphs\Plugin\rest\resource;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Form\FormState;
 use Drupal\Core\Render\Element;
 use Drupal\field\FieldConfigInterface;
 use Drupal\react_paragraphs\ReactParagraphsFieldsManager;
@@ -105,6 +106,7 @@ class ReactParagraphsResource extends ResourceBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function get($entity_type_id, $bundle) {
+
     $data = [];
     $entity_type_definition = $this->entityTypeManager->getDefinition($entity_type_id);
     $bundle_key = $entity_type_definition->getKey('bundle');
@@ -128,10 +130,10 @@ class ReactParagraphsResource extends ResourceBase {
       // that can be used by the react widget.
       $field_config = $field_config_storage->load("$entity_type_id.$bundle.$field_name");
       if ($field_config && ($plugin = $this->getReactFieldsPlugin($field_config))) {
-        $data[$field_name] = $plugin->getFieldInfo($form[$field_name], $field_config);
+        $data['form'][$field_name] = $plugin->getFieldInfo($form[$field_name], $field_config);
         $this->moduleHandler->alter(
           'react_paragraphs_form_field_data',
-          $data[$field_name],
+          $data['form'][$field_name],
           $form[$field_name],
           $field_config
         );
@@ -142,6 +144,19 @@ class ReactParagraphsResource extends ResourceBase {
       '\Drupal\Component\Utility\SortArray',
       'sortByWeightElement',
     ]);
+
+    if (method_exists($empty_entity, 'getParagraphType')) {
+      $paragraphs_type = $empty_entity->getParagraphType();
+      if ($paragraphs_type && \Drupal::currentUser()
+          ->hasPermission('edit behavior plugin settings')) {
+        foreach ($paragraphs_type->getEnabledBehaviorPlugins() as $plugin_id => $plugin) {
+          $data['behavior_plugins'][$plugin_id] = [];
+          if ($plugin_form = $plugin->buildBehaviorForm($empty_entity, $data['behavior_plugins'][$plugin_id], new FormState())) {
+            $data['behavior_plugins'][$plugin_id] = $plugin_form;
+          }
+        }
+      }
+    }
     return new JsonResponse($data);
   }
 
