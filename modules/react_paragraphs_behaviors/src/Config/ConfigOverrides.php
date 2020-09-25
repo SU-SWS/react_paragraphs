@@ -43,10 +43,12 @@ class ConfigOverrides implements ConfigFactoryOverrideInterface {
   public function loadOverrides($names) {
     $overrides = [];
     foreach ($names as $config_name) {
-      if (strpos($config_name, 'paragraphs.paragraphs_type.') === FALSE) {
+      $config_prefix = 'paragraphs.paragraphs_type.';
+
+      if (strpos($config_name, $config_prefix) === FALSE) {
         continue;
       }
-      $paragraph_type = substr($config_name, strlen('paragraphs.paragraphs_type.'));
+      $paragraph_type = substr($config_name, strlen($config_prefix));
 
       foreach ($this->getBehaviorDefinitions() as $id => $definition) {
         if (empty($definition['paragraphs']) || in_array($paragraph_type, $definition['paragraphs'])) {
@@ -88,6 +90,8 @@ class ConfigOverrides implements ConfigFactoryOverrideInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * @codeCoverageIgnore Nothing to test.
    */
   public function createConfigObject($name, $collection = StorageInterface::DEFAULT_COLLECTION) {
     return NULL;

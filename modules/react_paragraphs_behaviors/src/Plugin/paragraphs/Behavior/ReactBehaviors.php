@@ -28,10 +28,10 @@ class ReactBehaviors extends ParagraphsBehaviorBase {
     foreach ($this->pluginDefinition['config'] as $config_key => $config_field) {
       foreach ($config_field as $key => $item) {
         $form[$config_key]["#$key"] = $item;
+      }
 
-        if ($value = $paragraph->getBehaviorSetting($this->getPluginId(), $config_key)) {
-          $form[$config_key]["#default_value"] = $value;
-        }
+      if ($value = $paragraph->getBehaviorSetting($this->getPluginId(), $config_key)) {
+        $form[$config_key]["#default_value"] = $value;
       }
     }
     return $form;
@@ -39,6 +39,8 @@ class ReactBehaviors extends ParagraphsBehaviorBase {
 
   /**
    * {@inheritDoc}
+   *
+   * @codeCoverageIgnore Nothing to test here.
    */
   public function view(array &$build, Paragraph $paragraph, EntityViewDisplayInterface $display, $view_mode) {
     // Nothing to do here. A theme or module can invoke the hooks

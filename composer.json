@@ -22,7 +22,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Drupal\\Tests\\react_paragraphs\\": "./tests/src"
+            "Drupal\\Tests\\react_paragraphs\\": "./tests/src",
+            "Drupal\\Tests\\react_paragraphs_behaviors\\": "./modules/react_paragraphs_behaviors/tests/src"
         }
     }
 }
