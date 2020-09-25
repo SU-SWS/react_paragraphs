@@ -140,7 +140,7 @@ class ReactParagraphsResource extends ResourceBase {
       }
     }
 
-    uasort($data, [
+    uasort($data['form'], [
       '\Drupal\Component\Utility\SortArray',
       'sortByWeightElement',
     ]);
