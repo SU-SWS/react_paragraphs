@@ -2,7 +2,7 @@ name: React Paragraphs
 description: 'React based paragraphs fields'
 type: module
 core_version_requirement: '^8.8 || ^9'
-version: 8.x-2.1-dev
+version: 8.x-2.2-dev
 package: Paragraphs
 dependencies:
   - drupal:rest
