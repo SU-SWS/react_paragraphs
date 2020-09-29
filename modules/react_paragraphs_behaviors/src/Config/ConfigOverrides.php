@@ -55,9 +55,9 @@ class ConfigOverrides implements ConfigFactoryOverrideInterface {
    *   Array of config names.
    * @param array $overrides
    *   Keyed array of config overrides.
-   * @param $config_prefix
+   * @param string $config_prefix
    *   Config prefix we are overriding.
-   * @param $definition_key
+   * @param string $definition_key
    *   Behavior plugin key that indicates which ones it's enabled on.
    */
   protected function loadTypeOverrides(array $names, array &$overrides, $config_prefix, $definition_key) {
