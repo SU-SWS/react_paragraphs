@@ -219,7 +219,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
    */
   const getUriAsDisplayableString = (uri) => {
     const scheme = parseUrl(uri, 'PHP_URL_SCHEME');
-    console.log(urlSuggestions);
+
     // By default, the displayable string is the URI.
     let displayable_string = uri;
 
@@ -245,8 +245,8 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
       // entity type and id.
       displayable_string = `/${entity_type}/${entity_id}`
     }
-    else if (scheme === 'route') {
-      displayable_string = displayable_string.ltrim('route:');
+    else if (scheme === 'route' && displayable_string.indexOf('route:') === 0) {
+      displayable_string = displayable_string.replace('route:', '');
     }
     return displayable_string;
   };
