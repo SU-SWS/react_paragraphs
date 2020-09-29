@@ -34,7 +34,7 @@ export const EntityForm = ({entityType, bundle, entity, onFieldChange, widgetCon
   if (typeof formFields === 'undefined') {
     return <Loader/>;
   }
-  if (formFields.length === 0) {
+  if (formFields.form.length === 0) {
     return <div>No fields to edit.</div>
   }
 

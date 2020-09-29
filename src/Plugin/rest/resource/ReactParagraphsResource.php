@@ -107,7 +107,7 @@ class ReactParagraphsResource extends ResourceBase {
    */
   public function get($entity_type_id, $bundle) {
 
-    $data = [];
+    $data = ['form' => [], 'behavior_plugins' => []];
     $entity_type_definition = $this->entityTypeManager->getDefinition($entity_type_id);
     $bundle_key = $entity_type_definition->getKey('bundle');
     $empty_entity = $this->entityTypeManager->getStorage($entity_type_id)
