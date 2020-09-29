@@ -43,8 +43,25 @@ class ConfigOverrides implements ConfigFactoryOverrideInterface {
    */
   public function loadOverrides($names) {
     $overrides = [];
+    $this->loadTypeOverrides($names, $overrides, 'paragraphs.paragraphs_type.', 'paragraphs');
+    $this->loadTypeOverrides($names, $overrides, 'react_paragraphs.paragraphs_row_type.', 'rows');
+    return $overrides;
+  }
+
+  /**
+   * Load the config overrides for the given config entity type.
+   *
+   * @param array $names
+   *   Array of config names.
+   * @param array $overrides
+   *   Keyed array of config overrides.
+   * @param $config_prefix
+   *   Config prefix we are overriding.
+   * @param $definition_key
+   *   Behavior plugin key that indicates which ones it's enabled on.
+   */
+  protected function loadTypeOverrides(array $names, array &$overrides, $config_prefix, $definition_key) {
     foreach ($names as $config_name) {
-      $config_prefix = 'paragraphs.paragraphs_type.';
 
       if (strpos($config_name, $config_prefix) === FALSE) {
         continue;
@@ -52,12 +69,11 @@ class ConfigOverrides implements ConfigFactoryOverrideInterface {
       $paragraph_type = substr($config_name, strlen($config_prefix));
 
       foreach ($this->getBehaviorDefinitions() as $id => $definition) {
-        if (empty($definition['paragraphs']) || in_array($paragraph_type, $definition['paragraphs'])) {
+        if (!empty($definition[$definition_key]) && in_array($paragraph_type, $definition[$definition_key])) {
           $overrides[$config_name]['behavior_plugins']["react_paragraphs:$id"]['enabled'] = TRUE;
         }
       }
     }
-    return $overrides;
   }
 
   /**

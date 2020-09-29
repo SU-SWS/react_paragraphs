@@ -51,7 +51,7 @@ class ReactBehaviorsTest extends KernelTestBase {
   public function testBehaviorEnabled() {
     $enabled_behaviors = $this->paragraphType->getEnabledBehaviorPlugins();
     $this->assertArrayHasKey('react_paragraphs:first', $enabled_behaviors);
-    $this->assertArrayHasKey('react_paragraphs:second', $enabled_behaviors);
+    $this->assertArrayNotHasKey('react_paragraphs:second', $enabled_behaviors);
   }
 
   /**

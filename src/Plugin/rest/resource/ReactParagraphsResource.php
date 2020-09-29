@@ -159,6 +159,7 @@ class ReactParagraphsResource extends ResourceBase {
         }
       }
     }
+    dpm($data);
     return new JsonResponse($data);
   }
 
