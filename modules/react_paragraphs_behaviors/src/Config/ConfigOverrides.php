@@ -15,30 +15,6 @@ use Drupal\react_paragraphs_behaviors\ReactBehaviorsPluginManagerInterface;
 class ConfigOverrides implements ConfigFactoryOverrideInterface {
 
   /**
-   * Behavior yaml plugin manager for behavior derivatives.
-   *
-   * @var \Drupal\react_paragraphs_behaviors\ReactBehaviorsPluginManagerInterface
-   */
-  protected $pluginManager;
-
-  /**
-   * Keyed array of behavior derivative definitions.
-   *
-   * @var array
-   */
-  protected $behaviors = [];
-
-  /**
-   * ConfigOverrides constructor.
-   *
-   * @param \Drupal\react_paragraphs_behaviors\ReactBehaviorsPluginManagerInterface $plugin_manager
-   *   Behavior plugin manager service.
-   */
-  public function __construct(ReactBehaviorsPluginManagerInterface $plugin_manager) {
-    $this->pluginManager = $plugin_manager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function loadOverrides($names) {
@@ -67,7 +43,7 @@ class ConfigOverrides implements ConfigFactoryOverrideInterface {
 
       [, $entity_type, $bundle] = explode('.', $config_name);
 
-      foreach ($this->getBehaviorDefinitions() as $id => $definition) {
+      foreach (self::getBehaviorDefinitions() as $id => $definition) {
         if ($this->isBehaviorApplicable($definition, $entity_type, $bundle)) {
           $overrides[$config_name]['behavior_plugins']["react_paragraphs:$id"]['enabled'] = TRUE;
         }
@@ -109,16 +85,14 @@ class ConfigOverrides implements ConfigFactoryOverrideInterface {
   /**
    * Get the behavior derivative definitions.
    *
+   * Need this function to be static without dependency injection to avoid
+   * circular dependencies.
+   *
    * @return array
    *   Keyed array of plugin definitions.
    */
-  protected function getBehaviorDefinitions() {
-    if ($this->behaviors) {
-      return $this->behaviors;
-    }
-
-    $this->behaviors = $this->pluginManager->getDefinitions();
-    return $this->behaviors;
+  protected static function getBehaviorDefinitions() {
+    return \Drupal::service('plugin.manager.react_behaviors')->getDefinitions();
   }
 
   /**
