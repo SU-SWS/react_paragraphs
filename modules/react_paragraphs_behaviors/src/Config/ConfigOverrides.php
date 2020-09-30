@@ -57,8 +57,6 @@ class ConfigOverrides implements ConfigFactoryOverrideInterface {
    *   Keyed array of config overrides.
    * @param string $config_prefix
    *   Config prefix we are overriding.
-   * @param string $definition_key
-   *   Behavior plugin key that indicates which ones it's enabled on.
    */
   protected function loadTypeOverrides(array $names, array &$overrides, $config_prefix) {
     foreach ($names as $config_name) {
@@ -81,7 +79,7 @@ class ConfigOverrides implements ConfigFactoryOverrideInterface {
    * Is the behavior applicable to the give bundle and entity type.
    *
    * @param array $plugin_definition
-   *   Behavior plugin definition
+   *   Behavior plugin definition.
    * @param string $entity_type
    *   Entity type name.
    * @param string $bundle
