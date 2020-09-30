@@ -3,10 +3,10 @@
 first:
   id: first
   label: First
-  paragraphs:
-    - card
-    - text
-  rows: main_row
+  bundles:
+    - paragraphs_type|card
+    - paragraphs_type|text
+    - paragraphs_row_type|main_row
   config:
     foo:
       type: select
@@ -28,8 +28,6 @@ first:
 second:
   id: second
   label: Second
-  paragraphs: {}
-  rows: {}
   config:
     foo:
       type: select
@@ -48,3 +46,14 @@ second:
       title: 'Baz Checkbox'
       description: 'Baz Foo Bar'
       default_value: true
+
+third:
+  id: second
+  label: Second
+  bundles:
+    - foo|bar
+  config:
+    bar:
+      type: textfield
+      title: 'Bar Text Field'
+      description: 'Bar Foo Baz'

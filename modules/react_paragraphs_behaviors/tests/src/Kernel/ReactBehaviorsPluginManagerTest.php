@@ -28,7 +28,7 @@ class ReactBehaviorsPluginManagerTest extends KernelTestBase {
   public function testDiscovery() {
     $definitions = \Drupal::service('plugin.manager.react_behaviors')
       ->getDefinitions();
-    $this->assertCount(2, $definitions);
+    $this->assertCount(3, $definitions);
   }
 
   /**

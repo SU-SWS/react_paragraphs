@@ -3,9 +3,9 @@
 #first:
 #  id: first
 #  label: First
-#  paragraphs:
-#    - card
-#    - text
+#  bundles:
+#    - paragraph_type|card
+#    - paragraphs_row_type|*
 #  rows:
 #    - main_row
 #  config:
