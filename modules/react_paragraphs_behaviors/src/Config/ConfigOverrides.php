@@ -5,7 +5,6 @@ namespace Drupal\react_paragraphs_behaviors\Config;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Config\ConfigFactoryOverrideInterface;
 use Drupal\Core\Config\StorageInterface;
-use Drupal\react_paragraphs_behaviors\ReactBehaviorsPluginManagerInterface;
 
 /**
  * Class ConfigOverrides.
