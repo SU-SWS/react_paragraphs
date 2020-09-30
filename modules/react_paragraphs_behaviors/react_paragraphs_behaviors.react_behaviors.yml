@@ -2,12 +2,10 @@
 # Plugin property $defaults are defined in ReactBehaviorsPluginManager.
 #first:
 #  id: first
-#  label: First
+#  label: 'Card Paragraphs and all Rows'
 #  bundles:
 #    - paragraph_type|card
 #    - paragraphs_row_type|*
-#  rows:
-#    - main_row
 #  config:
 #    foo:
 #      type: select
@@ -26,12 +24,11 @@
 #      title: 'Baz Checkbox'
 #      description: 'Baz Foo Bar'
 #      default_value: true
-#second:
+#only:
 #  id: second
-#  label: Second
-#  paragraphs:
-#    - card
-#  rows: {}
+#  label: 'Foo Paragraphs only'
+#  bundles:
+#    - paragraph_type|foo
 #  config:
 #    foo:
 #      type: select

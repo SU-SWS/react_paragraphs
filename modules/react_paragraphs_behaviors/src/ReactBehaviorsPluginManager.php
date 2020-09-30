@@ -23,6 +23,7 @@ class ReactBehaviorsPluginManager extends DefaultPluginManager implements ReactB
   protected $defaults = [
     'id' => '',
     'label' => '',
+    'bundles' => [],
   ];
 
   /**
