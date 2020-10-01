@@ -1,0 +1,8 @@
+name: 'Test React Paragraphs Behaviors'
+type: module
+description: 'Test Module.'
+core_version_requirement: '^8.8 || ^9'
+package: 'Testing'
+hidden: true
+dependencies:
+  - react_paragraphs:react_paragraphs_behaviors
