@@ -1,0 +1,59 @@
+# Example react_behaviors plugin definitions.
+# Plugin property $defaults are defined in ReactBehaviorsPluginManager.
+first:
+  id: first
+  label: First
+  bundles:
+    - paragraphs_type|card
+    - paragraphs_type|text
+    - paragraphs_row_type|main_row
+  config:
+    foo:
+      type: select
+      title: 'Foo Select'
+      description: Foo Bar Baz
+      options:
+        foo: Foo
+        bar: Bar
+        baz: Baz
+    bar:
+      type: textfield
+      title: 'Bar Text Field'
+      description: 'Bar Foo Baz'
+    baz:
+      type: checkbox
+      title: 'Baz Checkbox'
+      description: 'Baz Foo Bar'
+      default_value: true
+second:
+  id: second
+  label: Second
+  config:
+    foo:
+      type: select
+      title: 'Foo Select'
+      description: Foo Bar Baz
+      options:
+        foo: Foo
+        bar: Bar
+        baz: Baz
+    bar:
+      type: textfield
+      title: 'Bar Text Field'
+      description: 'Bar Foo Baz'
+    baz:
+      type: checkbox
+      title: 'Baz Checkbox'
+      description: 'Baz Foo Bar'
+      default_value: true
+
+third:
+  id: second
+  label: Second
+  bundles:
+    - foo|bar
+  config:
+    bar:
+      type: textfield
+      title: 'Bar Text Field'
+      description: 'Bar Foo Baz'

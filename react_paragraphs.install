@@ -217,7 +217,7 @@ function react_paragraphs_update_8203(&$sandbox) {
         $paragraph->save();
         $row_items[] = [
           'target_id' => $paragraph->id(),
-          'target_revision_id' => $paragraph->getRevisionId(),
+          'entity' => $paragraph,
         ];
       }
 
@@ -231,7 +231,7 @@ function react_paragraphs_update_8203(&$sandbox) {
       $row->set($field_name, $row_items)->save();
       $entity_row_field_data[] = [
         'target_id' => $row->id(),
-        'target_revision_id' => $row->getRevisionId(),
+        'entity' => $row,
       ];
     }
 

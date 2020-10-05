@@ -140,7 +140,7 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
     }
     catch (\Exception $e) {
       \Drupal::logger('react_paragraphs')
-        ->error('Unable to get paragraph icon for %type', ['%type' => $type]);
+        ->error('Unable to get paragraph icon for %type', ['%type' => $type->id()]);
     }
   }
 

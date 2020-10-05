@@ -8,5 +8,13 @@ react_paragraphs.paragraphs_row_type.*:
     label:
       type: label
       label: 'Label'
-    uuid:
-      type: string
+    description:
+      type: text
+      label: 'Description'
+    behavior_plugins:
+      type: sequence
+      label: 'Plugins'
+      orderby: key
+      sequence:
+        type: paragraphs.behavior.settings.[%key]
+        label: 'Behavior plugins'

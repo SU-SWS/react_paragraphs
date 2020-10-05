@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * @file
+ * Contains react_paragraphs_behaviors.module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function react_paragraphs_behaviors_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the react_paragraphs_behaviors module.
+    case 'help.page.react_paragraphs_behaviors':
+      $output = '';
+      $output .= '<h3>' . t('Behaviors') . '</h3>';
+      $output .= '<p>' . t('This module provide the discoverability of behavior plugins within modules and themes as defined in yml files.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function react_paragraphs_behaviors_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $behavior_forms = [
+    'paragraphs_row_type_add_form',
+    'paragraphs_row_type_edit_form',
+    'paragraphs_type_add_form',
+    'paragraphs_type_edit_form',
+  ];
+
+  if (!in_array($form_id, $behavior_forms) || empty($form['behavior_plugins'])) {
+    return;
+  }
+
+  // Remove the behavior plugins from the react behavior derivative because we
+  // automatically enable/disable it via the config overrides.
+  foreach (Element::children($form['behavior_plugins']) as $behavior_plugin_id) {
+    if (strpos($behavior_plugin_id, 'react_paragraphs:') === 0) {
+      unset($form['behavior_plugins'][$behavior_plugin_id]);
+      $form['react_paragraphs_message'] = [
+        '#type' => 'container',
+        '#markup' => t('Some Behavior plugins provided by yaml configs are enabled/disabled automatically as defined in those files.'),
+        '#attributes' => ['class' => ['messages', 'messages--warning']],
+      ];
+    }
+  }
+
+  // Clean up the form if no behaviors exist.
+  if (empty(Element::children($form['behavior_plugins']))) {
+    unset($form['behavior_plugins']);
+  }
+}
