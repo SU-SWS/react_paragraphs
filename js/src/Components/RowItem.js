@@ -44,7 +44,7 @@ const ItemIcon = styled.img`
 `;
 
 
-export const RowItem = ({item,id, isDraggable, index}) => {
+export const RowItem = ({item, id, isDraggable, index}) => {
 
   const [modalOpen, setModalOpen] = useState(typeof item.isNew === 'undefined' ? false : true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -65,6 +65,22 @@ export const RowItem = ({item,id, isDraggable, index}) => {
     />;
   };
 
+  /**
+   * Get the label of the entity type for the current item
+   *
+   * @param widgetContext
+   * @returns {*}
+   */
+  const getToolLabel = (widgetContext) => {
+    try {
+      const toolInfo = widgetContext.getToolInformation(item.entity.type[0].target_id);
+      return toolInfo.label;
+    }
+    catch (e) {
+      console.error('Unknown error occurred: ' + e);
+      return null;
+    }
+  }
 
   return (
     <Draggable
@@ -113,6 +129,7 @@ export const RowItem = ({item,id, isDraggable, index}) => {
                 item={item}
                 onClose={setModalOpen}
                 widgetContext={widgetContext}
+                typeLabel={getToolLabel(widgetContext)}
               />
 
               <ConfirmDialog
