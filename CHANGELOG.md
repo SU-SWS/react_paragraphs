@@ -1,5 +1,15 @@
 # React Paragraphs
 
+8.x-2.2
+--------------------------------------------------------------------------------
+_Release Date: 2020-10-05_
+
+- Fixed paragraph entity form modal label (#72) (369e99a)
+- Fixed logger message (#71) (e0a5cdc)
+- D8CORE-2685 Discover behaviors defined in modules and themes yml (#70) (b0b7c7e)
+- D8CORE-2150: Adjust link widget to mirror the php link widget (#69) (664aebb)
+- Fix the upgrade for mismatched paragraph revisions (#68) (e6b40b2)
+
 8.x-2.1
 --------------------------------------------------------------------------------
 _Release Date: 2020-09-15_
