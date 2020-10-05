@@ -57,6 +57,9 @@ class EntityReference extends ReactParagraphsFieldsBase implements ContainerFact
     if (isset($field_element['widget']['media_library_selection'])) {
       $this->addMediaLibraryInfo($info, $field_config);
     }
+    if (!empty($field_element['widget'][0]['target_id']['#type']) && $field_element['widget'][0]['target_id']['#type'] == 'entity_autocomplete') {
+      $this->addAutocompleteInfo($info, $field_element['widget'][0]['target_id'], $field_config);
+    }
     return $info;
   }
 
@@ -79,6 +82,32 @@ class EntityReference extends ReactParagraphsFieldsBase implements ContainerFact
     $info['target_bundles'] = array_map(function ($bundle) {
       return $bundle->label();
     }, $target_bundles);
+  }
+
+  protected function addAutocompleteInfo(array &$info, array $widget, FieldConfigInterface $field_config) {
+    $handler = $field_config->getSetting('handler');
+    if (strpos($handler, 'default:') !== 0) {
+      return;
+    }
+    $handler_settings = $field_config->getSetting('handler_settings');
+    $entity_type = substr($handler, strlen('default:'));
+    $entity_storage = $this->entityTypeManager->getStorage($entity_type);
+
+    $bundle_key = $this->entityTypeManager->getDefinition($entity_type)
+      ->getKey('bundle');
+    $entity_ids = $entity_storage->getQuery()
+      ->condition($bundle_key, $handler_settings['target_bundles'], 'IN')
+      ->execute();
+
+    $info['options'] = [];
+    // Load the entities one at a time to avoid overloading the memory.
+    foreach ($entity_ids as $id) {
+      $info['options'][] = [
+        'entityId' => $id,
+        'label' => $entity_storage->load($id)->label(),
+      ];
+    }
+    $info['widget_type'] = 'entity_reference_autocomplete';
   }
 
 }
