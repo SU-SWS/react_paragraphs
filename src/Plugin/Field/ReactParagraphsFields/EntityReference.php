@@ -57,10 +57,31 @@ class EntityReference extends ReactParagraphsFieldsBase implements ContainerFact
     if (isset($field_element['widget']['media_library_selection'])) {
       $this->addMediaLibraryInfo($info, $field_config);
     }
-    if (!empty($field_element['widget'][0]['target_id']['#type']) && $field_element['widget'][0]['target_id']['#type'] == 'entity_autocomplete') {
-      $this->addAutocompleteInfo($info, $field_element['widget'][0]['target_id'], $field_config);
+
+    if ($this->isSelectListType($field_element)) {
+      $this->addAutocompleteInfo($info, $field_config);
     }
     return $info;
+  }
+
+  /**
+   * Is the field element an autocomplete or select list type of widget.
+   *
+   * @param array $field_element
+   *   Form field element.
+   *
+   * @return bool
+   *   If the form element is like a select list.
+   */
+  protected function isSelectListType(array $field_element) {
+    if (
+      !empty($field_element['widget'][0]['target_id']['#type']) &&
+      $field_element['widget'][0]['target_id']['#type'] == 'entity_autocomplete'
+    ) {
+      return TRUE;
+    }
+
+    return !empty($field_element['widget']['#type']) && $field_element['widget']['#type'] == 'select';
   }
 
   /**
@@ -84,8 +105,21 @@ class EntityReference extends ReactParagraphsFieldsBase implements ContainerFact
     }, $target_bundles);
   }
 
-  protected function addAutocompleteInfo(array &$info, array $widget, FieldConfigInterface $field_config) {
+  /**
+   * Add the select list or autocomplete options.
+   *
+   * @param array $info
+   *   React data.
+   * @param \Drupal\field\FieldConfigInterface $field_config
+   *   Field config entity.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
+  protected function addAutocompleteInfo(array &$info, FieldConfigInterface $field_config) {
     $handler = $field_config->getSetting('handler');
+
+    // We don't want to handle view handlers at this time.
     if (strpos($handler, 'default:') !== 0) {
       return;
     }
@@ -100,6 +134,7 @@ class EntityReference extends ReactParagraphsFieldsBase implements ContainerFact
       ->execute();
 
     $info['options'] = [];
+
     // Load the entities one at a time to avoid overloading the memory.
     foreach ($entity_ids as $id) {
       $info['options'][] = [
