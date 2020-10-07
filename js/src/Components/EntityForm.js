@@ -10,6 +10,7 @@ import {RadiosWidget} from "./Widgets/RadiosWidget";
 import {CkeditorWidget} from "./Widgets/CkeditorWidget";
 import {MediaLibrary} from "./Widgets/MediaLibrary";
 import {ViewFieldWidget} from "./Widgets/ViewFieldWidget";
+import {AutocompleteReferenceWidget} from "./Widgets/AutocompleteReferenceWidget";
 import {Loader} from "./Atoms/Loader";
 import styled from "styled-components";
 
@@ -26,7 +27,8 @@ export const EntityForm = ({entityType, bundle, entity, onFieldChange, widgetCon
     radios: RadiosWidget,
     ckeditor: CkeditorWidget,
     media_library: MediaLibrary,
-    viewfield: ViewFieldWidget
+    viewfield: ViewFieldWidget,
+    entity_reference_autocomplete: AutocompleteReferenceWidget
   };
 
   const formFields = widgetContext.getEntityForm(entityType, bundle);
