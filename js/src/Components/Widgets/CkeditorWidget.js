@@ -81,6 +81,7 @@ export class CkeditorWidget extends Component {
     // the ckeditor is in "view source" mode.
     CKEDITOR.instances[`${this.props.fieldId}-text-area`].on('unlockSnapshot', this.onEditorChange);
     CKEDITOR.instances[`${this.props.fieldId}-text-area`].on('key', this.onEditorChange);
+    CKEDITOR.instances[`${this.props.fieldId}-text-area`].on('change', this.onEditorChange);
   }
 
   /**
