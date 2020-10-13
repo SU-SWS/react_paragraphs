@@ -22,16 +22,16 @@ export const AutocompleteReferenceWidget = ({defaultValue, fieldId, onFieldChang
    * @returns {*|[]}
    */
   const getValue = () => {
+    const values = [];
     if (defaultValue && defaultValue.length > 0) {
-      const values = [];
       defaultValue.map(value => {
         const foundOption = options.find(option => parseInt(option.entityId) === parseInt(value.target_id));
         if (foundOption) {
-          values.push();
+          values.push(foundOption);
         }
       })
-      return settings.cardinality === 1 ? values[0] : values;
     }
+    return settings.cardinality === 1 ? values[0] : values;
   }
 
   /**
