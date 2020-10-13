@@ -2,6 +2,7 @@
 
 namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\field\FieldConfigInterface;
@@ -29,6 +30,13 @@ class EntityReference extends ReactParagraphsFieldsBase implements ContainerFact
   protected $entityTypeManager;
 
   /**
+   * Database connection service.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $database;
+
+  /**
    * {@inheritDoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -36,16 +44,18 @@ class EntityReference extends ReactParagraphsFieldsBase implements ContainerFact
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('database')
     );
   }
 
   /**
    * {@inheritDoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, Connection $database) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
+    $this->database = $database;
   }
 
   /**
@@ -127,19 +137,33 @@ class EntityReference extends ReactParagraphsFieldsBase implements ContainerFact
     $entity_type = substr($handler, strlen('default:'));
     $entity_storage = $this->entityTypeManager->getStorage($entity_type);
 
-    $bundle_key = $this->entityTypeManager->getDefinition($entity_type)
-      ->getKey('bundle');
+    $entity_definition = $this->entityTypeManager->getDefinition($entity_type);
+    $bundle_key = $entity_definition->getKey('bundle');
+
+    // Do a simple query to load all entity IDs without loading the entities.
+    // Using the getQuery it will also do access checks for the current user.
     $entity_ids = $entity_storage->getQuery()
       ->condition($bundle_key, $handler_settings['target_bundles'], 'IN')
       ->execute();
 
+    $label_key = $entity_definition->getKey('label');
+    $id_key = $entity_definition->getKey('id');
+
     $info['options'] = [];
 
-    // Load the entities one at a time to avoid overloading the memory.
-    foreach ($entity_ids as $id) {
+    // Now that we now the entity IDs and based on the entity definition, we
+    // can simply gather the data straight from the database.
+    $data = $this->database->select($entity_definition->getDataTable(), 'd')
+      ->fields('d', [$id_key, $label_key])
+      ->condition($id_key, $entity_ids, 'IN')
+      ->execute()
+      ->fetchAllKeyed();
+
+    // Construct the options based on the query data.
+    foreach ($data as $id => $label) {
       $info['options'][] = [
         'entityId' => $id,
-        'label' => $entity_storage->load($id)->label(),
+        'label' => $label,
       ];
     }
     $info['widget_type'] = 'entity_reference_autocomplete';
