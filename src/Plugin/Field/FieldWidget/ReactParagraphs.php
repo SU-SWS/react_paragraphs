@@ -177,8 +177,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     if (!empty($this->rowData)) {
       return $this->rowData;
     }
-
-    $react_data = json_decode(urldecode($values['container']['value']), TRUE);
+    $react_data = json_decode(rawurldecode($values['container']['value']), TRUE);
 
     $return_data = [];
 

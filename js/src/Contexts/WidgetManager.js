@@ -121,7 +121,7 @@ export class WidgetManager extends Component {
         rows: this.state.rows,
         rowOrder: this.state.rowOrder,
       };
-      formItemsField.value = encodeURI(JSON.stringify(returnValue));
+      formItemsField.value = encodeURIComponent(JSON.stringify(returnValue));
     }
   }
 
