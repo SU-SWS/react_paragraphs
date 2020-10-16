@@ -77,7 +77,7 @@
 
 </style>
 
-<script>const localBaseDomain = 'http://web.drupal8.loc/';</script>
+<script>const localBaseDomain = 'http://docroot.cardinalsites.loc/';</script>
 <script type="application/json" data-drupal-selector="drupal-settings-json">
   {
     "path": {
@@ -90,10 +90,10 @@
       {
         "fieldId": "root",
         "inputId": "root-input",
-        "rowBundle": "page_row",
+        "rowBundle": "node_stanford_page_row",
         "tools": [
           {
-            "id": "text_area",
+            "id": "stanford_wysiwyg",
             "label": "Text Area",
             "description": "",
             "icon": null,
@@ -101,34 +101,6 @@
           }
         ],
         "items": [
-          {
-            "row": {
-              "target_id": "2",
-              "entity": {
-                "type": [
-                  {
-                    "target_id": "page_row"
-                  }
-                ]
-              }
-            },
-            "rowItems": [
-              {
-                "target_id": "1",
-                "entity": {
-                  "type": [
-                    {
-                      "target_id": "text_area"
-                    }
-                  ]
-                },
-                "settings": {
-                  "width": 12,
-                  "admin_title": "This is the admin title"
-                }
-              }
-            ]
-          }
         ],
         "itemsPerRow": 4,
         "resizableItems": false

@@ -19,6 +19,7 @@ export class WidgetManager extends Component {
     getEntityForm: this.getEntityForm.bind(this),
     updateRowEntity: this.updateRowEntity.bind(this),
     updateRowItemEntity: this.updateRowItemEntity.bind(this),
+    updateEntityBehaviors: this.updateEntityBehaviors.bind(this),
     loadRow: this.loadRow.bind(this),
     loadRowItem: this.loadRowItem.bind(this)
   };
@@ -598,6 +599,10 @@ export class WidgetManager extends Component {
       }
     });
     this.triggerFormUpdated();
+  }
+
+  updateEntityBehaviors(type, item, behavior, fieldName, newValues){
+
   }
 
   /**
