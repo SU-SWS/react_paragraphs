@@ -601,8 +601,10 @@ export class WidgetManager extends Component {
     this.triggerFormUpdated();
   }
 
-  updateEntityBehaviors(type, item, behavior, fieldName, newValues){
-
+  updateEntityBehaviors(type, entity, behaviorKey, fieldName, newValues){
+console.log('type',type);
+console.log('entity', entity);
+console.error("NOTHING SAVED YET");
   }
 
   /**

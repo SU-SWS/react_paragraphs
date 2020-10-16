@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { withStyles } from '@material-ui/core/styles';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import {WidgetContext} from "../../Contexts/WidgetManager";
 import {RowForm} from "../RowForm";
 import {ConfirmDialog} from "./ConfirmDialog";
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 
 export const RowActions = ({onlyRow, rowId, entity, loadedEntity, onRemoveRow}) => {
 
@@ -43,10 +44,10 @@ export const RowActions = ({onlyRow, rowId, entity, loadedEntity, onRemoveRow}) 
         open={actionsOpen}
         onClose={closeActions}
       >
-        <MenuItem onClick={() => setFormDialogOpen(true)}>
+        <MenuItem onClick={() => {setFormDialogOpen(true); closeActions()}}>
           Edit Row
         </MenuItem>
-        <MenuItem onClick={() => setDeleteModalOpen(true)}>
+        <MenuItem onClick={() => {setDeleteModalOpen(true); closeActions()}}>
           Delete Row
         </MenuItem>
       </Menu>

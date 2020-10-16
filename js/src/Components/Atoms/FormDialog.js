@@ -3,6 +3,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import {makeStyles} from "@material-ui/core/styles";
 
 export const FormDialog = ({open, title, formContent, onClose, ...props}) => {
   let submitButton = React.createRef();
@@ -26,9 +27,12 @@ export const FormDialog = ({open, title, formContent, onClose, ...props}) => {
     dialogRef.current.removeAttribute('tabindex');
   };
 
+  const classes = useStyles();
+
   return (
     <Dialog
-      maxWidth='lg'
+      maxWidth='md'
+      fullWidth
       open={open}
       aria-labelledby="max-width-dialog-title"
       onBackdropClick={onBackdropClick}
@@ -36,6 +40,7 @@ export const FormDialog = ({open, title, formContent, onClose, ...props}) => {
       style={{zIndex: 900}}
       onEntered={onEntered}
       TransitionProps={{ref: dialogRef}}
+      classes={{ paper: classes.dialogPaper }}
     >
       <DialogTitle style={{
         background: '#6b6b6b',
@@ -46,7 +51,7 @@ export const FormDialog = ({open, title, formContent, onClose, ...props}) => {
       }}>
         {title}
       </DialogTitle>
-      <form onSubmit={onFormSubmit}>
+      <form onSubmit={onFormSubmit} style={{flex: '1 1 auto', display: 'flex', flexDirection: 'column'}}>
         <DialogContent>
           {props.children}
         </DialogContent>
@@ -68,3 +73,12 @@ export const FormDialog = ({open, title, formContent, onClose, ...props}) => {
     </Dialog>
   )
 };
+
+const useStyles = makeStyles(() => (
+  {
+    dialogPaper: {
+      minHeight: '80vh',
+      maxHeight: '80vh',
+    },
+  }
+));

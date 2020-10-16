@@ -4,7 +4,7 @@ import {SelectWidget} from "./Widgets/SelectWidget";
 import {CheckboxesWidget} from "./Widgets/CheckboxesWidget";
 import {RadiosWidget} from "./Widgets/RadiosWidget";
 
-export const Behaviors = ({behaviors, widgetContext, entityType, bundle, entity}) => {
+export const Behaviors = ({behaviors, widgetContext, entityType, entity}) => {
 
   const widgetComponents = {
     textfield: TextWidget,
@@ -14,8 +14,8 @@ export const Behaviors = ({behaviors, widgetContext, entityType, bundle, entity}
     radios: RadiosWidget
   };
 
-  const onFieldChange = () => {
-console.log(widgetContext);
+  const onFieldChange = (behaviorKey, fieldName, newValues) => {
+    widgetContext.updateEntityBehaviors(entityType, entity, behaviorKey, fieldName, newValues);
   }
 
   const getFieldSettings = (field) => {
@@ -56,7 +56,7 @@ console.log(widgetContext);
                 <WidgetName
                   fieldId={fieldName}
                   settings={settings}
-                  onFieldChange={onFieldChange.bind(undefined, fieldName)}
+                  onFieldChange={onFieldChange.bind(undefined, behaviorKey, fieldName)}
                   fieldName={fieldName}
                 />
               </div>

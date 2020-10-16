@@ -50,17 +50,6 @@ export const EntityForm = ({entityType, bundle, entity, onFieldChange, widgetCon
     return <div>No fields to edit.</div>
   }
 
-  const useStyles = makeStyles((theme) => ({
-    root: {
-      flexGrow: 1,
-      backgroundColor: theme.palette.background.paper,
-      display: 'flex',
-      height: 224,
-    },
-    tabs: {
-      borderRight: `1px solid ${theme.palette.divider}`,
-    },
-  }));
   const classes = useStyles();
 
   return (
@@ -73,12 +62,13 @@ export const EntityForm = ({entityType, bundle, entity, onFieldChange, widgetCon
         onChange={(e, newValue) => setTabValue(newValue)}
         className={classes.tabs}
       >
-        <Tab label="Content"/>
-        <Tab label="Style"/>
+        <Tab label="Content" className={classes.tab}/>
+        <Tab label="Style"  className={classes.tab}/>
       </Tabs>
       }
 
       <TabPanel value={tabValue} index={0}>
+
         {Object.keys(formFields.form).map(fieldName => {
           const field = formFields.form[fieldName];
           const WidgetName = widgetComponents[field.widget_type];
@@ -100,7 +90,6 @@ export const EntityForm = ({entityType, bundle, entity, onFieldChange, widgetCon
                 settings={formFields.form[fieldName]}
                 defaultValue={typeof entity[fieldName] !== 'undefined' ? entity[fieldName] : null}
                 fieldName={fieldName}
-                bundle={bundle}
               />
             </FieldContainer>
           )
@@ -124,8 +113,27 @@ export const EntityForm = ({entityType, bundle, entity, onFieldChange, widgetCon
 
 }
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+const useStyles = makeStyles((theme) => (
+  {
+    root: {
+      flexGrow: 1,
+      backgroundColor: theme.palette.background.paper,
+      display: 'flex',
+      height: 224,
+    },
+    tabs: {
+      borderRight: `1px solid ${theme.palette.divider}`,
+      background: '#e6e5e1'
+    },
+    tab: {
+      borderBottom: '1px solid #b3b2ad',
+      background: '#f2f2f0'
+    }
+  }
+));
+
+const TabPanel = (props) => {
+  const {children, value, index, ...other} = props;
 
   return (
     <div
