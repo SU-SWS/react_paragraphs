@@ -603,7 +603,7 @@ export class WidgetManager extends Component {
   }
 
   updateEntityBehaviors(item, itemId, type, behaviorKey, fieldName, newValues) {
-    let behaviorValues = typeof item.entity.behavior_settings === 'undefined' ? [{value: {}}] : [...item.entity.behavior_settings];
+    const behaviorValues = typeof item.entity.behavior_settings === 'undefined' ? [{value: {}}] : [...item.entity.behavior_settings];
     if (behaviorValues[0].value.length === 0) {
       behaviorValues[0].value = {};
     }

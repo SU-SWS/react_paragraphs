@@ -7,6 +7,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\field\FieldConfigInterface;
+use Drupal\paragraphs\ParagraphInterface;
 
 /**
  * Plugin implementation of the 'react_paragraphs' widget.
@@ -317,16 +318,14 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
         if ($field_definition instanceof FieldConfigInterface) {
           $entity->set($field_name, $field_data[$field_name]);
         }
-
-        if ($field_name == 'behavior_settings' && !empty($field_data[$field_name][0]['value'])) {
-          foreach ($field_data[$field_name][0]['value'] as $plugin_id => $settings) {
-            $entity->setBehaviorSettings($plugin_id, $settings);
-          }
-        }
       }
     }
+
+    $this->setBehaviorSettings($entity, $field_data['behavior_settings'] ?? []);
     return $entity;
   }
+
+
 
   /**
    * Create a new entity with the give field data.
@@ -358,10 +357,27 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     }
     /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
     $entity = $storage->create($entity_values);
+    $this->setBehaviorSettings($entity, $field_data['behavior_settings'] ?? []);
 
     // TODO: Handle validation.
     $entity->validate();
     return $entity;
+  }
+
+  /**
+   * Set the entity's behavior settings based on the values from the UI.
+   *
+   * @param \Drupal\paragraphs\ParagraphInterface $entity
+   *   Created or edited paragraph/row entity.
+   * @param $behaviors
+   *   Keyed array of behavior values.
+   */
+  protected function setBehaviorSettings(ParagraphInterface $entity, $behaviors) {
+    if (!empty($behaviors[0]['value'])) {
+      foreach ($behaviors[0]['value'] as $plugin_id => $settings) {
+        $entity->setBehaviorSettings($plugin_id, $settings);
+      }
+    }
   }
 
 }
