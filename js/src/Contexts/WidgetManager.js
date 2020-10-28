@@ -119,8 +119,8 @@ export class WidgetManager extends Component {
     const formItemsField = document.getElementById(this.props.inputId);
     if (formItemsField) {
       const returnValue = {
-        rows: this.state.rows,
-        rowOrder: this.state.rowOrder,
+        rows: {...this.state.rows},
+        rowOrder: [...this.state.rowOrder],
       };
       formItemsField.value = encodeURIComponent(JSON.stringify(returnValue));
     }
@@ -575,6 +575,7 @@ export class WidgetManager extends Component {
     const newState = {...this.state}
     newState.rows[rowId].entity[fieldName] = newValues;
     this.setState(newState);
+    this.triggerFormUpdated();
   }
 
   /**
@@ -601,10 +602,13 @@ export class WidgetManager extends Component {
     this.triggerFormUpdated();
   }
 
-  updateEntityBehaviors(item, type, behaviorKey, fieldName, newValues) {
-    const behaviorValues = typeof item.entity.behavior_settings === 'undefined' ? [{value: {}}] : [...item.entity.behavior_settings];
+  updateEntityBehaviors(item, itemId, type, behaviorKey, fieldName, newValues) {
+    let behaviorValues = typeof item.entity.behavior_settings === 'undefined' ? [{value: {}}] : [...item.entity.behavior_settings];
+    if (behaviorValues[0].value.length === 0) {
+      behaviorValues[0].value = {};
+    }
 
-    if (typeof behaviorValues[0].value[behaviorKey] == 'undefined') {
+    if (typeof behaviorValues[0].value[behaviorKey] === 'undefined') {
       behaviorValues[0].value[behaviorKey] = {};
     }
     behaviorValues[0].value[behaviorKey][fieldName] = newValues
@@ -614,8 +618,7 @@ export class WidgetManager extends Component {
         return this.updateRowItemEntity(item, 'behavior_settings', behaviorValues);
 
       default:
-
-        break;
+        return this.updateRowEntity(itemId, 'behavior_settings', behaviorValues);
     }
   }
 

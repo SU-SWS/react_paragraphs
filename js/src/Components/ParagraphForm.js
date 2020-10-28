@@ -28,6 +28,7 @@ export const ParagraphForm = ({item, widgetContext, open, typeLabel, onClose}) =
           entityType="paragraph"
           bundle={item.entity.type[0].target_id}
           entity={item.entity}
+          itemId={item.id}
           onFieldChange={(fieldName, newValue) => widgetContext.updateRowItemEntity(item, fieldName, newValue)}
           onBehaviorChange={widgetContext.updateEntityBehaviors.bind(undefined, item)}
           widgetContext={widgetContext}

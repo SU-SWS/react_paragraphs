@@ -19,7 +19,7 @@ import {Loader} from "./Atoms/Loader";
 import styled from "styled-components";
 import {Behaviors} from "./Behaviors";
 
-export const EntityForm = ({entityType, bundle, entity, onFieldChange, onBehaviorChange, widgetContext}) => {
+export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, onBehaviorChange, widgetContext}) => {
 
   const widgetComponents = {
     text: TextWidget,
@@ -105,6 +105,7 @@ export const EntityForm = ({entityType, bundle, entity, onFieldChange, onBehavio
           entityType={entityType}
           bundle={bundle}
           entity={entity}
+          itemId={itemId}
         />
       </TabPanel>
       }

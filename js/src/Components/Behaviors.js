@@ -4,7 +4,7 @@ import {SelectWidget} from "./Widgets/SelectWidget";
 import {CheckboxesWidget} from "./Widgets/CheckboxesWidget";
 import {RadiosWidget} from "./Widgets/RadiosWidget";
 
-export const Behaviors = ({behaviors, onBehaviorChange, entityType, entity}) => {
+export const Behaviors = ({behaviors, onBehaviorChange, entityType, entity, itemId}) => {
 
   const widgetComponents = {
     textfield: TextWidget,
@@ -17,7 +17,7 @@ export const Behaviors = ({behaviors, onBehaviorChange, entityType, entity}) => 
   const onFieldChange = (behaviorKey, fieldName, newValues) => {
     const flattenedValues = flattenObject(newValues);
     const valueKey = Object.keys(flattenedValues)[0];
-    onBehaviorChange(entityType, behaviorKey, fieldName, flattenedValues[valueKey])
+    onBehaviorChange(itemId, entityType, behaviorKey, fieldName, flattenedValues[valueKey])
   }
 
   /**
