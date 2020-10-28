@@ -17,12 +17,6 @@ export const ParagraphForm = ({item, widgetContext, open, typeLabel, onClose}) =
       open={open}
       onClose={() => onClose(false)}
     >
-      <AdminTitleField
-        textField={open}
-        item={item}
-        onChange={widgetContext.onAdminTitleChange.bind(undefined, item.id)}
-      />
-
       <div className="item-form">
         <EntityForm
           entityType="paragraph"
@@ -32,7 +26,15 @@ export const ParagraphForm = ({item, widgetContext, open, typeLabel, onClose}) =
           onFieldChange={(fieldName, newValue) => widgetContext.updateRowItemEntity(item, fieldName, newValue)}
           onBehaviorChange={widgetContext.updateEntityBehaviors.bind(undefined, item)}
           widgetContext={widgetContext}
-        />
+          header={
+            <AdminTitleField
+              textField={open}
+              item={item}
+              onChange={widgetContext.onAdminTitleChange.bind(undefined, item.id)}
+            />
+          }
+        >
+        </EntityForm>
       </div>
     </FormDialog>
   )

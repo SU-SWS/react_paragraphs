@@ -19,7 +19,7 @@ import {Loader} from "./Atoms/Loader";
 import styled from "styled-components";
 import {Behaviors} from "./Behaviors";
 
-export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, onBehaviorChange, widgetContext}) => {
+export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, onBehaviorChange, widgetContext, ...props}) => {
 
   const widgetComponents = {
     text: TextWidget,
@@ -61,14 +61,16 @@ export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, o
         value={tabValue}
         onChange={(e, newValue) => setTabValue(newValue)}
         className={classes.tabs}
+        TabIndicatorProps={{ children: <span/>}}
+        style={{width: '170px'}}
       >
         <Tab label="Content" className={classes.tab}/>
         <Tab label="Style"  className={classes.tab}/>
       </Tabs>
       }
 
-      <TabPanel value={tabValue} index={0}>
-
+      <TabPanel value={tabValue} index={0} style={{width: 'calc(100% - 170px)'}}>
+        {props.header}
         {Object.keys(formFields.form).map(fieldName => {
           const field = formFields.form[fieldName];
           const WidgetName = widgetComponents[field.widget_type];
@@ -94,11 +96,12 @@ export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, o
             </FieldContainer>
           )
         })}
+        {props.footer}
       </TabPanel>
 
 
       {Object.keys(formFields.behavior_plugins).length >= 1 &&
-      <TabPanel value={tabValue} index={1}>
+      <TabPanel value={tabValue} index={1} style={{width: 'calc(100% - 170px)'}}>
         <Behaviors
           behaviors={formFields.behavior_plugins}
           onBehaviorChange={onBehaviorChange}
@@ -120,7 +123,6 @@ const useStyles = makeStyles((theme) => (
       flexGrow: 1,
       backgroundColor: theme.palette.background.paper,
       display: 'flex',
-      height: 224,
     },
     tabs: {
       borderRight: `1px solid ${theme.palette.divider}`,

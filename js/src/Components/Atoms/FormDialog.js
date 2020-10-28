@@ -52,7 +52,7 @@ export const FormDialog = ({open, title, formContent, onClose, ...props}) => {
         {title}
       </DialogTitle>
       <form onSubmit={onFormSubmit} style={{flex: '1 1 auto', display: 'flex', flexDirection: 'column'}}>
-        <DialogContent>
+        <DialogContent classes={{root: classes.root}}>
           {props.children}
         </DialogContent>
 
@@ -76,6 +76,10 @@ export const FormDialog = ({open, title, formContent, onClose, ...props}) => {
 
 const useStyles = makeStyles(() => (
   {
+    root:{
+      padding: '0',
+      '&:first-child': {padding: 0}
+    },
     dialogPaper: {
       minHeight: '80vh',
       maxHeight: '80vh',
