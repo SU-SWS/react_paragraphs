@@ -601,10 +601,23 @@ export class WidgetManager extends Component {
     this.triggerFormUpdated();
   }
 
-  updateEntityBehaviors(type, entity, behaviorKey, fieldName, newValues){
-console.log('type',type);
-console.log('entity', entity);
-console.error("NOTHING SAVED YET");
+  updateEntityBehaviors(item, type, behaviorKey, fieldName, newValues) {
+    const behaviorValues = typeof item.entity.behavior_settings === 'undefined' ? [{value: {}}] : [...item.entity.behavior_settings];
+
+    if (typeof behaviorValues[0].value[behaviorKey] == 'undefined') {
+      behaviorValues[0].value[behaviorKey] = {};
+    }
+    behaviorValues[0].value[behaviorKey][fieldName] = newValues
+
+    switch (type) {
+      case 'paragraph':
+        this.updateRowItemEntity(item, 'behavior_settings', behaviorValues);
+        break;
+
+      default:
+
+        break;
+    }
   }
 
   /**

@@ -4,7 +4,7 @@ import {SelectWidget} from "./Widgets/SelectWidget";
 import {CheckboxesWidget} from "./Widgets/CheckboxesWidget";
 import {RadiosWidget} from "./Widgets/RadiosWidget";
 
-export const Behaviors = ({behaviors, widgetContext, entityType, entity}) => {
+export const Behaviors = ({behaviors, onBehaviorChange, entityType}) => {
 
   const widgetComponents = {
     textfield: TextWidget,
@@ -15,7 +15,31 @@ export const Behaviors = ({behaviors, widgetContext, entityType, entity}) => {
   };
 
   const onFieldChange = (behaviorKey, fieldName, newValues) => {
-    widgetContext.updateEntityBehaviors(entityType, entity, behaviorKey, fieldName, newValues);
+    const flattenedValues = flattenObject(newValues);
+    const valueKey = Object.keys(flattenedValues)[0];
+    onBehaviorChange(entityType, behaviorKey, fieldName, flattenedValues[valueKey])
+  }
+
+  /**
+   * Flatten a multidimensional object
+   *
+   * For example:
+   *   flattenObject({ a: 1, b: { c: 2 } })
+   * Returns:
+   *   { a: 1, c: 2}
+   */
+  const flattenObject = (obj) => {
+    const flattened = {}
+
+    Object.keys(obj).forEach((key) => {
+      if (typeof obj[key] === 'object' && obj[key] !== null) {
+        Object.assign(flattened, flattenObject(obj[key]))
+      } else {
+        flattened[key] = obj[key]
+      }
+    })
+
+    return flattened
   }
 
   const getFieldSettings = (field) => {

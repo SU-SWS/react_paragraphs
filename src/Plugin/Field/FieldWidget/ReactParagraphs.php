@@ -306,15 +306,23 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       return $this->createEntity($entity_type, $bundle, $field_data);
     }
 
-    /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+    /** @var \Drupal\paragraphs\ParagraphInterface $entity */
     $entity = $this->entityTypeManager->getStorage($entity_type)
       ->load($entity_id);
     $entity->setNewRevision();
 
     $fields = $this->fieldManager->getFieldDefinitions($entity_type, $bundle);
     foreach ($fields as $field_name => $field_definition) {
-      if (isset($field_data[$field_name]) && $field_definition instanceof FieldConfigInterface) {
-        $entity->set($field_name, $field_data[$field_name]);
+      if (isset($field_data[$field_name])) {
+        if ($field_definition instanceof FieldConfigInterface) {
+          $entity->set($field_name, $field_data[$field_name]);
+        }
+
+        if ($field_name == 'behavior_settings' && !empty($field_data[$field_name][0]['value'])) {
+          foreach ($field_data[$field_name][0]['value'] as $plugin_id => $settings) {
+            $entity->setBehaviorSettings($plugin_id, $settings);
+          }
+        }
       }
     }
     return $entity;
