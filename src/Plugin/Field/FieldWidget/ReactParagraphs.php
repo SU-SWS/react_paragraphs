@@ -8,6 +8,7 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\field\FieldConfigInterface;
 use Drupal\paragraphs\ParagraphInterface;
+use Drupal\react_paragraphs\Entity\ParagraphsRowInterface;
 
 /**
  * Plugin implementation of the 'react_paragraphs' widget.
@@ -66,7 +67,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
   /**
    * {@inheritdoc}
    */
-  public function settingsSummary() {
+  public function settingsSummary(): array {
     return [
       $this->getSetting('resizable') ? $this->t('Resizable') : $this->t('Equal Widths'),
     ];
@@ -75,7 +76,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
   /**
    * {@inheritdoc}
    */
-  public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+  public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state): array {
     $element['container'] = $element;
     $element['container'] += [
       '#type' => 'fieldset',
@@ -136,7 +137,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    * @return array
    *   Keyed data of rows and items.
    */
-  protected function getRowItems(FieldItemListInterface $items) {
+  protected function getRowItems(FieldItemListInterface $items): array {
     $row_item_field = self::getRowItemsField($this->fieldDefinition);
     $all_items = [];
 
@@ -174,7 +175,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
   /**
    * {@inheritdoc}
    */
-  public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
+  public function massageFormValues(array $values, array $form, FormStateInterface $form_state): array {
     if (!empty($this->rowData)) {
       return $this->rowData;
     }
@@ -232,14 +233,15 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    * @param int|null $entity_id
    *   Entity id if its existing.
    *
-   * @return \Drupal\Core\Entity\ContentEntityInterface
+   * @return \Drupal\react_paragraphs\Entity\ParagraphsRowInterface
    *   Row entity with set field values.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function getRowEntity(array $field_data, $entity_id) {
+  protected function getRowEntity(array $field_data, ?int $entity_id): ParagraphsRowInterface {
+    /** @var \Drupal\react_paragraphs\Entity\ParagraphsRowInterface $entity */
     $entity = $this->getEntity('paragraph_row', $this->getRowBundle(), $field_data, $entity_id);
     $entity->save();
     return $entity;
@@ -259,11 +261,8 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    *
    * @return \Drupal\paragraphs\ParagraphInterface
    *   Entity with modified field values.
-   *
-   * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function getRowItemEntity(array $field_data, $width, $admin_label, $entity_id) {
-    /** @var \Drupal\paragraphs\ParagraphInterface $row_item */
+  protected function getRowItemEntity(array $field_data, int $width, string $admin_label, ?int $entity_id): ParagraphInterface {
     $row_item = $this->getEntity('paragraph', $field_data['type'][0]['target_id'], $field_data, $entity_id);
     $row_item->setBehaviorSettings('react', [
       'width' => $width,
@@ -279,7 +278,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    * @return string
    *   Bundle ID.
    */
-  protected function getRowBundle() {
+  protected function getRowBundle(): string {
     $settings = $this->fieldDefinition->getSetting('handler_settings');
     return reset($settings['target_bundles']);
   }
@@ -296,13 +295,13 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    * @param int|null $entity_id
    *   Entity ID if available.
    *
-   * @return \Drupal\Core\Entity\ContentEntityInterface
+   * @return \Drupal\paragraphs\ParagraphInterface
    *   Entity with modified field values.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  protected function getEntity($entity_type, $bundle, array $field_data, $entity_id = NULL) {
+  protected function getEntity(string $entity_type, string $bundle, array $field_data, $entity_id = NULL): ParagraphInterface {
     if (!$entity_id) {
       return $this->createEntity($entity_type, $bundle, $field_data);
     }
@@ -333,13 +332,13 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    * @param array $field_data
    *   Array of field data from the react side.
    *
-   * @return \Drupal\Core\Entity\ContentEntityInterface
+   * @return \Drupal\paragraphs\ParagraphInterface
    *   Newly created entity.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  protected function createEntity($entity_type, $bundle, array $field_data) {
+  protected function createEntity(string $entity_type, string $bundle, array $field_data): ParagraphInterface {
     $entity_definition = $this->entityTypeManager->getDefinition($entity_type);
     $bundle_key = $entity_definition->getKey('bundle');
     $storage = $this->entityTypeManager->getStorage($entity_type);
@@ -351,7 +350,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
         $entity_values[$field_name] = $field_data[$field_name];
       }
     }
-    /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+    /** @var \Drupal\paragraphs\ParagraphInterface $entity */
     $entity = $storage->create($entity_values);
     $this->setBehaviorSettings($entity, $field_data['behavior_settings'] ?? []);
 
@@ -365,10 +364,10 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    *
    * @param \Drupal\paragraphs\ParagraphInterface $entity
    *   Created or edited paragraph/row entity.
-   * @param $behaviors
+   * @param array $behaviors
    *   Keyed array of behavior values.
    */
-  protected function setBehaviorSettings(ParagraphInterface $entity, $behaviors) {
+  protected function setBehaviorSettings(ParagraphInterface $entity, array $behaviors) {
     if (!empty($behaviors[0]['value'])) {
       foreach ($behaviors[0]['value'] as $plugin_id => $settings) {
         $entity->setBehaviorSettings($plugin_id, $settings);
