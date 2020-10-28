@@ -4,7 +4,7 @@ import {SelectWidget} from "./Widgets/SelectWidget";
 import {CheckboxesWidget} from "./Widgets/CheckboxesWidget";
 import {RadiosWidget} from "./Widgets/RadiosWidget";
 
-export const Behaviors = ({behaviors, onBehaviorChange, entityType}) => {
+export const Behaviors = ({behaviors, onBehaviorChange, entityType, entity}) => {
 
   const widgetComponents = {
     textfield: TextWidget,
@@ -34,7 +34,8 @@ export const Behaviors = ({behaviors, onBehaviorChange, entityType}) => {
     Object.keys(obj).forEach((key) => {
       if (typeof obj[key] === 'object' && obj[key] !== null) {
         Object.assign(flattened, flattenObject(obj[key]))
-      } else {
+      }
+      else {
         flattened[key] = obj[key]
       }
     })
@@ -50,12 +51,24 @@ export const Behaviors = ({behaviors, onBehaviorChange, entityType}) => {
     })
     settings.label = settings.title;
     settings.help = settings.description;
+    settings.column_key = 'value';
     settings.cardinality = (typeof settings.multiple !== 'undefined' && settings.multiple) ? -1 : 1;
 
     if (settings.type === 'checkbox') {
       settings.options = {1: settings.title};
     }
     return settings;
+  }
+
+  const getDefaultBehaviorValue = (behaviorKey, fieldName) => {
+    if (
+      typeof entity.behavior_settings === 'undefined' ||
+      typeof entity.behavior_settings[0].value[behaviorKey] === 'undefined' ||
+      typeof entity.behavior_settings[0].value[behaviorKey][fieldName] === 'undefined'
+    ) {
+      return [];
+    }
+    return [{value: entity.behavior_settings[0].value[behaviorKey][fieldName]}];
   }
 
   return (
@@ -82,6 +95,7 @@ export const Behaviors = ({behaviors, onBehaviorChange, entityType}) => {
                   settings={settings}
                   onFieldChange={onFieldChange.bind(undefined, behaviorKey, fieldName)}
                   fieldName={fieldName}
+                  defaultValue={getDefaultBehaviorValue(behaviorKey, fieldName)}
                 />
               </div>
             )

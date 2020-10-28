@@ -611,8 +611,7 @@ export class WidgetManager extends Component {
 
     switch (type) {
       case 'paragraph':
-        this.updateRowItemEntity(item, 'behavior_settings', behaviorValues);
-        break;
+        return this.updateRowItemEntity(item, 'behavior_settings', behaviorValues);
 
       default:
 
