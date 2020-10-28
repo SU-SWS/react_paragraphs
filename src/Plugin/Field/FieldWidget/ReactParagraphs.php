@@ -314,18 +314,14 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
 
     $fields = $this->fieldManager->getFieldDefinitions($entity_type, $bundle);
     foreach ($fields as $field_name => $field_definition) {
-      if (isset($field_data[$field_name])) {
-        if ($field_definition instanceof FieldConfigInterface) {
-          $entity->set($field_name, $field_data[$field_name]);
-        }
+      if (isset($field_data[$field_name]) && $field_definition instanceof FieldConfigInterface) {
+        $entity->set($field_name, $field_data[$field_name]);
       }
     }
 
     $this->setBehaviorSettings($entity, $field_data['behavior_settings'] ?? []);
     return $entity;
   }
-
-
 
   /**
    * Create a new entity with the give field data.
