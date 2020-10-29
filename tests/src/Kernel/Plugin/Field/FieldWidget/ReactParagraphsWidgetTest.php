@@ -160,7 +160,7 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
   }
 
   /**
-   *
+   * Behaviors in the react data will be saved to the entity.
    */
   public function testBehaviorSubmission(){
     $config = [
