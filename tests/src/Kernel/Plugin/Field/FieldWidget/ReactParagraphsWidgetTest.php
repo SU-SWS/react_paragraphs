@@ -31,7 +31,6 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
   protected function setUp() {
     parent::setUp();
 
-
     $paragraph1 = Paragraph::create(['type' => 'card']);
     $paragraph1->save();
 
@@ -158,6 +157,41 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
     $massaged_values = $widget->massageFormValues($values, $form, $form_state);
     $this->assertNotEmpty($massaged_values);
     $this->assertCount(2, $massaged_values);
+  }
+
+  /**
+   *
+   */
+  public function testBehaviorSubmission(){
+    $config = [
+      'field_definition' => $this->fieldConfig,
+      'settings' => [],
+      'third_party_settings' => [],
+    ];
+    $widget = ReactParagraphs::create(\Drupal::getContainer(), $config, 'react_paragraphs', []);
+
+    $form = [];
+    $form_state = new FormState();
+
+    $value = $this->getValidValue();
+    $paragraph_uuid = $value['rows']['row-1']['itemsOrder'][0];
+    $value['rows']['row-1']['items'][$paragraph_uuid]['entity']['behavior_settings'] = [
+      [
+        'value' => [
+          'foo' => ['bar' => 'baz'],
+        ],
+      ],
+    ];
+
+
+    $values['container']['value'] = json_encode($value);
+    $widget->massageFormValues($values, $form, $form_state);
+
+    /** @var \Drupal\paragraphs\ParagraphInterface $paragraph */
+    $paragraphs = \Drupal::entityTypeManager()
+      ->getStorage('paragraph')
+      ->loadByProperties(['uuid' => $paragraph_uuid]);
+    $this->assertEqual(reset($paragraphs)->getBehaviorSetting('foo', 'bar'), 'baz');
   }
 
   /**
