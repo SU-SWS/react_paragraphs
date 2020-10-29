@@ -1,8 +1,11 @@
 import React, {useState} from "react";
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
+import styled from "styled-components";
+import {Loader} from "./Atoms/Loader";
+import {Behaviors} from "./Behaviors";
 import {TextWidget} from "./Widgets/TextWidget";
 import {LinkWidget} from "./Widgets/LinkWidget";
 import {BooleanWidget} from "./Widgets/BooleanWidget";
@@ -15,9 +18,6 @@ import {CkeditorWidget} from "./Widgets/CkeditorWidget";
 import {MediaLibrary} from "./Widgets/MediaLibrary";
 import {ViewFieldWidget} from "./Widgets/ViewFieldWidget";
 import {AutocompleteReferenceWidget} from "./Widgets/AutocompleteReferenceWidget";
-import {Loader} from "./Atoms/Loader";
-import styled from "styled-components";
-import {Behaviors} from "./Behaviors";
 
 export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, onBehaviorChange, widgetContext, ...props}) => {
 
@@ -51,6 +51,7 @@ export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, o
   }
 
   const classes = useStyles();
+  const tabPanelWidth = (hasFormFields && hasBehaviorFields) ? 'calc(100% - 170px)' : '100%';
 
   return (
     <div className={classes.root}>
@@ -69,7 +70,7 @@ export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, o
       </Tabs>
       }
 
-      <TabPanel value={tabValue} index={0} style={{width: 'calc(100% - 170px)'}}>
+      <TabPanel value={tabValue} index={0} style={{width: tabPanelWidth}}>
         {props.header}
         {Object.keys(formFields.form).map(fieldName => {
           const field = formFields.form[fieldName];
@@ -101,7 +102,7 @@ export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, o
 
 
       {Object.keys(formFields.behavior_plugins).length >= 1 &&
-      <TabPanel value={tabValue} index={1} style={{width: 'calc(100% - 170px)'}}>
+      <TabPanel value={tabValue} index={1} style={{width: tabPanelWidth}}>
         <Behaviors
           behaviors={formFields.behavior_plugins}
           onBehaviorChange={onBehaviorChange}

@@ -47,7 +47,7 @@ export const FormDialog = ({open, title, formContent, onClose, ...props}) => {
         color: '#fff',
         position: 'sticky',
         top: 0,
-        zIndex: 1
+        zIndex: 2
       }}>
         {title}
       </DialogTitle>

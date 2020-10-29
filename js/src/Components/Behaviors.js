@@ -124,15 +124,19 @@ export const Behaviors = ({behaviors, onBehaviorChange, entityType, entity, item
 
     switch (behaviors[behaviorKey][fieldName]['#type']) {
       case 'checkbox':
+        // Convert true/false into integers for the field widget.
         default_value = default_value ? 1 : 0;
         break;
 
       case 'checkboxes':
+        // Construct an array of values to match what the field widget wants.
         return default_value.map(item => {
           return ({value: item})
         });
 
       case 'select':
+        // Construct an array of values to match what the field widget wants if
+        // the select field allows multiple values.
         if (behaviors[behaviorKey][fieldName]['#multiple']) {
           return default_value.map(item => {
             return ({value: item})
