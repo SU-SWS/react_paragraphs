@@ -147,17 +147,17 @@ class ReactParagraphsResource extends ResourceBase {
 
     if (method_exists($empty_entity, 'getParagraphType')) {
       $paragraphs_type = $empty_entity->getParagraphType();
-      if (
-        $paragraphs_type &&
-        \Drupal::currentUser()->hasPermission('edit behavior plugin settings')
-      ) {
+//      if (
+//        $paragraphs_type &&
+//        \Drupal::currentUser()->hasPermission('edit behavior plugin settings')
+//      ) {
         foreach ($paragraphs_type->getEnabledBehaviorPlugins() as $plugin_id => $plugin) {
           $data['behavior_plugins'][$plugin_id] = [];
           if ($plugin_form = $plugin->buildBehaviorForm($empty_entity, $data['behavior_plugins'][$plugin_id], new FormState())) {
             $data['behavior_plugins'][$plugin_id] = $plugin_form;
           }
         }
-      }
+//      }
     }
 
     return new JsonResponse($data);

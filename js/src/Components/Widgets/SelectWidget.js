@@ -12,6 +12,10 @@ export const SelectWidget = ({fieldId, defaultValue, onFieldChange, settings}) =
     defaultFieldValue = settings.cardinality === 1 ? defaultValue[0][settings.column_key] : defaultValue.map(item => item[settings.column_key]);
   }
 
+  if (defaultFieldValue === undefined && settings.cardinality !== 1) {
+    defaultFieldValue = [];
+  }
+
   const valueChanged = (newValue) => {
     if (newValue.length === 0) {
       onFieldChange([]);
