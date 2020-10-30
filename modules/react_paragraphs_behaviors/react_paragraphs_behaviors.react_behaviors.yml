@@ -4,7 +4,7 @@
 #  id: first
 #  label: 'Card Paragraphs and all Rows'
 #  bundles:
-#    - paragraph_type|card
+#    - paragraphs_type|card
 #    - paragraphs_row_type|*
 #  config:
 #    select:
