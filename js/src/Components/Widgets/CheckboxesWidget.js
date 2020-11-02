@@ -33,6 +33,8 @@ export const CheckboxesWidget = ({fieldId, defaultValue, onFieldChange, settings
         {Object.keys(settings.options).map(key =>
           <FormControlLabel
             key={`${fieldId}-${key}`}
+            labelPlacement="end"
+            label={settings.options[key]}
             control={
               <Checkbox
                 id={`${fieldId}-${key}`}
@@ -41,7 +43,6 @@ export const CheckboxesWidget = ({fieldId, defaultValue, onFieldChange, settings
                 onChange={checkboxChanged}
               />
             }
-            label={settings.options[key]}
           />
         )}
       </FormGroup>

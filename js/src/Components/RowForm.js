@@ -18,8 +18,10 @@ export const RowForm = ({widgetContext, open, onClose, rowId, entity, loadedEnti
       entityType="paragraph_row"
       bundle={widgetContext.props.rowBundle}
       onFieldChange={(fieldName, newValue) => widgetContext.updateRowEntity(rowId, fieldName, newValue)}
+      onBehaviorChange={widgetContext.updateEntityBehaviors.bind(undefined, {entity: entity})}
       widgetContext={widgetContext}
       entity={entity}
+      itemId={rowId}
     />
   }
 

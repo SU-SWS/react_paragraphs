@@ -4,10 +4,10 @@
 #  id: first
 #  label: 'Card Paragraphs and all Rows'
 #  bundles:
-#    - paragraph_type|card
+#    - paragraphs_type|card
 #    - paragraphs_row_type|*
 #  config:
-#    foo:
+#    select:
 #      type: select
 #      title: 'Foo Select'
 #      description: Foo Bar Baz
@@ -15,16 +15,35 @@
 #        foo: Foo
 #        bar: Bar
 #        baz: Baz
-#    bar:
+#    multiple_select:
+#      type: select
+#      title: 'Multiple Select'
+#      description: Foo Bar Baz
+#      multiple: true
+#      options:
+#        foo: Foo
+#        bar: Bar
+#        baz: Baz
+#    textfield:
 #      type: textfield
-#      title: 'Bar Text Field'
+#      title: 'Text Field'
 #      description: 'Bar Foo Baz'
-#    baz:
+#      default_value: 'This is my value'
+#    checkbox:
 #      type: checkbox
 #      title: 'Baz Checkbox'
 #      description: 'Baz Foo Bar'
 #      default_value: true
-#only:
+#    checkboxes:
+#      type: checkboxes
+#      title: 'Checkboxes'
+#      descriptin: 'this is a set of checkboxes'
+#      options:
+#        foo: FOO
+#        bar: BAR
+#        baz: BAZ
+#      default_value:
+#        - baz
 #  id: second
 #  label: 'Foo Paragraphs only'
 #  bundles:

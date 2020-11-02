@@ -89,7 +89,7 @@ export class ViewFieldWidget extends Component {
           )}
         </Select>
 
-        <InputWrapper
+        <InputGroupWrapper
           style={{display: this.state.target_id !== '_none' ? 'block' : 'none'}}>
 
           <InputLabel htmlFor={this.props.fieldId + '-display-id'}>
@@ -121,8 +121,13 @@ export class ViewFieldWidget extends Component {
 
           <AdvancedOptions>
             <a href="#"
-               onClick={() => this.setState({advancedOpen: !this.state.advancedOpen})}>Advanced
-              Options</a>
+               onClick={(e) => {
+                 e.preventDefault();
+                 this.setState({advancedOpen: !this.state.advancedOpen})
+               }}
+            >
+              Advanced Options
+            </a>
             <InputWrapper
               style={{display: this.state.advancedOpen ? 'block' : 'none'}}>
               <InputWrapper>
@@ -154,7 +159,7 @@ export class ViewFieldWidget extends Component {
               </InputWrapper>
             </InputWrapper>
           </AdvancedOptions>
-        </InputWrapper>
+        </InputGroupWrapper>
       </FormGroup>
     )
   }
@@ -164,7 +169,14 @@ export class ViewFieldWidget extends Component {
 const AdvancedOptions = styled.div`
   border: 1px solid #ccc;
   padding: 20px;
+  margin-top: 20px;
 `;
+
+const InputGroupWrapper = styled.div`
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin-top: 10px;
+`
 
 const InputWrapper = styled.div`
   margin-top: 10px;
