@@ -43,8 +43,8 @@ export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, o
   }
 
   const hasFormFields = formFields.form.length !== 0
-  const hasBehaviorFields = formFields.behavior_plugins.length !== 0;
-  const [tabValue, setTabValue] = useState(hasFormFields ? 0 : 1);
+  const hasBehaviorFields = formFields.behavior_plugins.length !== 0
+  const [tabValue, setTabValue] = useState(hasFormFields ? 0 : 1)
 
   if (!hasFormFields && !hasBehaviorFields) {
     return <div>No fields to edit.</div>
