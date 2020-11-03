@@ -252,9 +252,9 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    *
    * @param array $field_data
    *   Array of field data from the react side.
-   * @param int $width
+   * @param int|null $width
    *   Width of the current item.
-   * @param string $admin_label
+   * @param string|null $admin_label
    *   Administrative label.
    * @param int|null $entity_id
    *   Entity id.
@@ -262,7 +262,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    * @return \Drupal\paragraphs\ParagraphInterface
    *   Entity with modified field values.
    */
-  protected function getRowItemEntity(array $field_data, int $width, string $admin_label, ?int $entity_id): ParagraphInterface {
+  protected function getRowItemEntity(array $field_data, ?int $width, ?string $admin_label, ?int $entity_id): ParagraphInterface {
     $row_item = $this->getEntity('paragraph', $field_data['type'][0]['target_id'], $field_data, $entity_id);
     $row_item->setBehaviorSettings('react', [
       'width' => $width,
@@ -301,7 +301,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  protected function getEntity(string $entity_type, string $bundle, array $field_data, $entity_id = NULL): ParagraphInterface {
+  protected function getEntity(string $entity_type, string $bundle, array $field_data, ?int $entity_id = NULL): ParagraphInterface {
     if (!$entity_id) {
       return $this->createEntity($entity_type, $bundle, $field_data);
     }
