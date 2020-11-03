@@ -93,6 +93,7 @@ export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, o
                 settings={formFields.form[fieldName]}
                 defaultValue={typeof entity[fieldName] !== 'undefined' ? entity[fieldName] : null}
                 fieldName={fieldName}
+                bundle={bundle}
               />
             </FieldContainer>
           )
