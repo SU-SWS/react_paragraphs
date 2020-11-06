@@ -46,7 +46,7 @@ export const CheckboxesWidget = ({fieldId, defaultValue, onFieldChange, settings
           />
         )}
       </FormGroup>
-      {settings.help && <FormHelperText>{settings.help}</FormHelperText>}
+      {settings.help && <FormHelperText dangerouslySetInnerHTML={{__html: settings.help}}/>}
     </FormControl>
   )
 };

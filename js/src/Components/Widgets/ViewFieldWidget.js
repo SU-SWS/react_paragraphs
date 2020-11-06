@@ -63,9 +63,7 @@ export class ViewFieldWidget extends Component {
           {this.props.settings.label}
         </InputLabel>
 
-        <FormHelperText>
-          {this.props.settings.help}
-        </FormHelperText>
+        <FormHelperText dangerouslySetInnerHTML={{__html: this.props.settings.help}}/>
 
         <Select
           id={this.props.fieldId + '-target-id'}
@@ -137,7 +135,6 @@ export class ViewFieldWidget extends Component {
                   helperText={`Separate contextual filters with a "/". Each filter may use "+" or "," for multi-value arguments. This field supports tokens.`}
                   variant="outlined"
                   defaultValue={this.state['arguments']}
-                  required={this.props.settings.required}
                   onChange={e => this.valueChanged('arguments', e.target.value)}
                   inputProps={{maxLength: 254}}
                   fullWidth

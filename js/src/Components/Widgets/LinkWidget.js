@@ -154,7 +154,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
    */
   const getUserEnteredStringAsUri = (string) => {
     // By default, assume the entered string is an URI.
-    let uri = string.trim().toLowerCase();
+    let uri = string.trim();
 
     // Detect entity autocomplete string, map to 'entity:' URI.
     const entity_id = extractEntityIdFromAutocompleteInput(uri);
@@ -394,7 +394,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
       {addAnotherButton(settings.cardinality)}
 
       {settings.help.length > 1 &&
-      <FormHelperText>{settings.help}</FormHelperText>
+      <FormHelperText dangerouslySetInnerHTML={{__html: settings.help}}/>
       }
     </FormGroup>
   )
