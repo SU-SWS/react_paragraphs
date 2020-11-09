@@ -41,7 +41,12 @@ use Drupal\paragraphs\Entity\Paragraph;
  *     "published" = "status"
  *   },
  *   bundle_entity_type = "paragraphs_row_type",
- *   field_ui_base_route = "entity.paragraphs_row_type.edit_form"
+ *   field_ui_base_route = "entity.paragraphs_row_type.edit_form",
+ *   serialized_field_property_names = {
+ *     "behavior_settings" = {
+ *       "value"
+ *     }
+ *   }
  * )
  */
 class ParagraphRow extends Paragraph implements ParagraphsRowInterface {

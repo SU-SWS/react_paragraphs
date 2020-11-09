@@ -19,6 +19,7 @@ export class WidgetManager extends Component {
     getEntityForm: this.getEntityForm.bind(this),
     updateRowEntity: this.updateRowEntity.bind(this),
     updateRowItemEntity: this.updateRowItemEntity.bind(this),
+    updateEntityBehaviors: this.updateEntityBehaviors.bind(this),
     loadRow: this.loadRow.bind(this),
     loadRowItem: this.loadRowItem.bind(this)
   };
@@ -118,10 +119,10 @@ export class WidgetManager extends Component {
     const formItemsField = document.getElementById(this.props.inputId);
     if (formItemsField) {
       const returnValue = {
-        rows: this.state.rows,
-        rowOrder: this.state.rowOrder,
+        rows: {...this.state.rows},
+        rowOrder: [...this.state.rowOrder],
       };
-      formItemsField.value = encodeURI(JSON.stringify(returnValue));
+      formItemsField.value = encodeURIComponent(JSON.stringify(returnValue));
     }
   }
 
@@ -574,6 +575,7 @@ export class WidgetManager extends Component {
     const newState = {...this.state}
     newState.rows[rowId].entity[fieldName] = newValues;
     this.setState(newState);
+    this.triggerFormUpdated();
   }
 
   /**
@@ -598,6 +600,26 @@ export class WidgetManager extends Component {
       }
     });
     this.triggerFormUpdated();
+  }
+
+  updateEntityBehaviors(item, itemId, type, behaviorKey, fieldName, newValues) {
+    const behaviorValues = typeof item.entity.behavior_settings === 'undefined' ? [{value: {}}] : [...item.entity.behavior_settings];
+    if (behaviorValues[0].value.length === 0) {
+      behaviorValues[0].value = {};
+    }
+
+    if (typeof behaviorValues[0].value[behaviorKey] === 'undefined') {
+      behaviorValues[0].value[behaviorKey] = {};
+    }
+    behaviorValues[0].value[behaviorKey][fieldName] = newValues
+
+    switch (type) {
+      case 'paragraph':
+        return this.updateRowItemEntity(item, 'behavior_settings', behaviorValues);
+
+      default:
+        return this.updateRowEntity(itemId, 'behavior_settings', behaviorValues);
+    }
   }
 
   /**

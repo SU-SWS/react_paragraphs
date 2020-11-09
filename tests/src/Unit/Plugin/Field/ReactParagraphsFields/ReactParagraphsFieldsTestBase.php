@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\react_paragraphs\Unit\Plugin\Field\ReactParagraphsFields;
 
+use Drupal\Core\Database\Connection;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
@@ -55,6 +56,9 @@ abstract class ReactParagraphsFieldsTestBase extends UnitTestCase {
 
     $this->container->set('entity_type.manager', $entity_type_manager);
     $this->container->set('current_user', $this->createMock(AccountProxyInterface::class));
+
+    $database = $this->createMock(Connection::class);
+    $this->container->set('database', $database);
 
     $this->plugin = $class::create($this->container, [], 'foo_bar', []);
     \Drupal::setContainer($this->container);

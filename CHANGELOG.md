@@ -1,5 +1,17 @@
 # React Paragraphs
 
+8.x-2.3
+--------------------------------------------------------------------------------
+_Release Date: 2020-11-06_
+
+- D8CORE-2857 keep upper case characters in link fields (#78) (2c39332)
+- Adjusted method typehinting to also accept null (for testing) (e31be83)
+- Fixed media browser missing its bundle (a975773)
+- D8CORE-2686 Paragraph and row behaviors UI (#77) (48451f4)
+- Fix default values in autocomplete and allow special characters in text fields (#76) (d49c144)
+- D8CORE-2852: Add ckeditor event listener for changes (#75) (631fac2)
+- D8CORE-2709 Entity Reference Autocomplete & Select support (#74) (eca809f)
+
 8.x-2.2
 --------------------------------------------------------------------------------
 _Release Date: 2020-10-05_

@@ -126,7 +126,7 @@ export class MediaLibrary extends Component {
         />
         }
 
-        <FormHelperText>{this.props.settings.help}</FormHelperText>
+        <FormHelperText dangerouslySetInnerHTML={{__html:this.props.settings.help}}/>
         <input
           data-media-library-widget-value={this.props.fieldName}
           type="hidden"
