@@ -30,6 +30,12 @@ use Drupal\paragraphs\Entity\ParagraphsType;
  *     "label" = "label",
  *     "uuid" = "uuid"
  *   },
+ *   config_export = {
+ *     "id",
+ *     "label",
+ *     "description",
+ *     "behavior_plugins",
+ *   },
  *   links = {
  *     "add-form" = "/admin/structure/paragraphs_row_type/add",
  *     "edit-form" = "/admin/structure/paragraphs_row_type/{paragraphs_row_type}/edit",
