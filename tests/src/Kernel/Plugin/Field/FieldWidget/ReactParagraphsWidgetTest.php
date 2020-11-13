@@ -28,7 +28,7 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
   /**
    * {@inheritDoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $paragraph1 = Paragraph::create(['type' => 'card']);
