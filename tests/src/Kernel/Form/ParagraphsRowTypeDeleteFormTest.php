@@ -22,12 +22,12 @@ class ParagraphsRowTypeDeleteFormTest extends ParagraphRowFormTestBase {
     $form_object = \Drupal::entityTypeManager()
       ->getFormObject($this->row->getEntityTypeId(), 'delete');
     $form_object->setEntity($this->row);
-    $this->assertContains('Are you sure', $form_object->getQuestion()
+    $this->assertStringContainsString('Are you sure', $form_object->getQuestion()
       ->render());
 
-    $this->assertContains('entity.paragraphs_row_type.collection', $form_object->getCancelUrl()->getRouteName());
+    $this->assertStringContainsString('entity.paragraphs_row_type.collection', $form_object->getCancelUrl()->getRouteName());
 
-    $this->assertContains('Delete', $form_object->getConfirmText()
+    $this->assertStringContainsString('Delete', $form_object->getConfirmText()
       ->render());
 
     $form_state = new FormState();
