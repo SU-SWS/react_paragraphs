@@ -57,8 +57,7 @@ export class CkeditorWidget extends Component {
       Drupal.behaviors.editor.attach(this.widgetRef.current, window.drupalSettings);
 
       // Add a scroll listener to allow us to fix the ckeditor toolbar.
-      const paper = document.getElementsByClassName('MuiPaper-root')
-      paper[0].onscroll = this.modalScroll;
+      document.getElementsByClassName('MuiPaper-root')[0].addEventListener('scroll', this.modalScroll);
     }
     catch (error) {
     }
@@ -69,8 +68,7 @@ export class CkeditorWidget extends Component {
    */
   componentWillUnmount() {
     try {
-      const paper = document.getElementsByClassName('MuiPaper-root')
-      paper[0].removeEventListener('scroll', this.modalScroll);
+      document.getElementsByClassName('MuiPaper-root')[0].removeEventListener('scroll', this.modalScroll);
 
       Drupal.behaviors.editor.detach(this.widgetRef.current, window.drupalSettings, 'destroy');
       CKEDITOR.removeListener('instanceReady', this.addListeners);
@@ -175,33 +173,29 @@ export class CkeditorWidget extends Component {
    */
   modalScroll = (e) => {
     const dialogTitleBounding = e.target.getElementsByClassName('MuiDialogTitle-root')[0].getBoundingClientRect();
-    const editors = e.target.getElementsByClassName('ckeditor-react');
+    const editor = this.widgetRef.current.getElementsByClassName('cke')[0];
 
-    // A component could have more than 1 ckeditor fields on it.
-    for (let i = 0; i < editors.length; i++) {
-      const editor = editors.item(i);
-      const toolbar = editor.getElementsByClassName('cke_top')[0];
-      const editorBounding = editor.getBoundingClientRect();
+    const toolbar = editor.getElementsByClassName('cke_top')[0];
+    const editorBounding = editor.getBoundingClientRect();
 
-      toolbar.style.width = null;
-      toolbar.style.position = null;
-      toolbar.style.top = null;
-      editor.getElementsByClassName('cke_contents')[0].style['margin-top'] = null;
+    toolbar.style.width = null;
+    toolbar.style.position = null;
+    toolbar.style.top = null;
+    editor.getElementsByClassName('cke_contents')[0].style['margin-top'] = null;
 
-      // The top of the ckeditor container is above the bottom of the dialog
-      // title and the bottom of the editor is still within view. We don't want
-      // to do anything if the bottom of the editor is too far up on the scroll.
-      if (
-        editor.getBoundingClientRect().top < dialogTitleBounding.bottom &&
-        editorBounding.bottom - 100 > dialogTitleBounding.bottom
-      ) {
-        toolbar.style.width = (editorBounding.width - 16) + 'px';
-        toolbar.style.position = 'fixed';
-        toolbar.style.top = dialogTitleBounding.bottom + 'px';
+    // The top of the ckeditor container is above the bottom of the dialog
+    // title and the bottom of the editor is still within view. We don't want
+    // to do anything if the bottom of the editor is too far up on the scroll.
+    if (
+      editor.getBoundingClientRect().top < dialogTitleBounding.bottom &&
+      editorBounding.bottom - 100 > dialogTitleBounding.bottom
+    ) {
+      toolbar.style.width = (editorBounding.width - 18) + 'px';
+      toolbar.style.position = 'fixed';
+      toolbar.style.top = dialogTitleBounding.bottom + 'px';
 
-        const ckeContents = editor.getElementsByClassName('cke_contents')[0];
-        ckeContents.style['margin-top'] = toolbar.getBoundingClientRect().height + 'px';
-      }
+      // Add some margin top to the contents to avoid the input area jumping.
+      editor.getElementsByClassName('cke_contents')[0].style['margin-top'] = toolbar.getBoundingClientRect().height + 'px';
     }
   }
 
