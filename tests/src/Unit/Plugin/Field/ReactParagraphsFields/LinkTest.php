@@ -15,7 +15,7 @@ class LinkTest extends ReactParagraphsFieldsTestBase {
   /**
    * {@inheritDoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $url_generator = $this->createMock(UrlGeneratorInterface::class);
     $url_generator->method('generateFromRoute')->willReturn('/foo-bar');

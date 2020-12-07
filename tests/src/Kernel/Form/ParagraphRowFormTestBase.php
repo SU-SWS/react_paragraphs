@@ -34,7 +34,7 @@ abstract class ParagraphRowFormTestBase extends KernelTestBase {
   /**
    * {@inheritDoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('user');
     $this->installEntitySchema('paragraph_row');

@@ -55,6 +55,9 @@ export class CkeditorWidget extends Component {
       // format is changed, `instanceReady` is called again.
       CKEDITOR.on('instanceReady', this.addListeners);
       Drupal.behaviors.editor.attach(this.widgetRef.current, window.drupalSettings);
+
+      // Add a scroll listener to allow us to fix the ckeditor toolbar.
+      document.getElementsByClassName('MuiPaper-root')[0].addEventListener('scroll', this.modalScroll);
     }
     catch (error) {
     }
@@ -65,6 +68,8 @@ export class CkeditorWidget extends Component {
    */
   componentWillUnmount() {
     try {
+      document.getElementsByClassName('MuiPaper-root')[0].removeEventListener('scroll', this.modalScroll);
+
       Drupal.behaviors.editor.detach(this.widgetRef.current, window.drupalSettings, 'destroy');
       CKEDITOR.removeListener('instanceReady', this.addListeners);
     }
@@ -162,6 +167,39 @@ export class CkeditorWidget extends Component {
   }
 
   /**
+   * When the user scrolls within the modal dialog, fix the ckeditor toolbar.
+   *
+   * @param e
+   */
+  modalScroll = (e) => {
+    const dialogTitleBounding = e.target.getElementsByClassName('MuiDialogTitle-root')[0].getBoundingClientRect();
+    const editor = this.widgetRef.current.getElementsByClassName('cke')[0];
+
+    const toolbar = editor.getElementsByClassName('cke_top')[0];
+    const editorBounding = editor.getBoundingClientRect();
+
+    toolbar.style.width = null;
+    toolbar.style.position = null;
+    toolbar.style.top = null;
+    editor.getElementsByClassName('cke_contents')[0].style['margin-top'] = null;
+
+    // The top of the ckeditor container is above the bottom of the dialog
+    // title and the bottom of the editor is still within view. We don't want
+    // to do anything if the bottom of the editor is too far up on the scroll.
+    if (
+      editor.getBoundingClientRect().top < dialogTitleBounding.bottom &&
+      editorBounding.bottom - 100 > dialogTitleBounding.bottom
+    ) {
+      toolbar.style.width = (editorBounding.width - 18) + 'px';
+      toolbar.style.position = 'fixed';
+      toolbar.style.top = dialogTitleBounding.bottom + 'px';
+
+      // Add some margin top to the contents to avoid the input area jumping.
+      editor.getElementsByClassName('cke_contents')[0].style['margin-top'] = toolbar.getBoundingClientRect().height + 'px';
+    }
+  }
+
+  /**
    * Rendering the component.
    */
   render() {
@@ -169,7 +207,7 @@ export class CkeditorWidget extends Component {
       <FormGroup ref={this.widgetRef}>
         {this.getSummaryInput()}
 
-        <CkeditorWrapper>
+        <div className="ckeditor-react">
           <InputLabel htmlFor={`${this.props.fieldId}-text-area`}>
             {this.props.settings.label}
             {this.props.settings.summary &&
@@ -212,15 +250,8 @@ export class CkeditorWidget extends Component {
               </select>
             </div>
           </div>
-        </CkeditorWrapper>
+        </div>
       </FormGroup>
     )
   }
 }
-
-const CkeditorWrapper = styled.div`
-  .cke_top {
-    position: sticky;
-    top: 0 !important;
-  }
-`;

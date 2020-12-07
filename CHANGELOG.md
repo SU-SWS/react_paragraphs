@@ -1,5 +1,14 @@
 # React Paragraphs
 
+8.x-2.4
+--------------------------------------------------------------------------------
+_Release Date: 2020-12-04_
+
+- D8CORE-1420 Fix the ckeditor toolbar when scrolling down the item. (#83) (142ccbd)
+- Update tests for D9 phpunit (#82) (e432833)
+- phpunit void return annoation (7e823de)
+- Added config export for D9 Requirements (#81) (dff7625)
+
 8.x-2.3
 --------------------------------------------------------------------------------
 _Release Date: 2020-11-06_

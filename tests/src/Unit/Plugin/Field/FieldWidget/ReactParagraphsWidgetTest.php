@@ -17,7 +17,7 @@ use Drupal\Tests\UnitTestCase;
  */
 class ReactParagraphsWidgetTest extends UnitTestCase {
 
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $container = new ContainerBuilder();
 
