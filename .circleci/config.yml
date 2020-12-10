@@ -101,8 +101,8 @@ workflows:
   tests:
     jobs:
       - run-coverage
-#      - run-d8-codeception
-#      - run-d9-codeception
+      - run-d8-codeception
+      - run-d9-codeception
   # Re-test every sunday in case this code becomes stale.
   sundays:
     jobs:
