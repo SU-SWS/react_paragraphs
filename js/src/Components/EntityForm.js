@@ -15,7 +15,7 @@ import {SelectWidget} from "./Widgets/SelectWidget";
 import {CheckboxesWidget} from "./Widgets/CheckboxesWidget";
 import {RadiosWidget} from "./Widgets/RadiosWidget";
 import {CkeditorWidget} from "./Widgets/CkeditorWidget";
-import {MediaLibrary} from "./Widgets/MediaLibrary";
+import {MediaLibrary} from "./Widgets/Media/MediaLibrary";
 import {ViewFieldWidget} from "./Widgets/ViewFieldWidget";
 import {AutocompleteReferenceWidget} from "./Widgets/AutocompleteReferenceWidget";
 
