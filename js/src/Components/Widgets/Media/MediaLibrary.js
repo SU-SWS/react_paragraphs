@@ -95,10 +95,6 @@ export class MediaLibrary extends Component {
     this.updateField();
   }
 
-  updateOrder(newOrder){
-
-  }
-
   render() {
     return (
       <fieldset className="form-item">

@@ -4,13 +4,29 @@ import {FlexDiv} from "../../Atoms/FlexDiv";
 import {XButton} from "../../Atoms/XButton";
 import {Loader} from "../../Atoms/Loader";
 
+const PreviewContainer = styled.div`
+  border: 1px solid #dbdbdb;
+  position: relative;
+  max-width: 200px;
+  margin: 0 10px 10px 0;
+`;
+
+const PreviewImage = styled.img`
+  height: 180px;
+  object-fit: contain;
+  object-position: center center;
+  max-width: 100%;
+`;
 
 export const MediaList = ({selectedItems, onRemove, updateOrder}) => {
+
   return (
-    <FlexDiv style={{flexWrap: 'wrap'}}>
+    <FlexDiv
+      style={{flexWrap: 'wrap'}}
+    >
       {selectedItems.map((item, delta) =>
         <MediaItem
-          key={item.target_id}
+          key={`media-${delta}-${item.target_id}`}
           mid={item.target_id}
           delta={delta}
           onRemove={onRemove}
@@ -41,7 +57,7 @@ const MediaItem = ({mid, delta, onRemove}) => {
   }
 
   return (
-    <div style={{maxWidth: '175px', position:'relative'}}>
+    <PreviewContainer>
       <XButton
         title="Remove Media Item"
         onClick={() => onRemove(delta)}
@@ -49,9 +65,9 @@ const MediaItem = ({mid, delta, onRemove}) => {
       />
 
       {typeof mediaData.message === 'undefined' &&
-      <React.Fragment>
+      <>
         <div style={{background: "#ebebeb", padding: "0 20px"}}>
-          <img
+          <PreviewImage
             src={mediaData.thumbnail[0].url}
             alt=""
             role="presentation"
@@ -60,7 +76,7 @@ const MediaItem = ({mid, delta, onRemove}) => {
         <div style={{padding: "5px"}}>
           {mediaData.name[0].value}
         </div>
-      </React.Fragment>
+      </>
       }
 
       {typeof mediaData.message !== 'undefined' &&
@@ -68,6 +84,6 @@ const MediaItem = ({mid, delta, onRemove}) => {
       <div style={{padding: '20px'}}>Unable to provide a preview of media.</div>
       }
 
-    </div>
+    </PreviewContainer>
   )
 }
