@@ -1,9 +1,6 @@
-import React, {Component, useEffect, useState} from "react";
+import React, {Component} from "react";
 import {FormHelperText} from "@material-ui/core";
-import {FlexDiv} from "../Atoms/FlexDiv";
-import {XButton} from "../Atoms/XButton";
-import styled from 'styled-components';
-import {Loader} from "../Atoms/Loader";
+import {MediaList} from "./MediaList";
 
 export class MediaLibrary extends Component {
 
@@ -91,10 +88,9 @@ export class MediaLibrary extends Component {
       })
   }
 
-  removeItem(mid) {
-    const itemIndex = this.state.selectedMedia.findIndex(item => item.target_id === mid);
+  removeItem(delta) {
     const newState = {...this.state};
-    this.state.selectedMedia.splice(itemIndex, 1);
+    this.state.selectedMedia.splice(delta, 1);
     this.setState(newState);
     this.updateField();
   }
@@ -106,15 +102,11 @@ export class MediaLibrary extends Component {
           {this.props.settings.label}
         </div>
 
-        <FlexDiv>
-          {this.state.selectedMedia.map(item =>
-            <MediaItemPreview
-              key={item.target_id}
-              mid={item.target_id}
-              onRemove={this.removeItem}
-            />
-          )}
-        </FlexDiv>
+        <MediaList
+          selectedItems={this.state.selectedMedia}
+          onRemove={this.removeItem}
+          updateOrder={this.updateOrder}
+        />
 
         {(this.props.settings.cardinality === -1 || this.props.settings.cardinality > this.state.selectedMedia.length) &&
         <input
@@ -145,66 +137,3 @@ export class MediaLibrary extends Component {
     )
   }
 }
-
-const MediaItemPreview = ({mid, onRemove}) => {
-  const [mediaData, setMediaData] = useState(false);
-
-  useEffect(() => {
-    if (!mediaData) {
-      fetch(`/media/${mid}/edit?_format=json`)
-        .then(response => response.json())
-        .then(jsonData => {
-          if (typeof jsonData.message !== 'undefined') {
-            console.error(jsonData.message);
-          }
-          setMediaData(jsonData);
-        });
-    }
-  }, []);
-
-  if (!mediaData) {
-    return <Loader/>
-  }
-
-  return (
-    <PreviewContainer>
-      <XButton title="Remove Media Item" onClick={() => onRemove(mid)}
-               greyIcon/>
-
-      {typeof mediaData.message === 'undefined' &&
-      <React.Fragment>
-        <div style={{background: "#ebebeb", padding: "0 20px"}}>
-          <PreviewImage
-            src={mediaData.thumbnail[0].url}
-            alt=""
-            role="presentation"
-          />
-        </div>
-        <div style={{padding: "5px"}}>
-          {mediaData.name[0].value}
-        </div>
-      </React.Fragment>
-      }
-
-      {typeof mediaData.message !== 'undefined' &&
-      // When the media entity doesn't exist or some communication error occurs.
-      <div style={{padding: '20px'}}>Unable to provide a preview of media.</div>
-      }
-
-    </PreviewContainer>
-  )
-};
-
-const PreviewContainer = styled.div`
-  border: 1px solid #dbdbdb;
-  position: relative;
-  max-width: 200px;
-  margin: 0 10px 10px 0;
-`;
-
-const PreviewImage = styled.img`
-  height: 180px;
-  object-fit: contain;
-  object-position: center center;
-  max-width: 100%;
-`;
