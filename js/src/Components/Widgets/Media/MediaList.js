@@ -76,7 +76,7 @@ const MediaItem = ({mid, delta, onRemove}) => {
       />
       {/* Wrap the preview image in an error handler. */}
       <ErrorBoundary errorMessage={<div style={{padding: '20px'}}>Unable to provide a preview of media.</div>}>
-          <PreviewImage mediaData={mediaData}/>
+        <PreviewImage mediaData={mediaData}/>
       </ErrorBoundary>
     </PreviewContainer>
   )
