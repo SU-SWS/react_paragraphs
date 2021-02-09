@@ -1,5 +1,13 @@
 # React Paragraphs
 
+8.x-2.5
+--------------------------------------------------------------------------------
+_Release Date: 2021-02-08_
+
+- Fixed name of rest config entity (e90df66)
+- D8CORE-3263 Improve the media library widget with cardinality above 1 (#87) (e47936f)
+- Updated circleci testing (#85) (d4478a7)
+
 8.x-2.4
 --------------------------------------------------------------------------------
 _Release Date: 2020-12-04_
