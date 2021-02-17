@@ -2,7 +2,6 @@
 
 namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 
-use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\field\FieldConfigInterface;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
