@@ -2,6 +2,7 @@
 
 namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 
+use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\field\FieldConfigInterface;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
@@ -62,6 +63,11 @@ class View extends ReactParagraphsFieldsBase {
     foreach ($view_storage->loadMultiple(array_keys($view_options)) as $view) {
       $displays = $view->get('display');
       $valid_displays = FALSE;
+
+      // Sort the display options based on their order in the view settings.
+      uasort($displays, function ($a, $b) {
+        return $a['position'] > $b['position'];
+      });
 
       foreach ($displays as $display_id => $display) {
         // The field only allows certain display modes. Don't allow those
