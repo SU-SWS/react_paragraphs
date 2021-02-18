@@ -15,7 +15,10 @@ class ViewTest extends ReactParagraphsFieldsTestBase {
 
   protected function setUp(): void {
     parent::setUp();
-    $this->fieldConfig->method('getSetting')->willReturn(['block' => 'block', 'master' => 0]);
+    $this->fieldConfig->method('getSetting')->willReturn([
+      'block' => 'block',
+      'master' => 0,
+    ]);
   }
 
   /**
@@ -27,18 +30,12 @@ class ViewTest extends ReactParagraphsFieldsTestBase {
     $data = $this->plugin->getFieldInfo($field_element, $this->fieldConfig);
 
     $expected = [
-      'cardinality' => 1,
-      'help' => 'Description',
       'label' => 'Foo Bar',
+      'cardinality' => 1,
+      'widget_type' => 'foo_bar',
+      'help' => 'Description',
       'required' => TRUE,
       'weight' => 0,
-      'widget_type' => 'foo_bar',
-      'views' => [
-        [
-          'value' => 'foo',
-          'label' => 'Foo',
-        ],
-      ],
       'displays' => [
         'foo' => [
           [
@@ -47,8 +44,15 @@ class ViewTest extends ReactParagraphsFieldsTestBase {
           ],
         ],
       ],
+      'views' => [
+        [
+          'value' => 'foo',
+          'label' => 'Foo',
+        ],
+      ],
     ];
-    $this->assertArrayEquals($expected, $data);
+
+    $this->assertSame($expected, $data);
   }
 
   /**
@@ -59,6 +63,7 @@ class ViewTest extends ReactParagraphsFieldsTestBase {
       'master' => [
         'display_plugin' => 'master',
         'display_title' => 'Master',
+        'position' => 1,
       ],
       'block' => [
         'display_plugin' => 'block',
