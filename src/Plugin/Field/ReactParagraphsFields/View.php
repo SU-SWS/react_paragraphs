@@ -63,6 +63,11 @@ class View extends ReactParagraphsFieldsBase {
       $displays = $view->get('display');
       $valid_displays = FALSE;
 
+      // Sort the display options based on their order in the view settings.
+      uasort($displays, function ($a, $b) {
+        return !empty($a['position']) && !empty($b['position']) && $a['position'] > $b['position'];
+      });
+
       foreach ($displays as $display_id => $display) {
         // The field only allows certain display modes. Don't allow those
         // displays from being available to the user.
