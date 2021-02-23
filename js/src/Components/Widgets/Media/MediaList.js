@@ -16,6 +16,7 @@ const PreviewContainer = styled.div`
   min-height: 100px;
   min-width: 100px;
   z-index: 999;
+  cursor: move;
 `;
 
 const PreviewImageTag = styled.img`
