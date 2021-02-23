@@ -61,7 +61,7 @@ export const MediaList = ({selectedItems, onRemove, updateOrder}) => {
   return (
     <SortableList
       axis="xy"
-      transitionDuration={0}
+      transitionDuration={250}
       items={selectedItems}
       onSortEnd={onSortEnd}
       onRemoveItem={onRemove}
