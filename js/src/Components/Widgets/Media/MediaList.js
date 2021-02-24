@@ -102,6 +102,7 @@ const MediaItem = ({mid, delta, onRemove}) => {
         title="Remove Media Item"
         onClick={() => onRemove(delta)}
         greyIcon
+        style={{zIndex: 1000}}
       />
       {/* Wrap the preview image in an error handler. */}
       <ErrorBoundary
