@@ -10,6 +10,7 @@ export class MediaLibrary extends Component {
     this.openMediaLibrary = this.openMediaLibrary.bind(this);
     this.updateWidget = this.updateWidget.bind(this);
     this.removeItem = this.removeItem.bind(this);
+    this.updateOrder = this.updateOrder.bind(this);
 
     // Make sure the existing default value is valid. Make sure the ids are more than 0.
     this.state = {
@@ -26,6 +27,11 @@ export class MediaLibrary extends Component {
       this.setState(newState);
       this.updateField();
     }
+  }
+
+  updateOrder(newOrder) {
+    this.setState({selectedMedia: newOrder});
+    this.updateField();
   }
 
   updateField() {
