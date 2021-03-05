@@ -1,5 +1,13 @@
 # React Paragraphs
 
+8.x-2.6
+--------------------------------------------------------------------------------
+_Release Date: 2021-03-05_
+
+- D8CORE-3554 Patched paragraphs module to fix behaviors plugin setting (9d2ec85)
+- D8CORE-3380 Allow media library widget to be sortable (#90) (1435ba9)
+- D8CORE-3392 Sort the view displays based on their order in the view (#89) (d8fb8e8)
+
 8.x-2.5
 --------------------------------------------------------------------------------
 _Release Date: 2021-02-08_
