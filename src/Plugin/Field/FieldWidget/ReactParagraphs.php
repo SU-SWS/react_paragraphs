@@ -3,7 +3,6 @@
 namespace Drupal\react_paragraphs\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\field\FieldConfigInterface;
@@ -103,7 +102,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       'itemsPerRow' => self::getRowItemsField($this->fieldDefinition)
         ->getFieldStorageDefinition()
         ->getCardinality(),
-      'resizableItems' => (bool) $this->getSetting('resizable')
+      'resizableItems' => (bool) $this->getSetting('resizable'),
     ];
 
     // The hidden input with a empty container nearby for react to attach to.
@@ -194,7 +193,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    *
    * @param array $rows
    *   Row entities as the values, or as a value of the array.
-   * @param false $as_json
+   * @param bool $as_json
    *   Return as json data.
    *
    * @return array|string
@@ -206,7 +205,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
 
     // Loop through the rows that are referenced and load its field data.
     foreach ($rows as $row_delta => $row) {
-      $entity = $row instanceof ParagraphsRowInterface?$row:$row['entity'];
+      $entity = $row instanceof ParagraphsRowInterface ? $row : $row['entity'];
       $all_items[$row_delta]['row'] = [
         'target_id' => $entity->id(),
         'entity' => ['type' => [['target_id' => $entity->bundle()]]],
