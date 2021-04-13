@@ -36,23 +36,16 @@ export class WidgetManager extends Component {
     if (typeof window.drupalSettings.user === 'undefined' && typeof localBaseDomain !== 'undefined') {
       this.apiUrls.baseDomain = localBaseDomain;
     }
+
     // If the form was submitted and rebuilt, we will want to use the existing
     // form data to re-build the UI.
-    if (props.existingData) {
-      this.state = {
-        rowCount: props.existingData.rowOrder.length,
-        rows: props.existingData.rows,
-        rowOrder: props.existingData.rowOrder,
-        loadedItems: 0,
-        cachedForms: {}
-      };
-      return;
-    }
+    const savedCookie = this.getCookie(this.props.fieldId);
+    const originalItems = savedCookie.length >= 1 ? savedCookie : this.props.items;
 
     let rows = {};
     let rowOrder = [];
 
-    this.props.items.map((row, rowIndex) => {
+    originalItems.map((row, rowIndex) => {
       const rowId = 'row-' + rowIndex;
       rowOrder[rowIndex] = rowId;
       rows[rowId] = {
@@ -102,6 +95,25 @@ export class WidgetManager extends Component {
     this.componentDidUpdate();
   }
 
+  getCookie() {
+    const formItemsField = document.getElementById(this.props.inputId);
+    const cname = formItemsField.getAttribute('data-cookie-id');
+
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return JSON.parse(c.substring(name.length, c.length));
+      }
+    }
+    return "";
+  }
+
   /**
    * Trigger form updated event for drupal confirm leave module.
    *
@@ -119,6 +131,7 @@ export class WidgetManager extends Component {
     const formItemsField = document.getElementById(this.props.inputId);
     if (formItemsField) {
       const returnValue = {
+        cookieId: formItemsField.getAttribute('data-cookie-id'),
         rows: {...this.state.rows},
         rowOrder: [...this.state.rowOrder],
       };

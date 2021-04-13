@@ -5,11 +5,9 @@ import {Toolbox} from "./Toolbox";
 import {WidgetManager, WidgetContext} from "../Contexts/WidgetManager";
 import {FlexDiv} from "./Atoms/FlexDiv";
 
-export const Field = ({inputId, fieldName, items, tools, itemsPerRow, resizableItems, rowBundle, existingData}) => {
-
+export const Field = ({inputId, fieldName, items, tools, itemsPerRow, resizableItems, rowBundle}) => {
   return (
     <WidgetManager
-      existingData={existingData}
       items={items}
       inputId={inputId}
       fieldName={fieldName}
