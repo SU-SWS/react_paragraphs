@@ -122,7 +122,6 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
         ],
         'itemsPerRow' => 1,
         'resizableItems' => FALSE,
-        'existingData' => FALSE,
       ],
     ];
 
@@ -204,6 +203,7 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
     $paragraph = Paragraph::create(['type' => 'card']);
     $paragraph->save();
     return [
+      'cookieId' => 'foo',
       'rowOrder' => ['row-0', 'row-1'],
       'rows' => [
         'row-0' => [
