@@ -3,7 +3,6 @@
 namespace Drupal\react_paragraphs\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\field\FieldConfigInterface;
@@ -92,16 +91,6 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     $attachments = $this->editorManager->getAttachments(array_keys(filter_formats($this->currentUser)));
     $attachments['library'][] = 'react_paragraphs/field_widget';
 
-    // If the user has submitted the form but there are some validation issues,
-    // the form will be rebuilt. We will want to grab the data the user has
-    // changed or entered and pass that back to the react environment. This will
-    // prevent a user from loosing all their hard work if something doesn't
-    // validate elsewhere.
-    $field_name = $this->fieldDefinition->getName();
-    $path = array_merge($form['#parents'], [$field_name, 'container', 'value']);
-    $key_exists = NULL;
-    $values = NestedArray::getValue($form_state->getUserInput(), $path, $key_exists);
-
     // Set the javascript settings to be picked up by react.
     $attachments['drupalSettings']['reactParagraphs'][] = [
       'fieldId' => $element_id,
@@ -114,7 +103,6 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
         ->getFieldStorageDefinition()
         ->getCardinality(),
       'resizableItems' => (bool) $this->getSetting('resizable'),
-      'existingData' => $key_exists ? json_decode(urldecode($values)) : FALSE,
     ];
 
     // The hidden input with a empty container nearby for react to attach to.
@@ -123,7 +111,10 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       '#prefix' => '<div id="' . $element_id . '"></div>',
       '#type' => 'hidden',
       '#attached' => $attachments,
-      '#attributes' => ['id' => "$element_id-input"],
+      '#attributes' => [
+        'id' => "$element_id-input",
+        'data-cookie-id' => $this->fieldDefinition->getUniqueIdentifier(),
+      ],
     ];
     return $element;
   }
@@ -138,38 +129,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
    *   Keyed data of rows and items.
    */
   protected function getRowItems(FieldItemListInterface $items): array {
-    $row_item_field = self::getRowItemsField($this->fieldDefinition);
-    $all_items = [];
-
-    // Loop through the rows that are referenced and load its field data.
-    foreach ($items->referencedEntities() as $row_delta => $row_entity) {
-      $all_items[$row_delta]['row'] = [
-        'target_id' => $row_entity->id(),
-        'entity' => ['type' => [['target_id' => $row_entity->bundle()]]],
-      ];
-
-      // In case a row has 0 items.
-      $all_items[$row_delta]['rowItems'] = [];
-
-      /** @var \Drupal\paragraphs\ParagraphInterface $row_item */
-      // Loop through the items within the row and populate the data.
-      $ref_items = $row_entity->get($row_item_field->getName())
-        ->referencedEntities();
-      foreach ($ref_items as $item_delta => $row_item) {
-        $all_items[$row_delta]['rowItems'][$item_delta] = [
-          'target_id' => $row_item->id(),
-          'entity' => ['type' => [['target_id' => $row_item->bundle()]]],
-          'settings' => [
-            'width' => $row_item->getBehaviorSetting('react', 'width'),
-            'admin_title' => $row_item->getBehaviorSetting('react', 'label'),
-          ],
-        ];
-      }
-
-      // Reset the data so that its a clean array.
-      $all_items[$row_delta]['rowItems'] = array_values($all_items[$row_delta]['rowItems']);
-    }
-    return $all_items;
+    return $this->getRowItemsObject($items->referencedEntities());
   }
 
   /**
@@ -222,7 +182,57 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
       ];
     }
     $this->rowData = $return_data;
+    if ($return_data) {
+      setcookie($react_data['cookieId'], $this->getRowItemsObject($return_data, TRUE), time() + 5);
+    }
     return $this->rowData;
+  }
+
+  /**
+   * Get the nested array of items from the existing entities.
+   *
+   * @param array $rows
+   *   Row entities as the values, or as a value of the array.
+   * @param bool $as_json
+   *   Return as json data.
+   *
+   * @return array|string
+   *   Array or json string of the array data.
+   */
+  protected function getRowItemsObject(array $rows, $as_json = FALSE) {
+    $row_item_field = self::getRowItemsField($this->fieldDefinition);
+    $all_items = [];
+
+    // Loop through the rows that are referenced and load its field data.
+    foreach ($rows as $row_delta => $row) {
+      $entity = $row instanceof ParagraphsRowInterface ? $row : $row['entity'];
+      $all_items[$row_delta]['row'] = [
+        'target_id' => $entity->id(),
+        'entity' => ['type' => [['target_id' => $entity->bundle()]]],
+      ];
+
+      // In case a row has 0 items.
+      $all_items[$row_delta]['rowItems'] = [];
+
+      /** @var \Drupal\paragraphs\ParagraphInterface $row_item */
+      // Loop through the items within the row and populate the data.
+      $ref_items = $entity->get($row_item_field->getName())
+        ->referencedEntities();
+      foreach ($ref_items as $item_delta => $row_item) {
+        $all_items[$row_delta]['rowItems'][$item_delta] = [
+          'target_id' => $row_item->id(),
+          'entity' => ['type' => [['target_id' => $row_item->bundle()]]],
+          'settings' => [
+            'width' => $row_item->getBehaviorSetting('react', 'width'),
+            'admin_title' => $row_item->getBehaviorSetting('react', 'label'),
+          ],
+        ];
+      }
+
+      // Reset the data so that its a clean array.
+      $all_items[$row_delta]['rowItems'] = array_values($all_items[$row_delta]['rowItems']);
+    }
+    return $as_json ? json_encode($all_items) : $all_items;
   }
 
   /**
