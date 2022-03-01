@@ -20,13 +20,6 @@
         "drupal/core": "^8.8 || ^9.0",
         "drupal/paragraphs": "^1.1"
     },
-    "extra": {
-        "patches": {
-            "drupal/paragraphs": {
-                "https://www.drupal.org/project/paragraphs/issues/3099997": "https://www.drupal.org/files/issues/2021-02-25/3099997_merge-behaviors-12.patch"
-            }
-        }
-    },
     "autoload-dev": {
         "psr-4": {
             "Drupal\\Tests\\react_paragraphs\\": "./tests/src",
