@@ -351,7 +351,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
               fullWidth
               label="URL"
               variant="outlined"
-              helperText="Start typing the title of a piece of content to select it. You can also enter an internal path such as /foo/bar or an external URL such as http://example.com. Enter <front> to link to the front page."
+              helperText={settings.help + " Start typing the title of a piece of content to select it. You can also enter an internal path such as /foo/bar or an external URL such as http://example.com. Enter <front> to link to the front page."}
               onChange={(e) => uriChanged(e.target.value)}
               required={settings.required}
               onBlur={(e) => onUriBlur(e, delta)}
@@ -393,9 +393,6 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
 
       {addAnotherButton(settings.cardinality)}
 
-      {settings.help.length > 1 &&
-      <FormHelperText dangerouslySetInnerHTML={{__html: settings.help}}/>
-      }
     </FormGroup>
   )
 };
