@@ -6,7 +6,12 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
+export const LinkWidget = ({
+                             fieldId,
+                             defaultValue,
+                             onFieldChange,
+                             settings
+                           }) => {
   let timeout;
   let initialCondition = defaultValue;
 
@@ -331,68 +336,67 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     }
   }
 
-  /**
-   * To support cardinality, we may need to display more than one link field.
-   */
-  const linkFields = fieldValues.map((link, delta) =>
-    <div style={{marginBottom: '20px'}} key={delta}>
-      <FormControl style={{marginBottom: '20px'}}>
-        <Autocomplete
-          freeSolo
-          id={`${fieldId}-uri-${delta}`}
-          options={urlSuggestions}
-          renderOption={option => <div>{option.label}</div>}
-          getOptionLabel={option => typeof option.label !== 'undefined' ? option.label : getUriAsDisplayableString(option)}
-          onChange={(e, newValue) => suggestionPicked(e, newValue, delta)}
-          value={getUriAsDisplayableString(fieldValues[delta].uri)}
-          renderInput={params => (
-            <TextField
-              {...params}
-              fullWidth
-              label="URL"
-              variant="outlined"
-              helperText={settings.help + " Start typing the title of a piece of content to select it. You can also enter an internal path such as /foo/bar or an external URL such as http://example.com. Enter <front> to link to the front page."}
-              onChange={(e) => uriChanged(e.target.value)}
-              required={settings.required}
-              onBlur={(e) => onUriBlur(e, delta)}
-            />
-          )}
-        />
-      </FormControl>
-
-      {settings.title !== 0 &&
-      <FormControl style={{paddingBottom: '10px'}}>
-        <TextField
-          id={`${fieldId}-title-${delta}`}
-          label="Link text"
-          value={fieldValues[delta].title}
-          onChange={e => alterValues({
-            title: e.target.value,
-            uri: fieldValues[delta].uri,
-            delta: delta
-          })}
-          variant="outlined"
-          required={typeof fieldValues[delta].uri !== 'undefined' && fieldValues[delta].uri.length >= 1}
-          fullWidth
-        />
-      </FormControl>
-      }
-
-      {removeLinkButton(delta)}
-
-    </div>
-  );
 
   return (
-    <FormGroup>
+    <FormGroup className="clearfix">
       <FormLabel component="legend">
         {settings.label}
       </FormLabel>
 
-      {linkFields}
+      {fieldValues.map((link, delta) =>
+        <div style={{marginBottom: '20px'}} key={delta}>
+          <FormControl style={{marginBottom: '20px'}}>
+            <Autocomplete
+              freeSolo
+              id={`${fieldId}-uri-${delta}`}
+              options={urlSuggestions}
+              renderOption={option => <div>{option.label}</div>}
+              getOptionLabel={option => typeof option.label !== 'undefined' ? option.label : getUriAsDisplayableString(option)}
+              onChange={(e, newValue) => suggestionPicked(e, newValue, delta)}
+              value={getUriAsDisplayableString(fieldValues[delta].uri)}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  fullWidth
+                  label="URL"
+                  variant="outlined"
+                  helperText={"Start typing the title of a piece of content to select it. You can also enter an internal path such as /foo/bar or an external URL such as http://example.com. Enter <front> to link to the front page."}
+                  onChange={(e) => uriChanged(e.target.value)}
+                  required={settings.required}
+                  onBlur={(e) => onUriBlur(e, delta)}
+                />
+              )}
+            />
+          </FormControl>
+
+          {settings.title !== 0 &&
+            <FormControl style={{paddingBottom: '10px'}}>
+              <TextField
+                id={`${fieldId}-title-${delta}`}
+                label="Link text"
+                value={fieldValues[delta].title}
+                onChange={e => alterValues({
+                  title: e.target.value,
+                  uri: fieldValues[delta].uri,
+                  delta: delta
+                })}
+                variant="outlined"
+                required={typeof fieldValues[delta].uri !== 'undefined' && fieldValues[delta].uri.length >= 1}
+                fullWidth
+              />
+
+              {settings.help.length > 1 &&
+                <FormHelperText dangerouslySetInnerHTML={{__html: settings.help}}/>
+              }
+            </FormControl>
+          }
+
+          {removeLinkButton(delta)}
+
+        </div>
+      )}
 
       {addAnotherButton(settings.cardinality)}
-
     </FormGroup>
   )
 };
