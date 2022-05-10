@@ -1,6 +1,14 @@
 # React Paragraphs
 
 
+8.x-2.10
+--------------------------------------------------------------------------------
+_Release Date: 2022-05-10_
+
+- D8CORE-2331: Updated help text display for link and ckeditor fields (#112)
+- Removed D8 Tests
+
+
 8.x-2.9
 --------------------------------------------------------------------------------
 _Release Date: 2022-03-02_
