@@ -364,17 +364,19 @@ export const LinkWidget = ({
                   onChange={(e) => uriChanged(e.target.value)}
                   required={settings.required}
                   onBlur={(e) => onUriBlur(e, delta)}
+                  inputProps={{maxlength: 2048}}
                 />
               )}
             />
           </FormControl>
 
           {settings.title !== 0 &&
-            <FormControl style={{paddingBottom: '10px'}}>
+            <FormControl style={{paddingBottom: '10px', width: '100%'}}>
               <TextField
                 id={`${fieldId}-title-${delta}`}
                 label="Link text"
                 value={fieldValues[delta].title}
+                inputProps={{maxlength: 255}}
                 onChange={e => alterValues({
                   title: e.target.value,
                   uri: fieldValues[delta].uri,
