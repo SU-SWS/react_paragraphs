@@ -6,6 +6,8 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
+import {UrlFix} from "../../utils/UrlFix";
+
 export const LinkWidget = ({
                              fieldId,
                              defaultValue,
@@ -58,7 +60,7 @@ export const LinkWidget = ({
         setSuggestions([]);
         return;
       }
-      fetch(`${settings.autocomplete}?q=${newUri}`)
+      fetch(UrlFix(`${settings.autocomplete}?q=${newUri}`))
         .then(response => response.json())
         .then(suggestionResults => setSuggestions(suggestionResults));
 

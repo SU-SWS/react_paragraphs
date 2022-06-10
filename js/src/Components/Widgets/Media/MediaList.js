@@ -5,6 +5,7 @@ import {XButton} from "../../Atoms/XButton";
 import {Loader} from "../../Atoms/Loader";
 import {ErrorBoundary} from "../../Atoms/ErrorBoundary";
 import {SortableContainer, SortableElement} from "react-sortable-hoc";
+import {UrlFix} from "../../../utils/UrlFix";
 
 const arrayMove = require('array-move');
 
@@ -80,7 +81,7 @@ const MediaItem = ({mid, delta, onRemove}) => {
     if (!mediaData) {
       // Fetch the media data. If the content is not json or the page fails, it
       // will just bail.
-      fetch(`/media/${mid}/edit?_format=json`)
+      fetch(UrlFix(`/media/${mid}/edit?_format=json`))
         .then(response => response.json())
         .then(jsonData => {
           if (typeof jsonData.message !== 'undefined') {

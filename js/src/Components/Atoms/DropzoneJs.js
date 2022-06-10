@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
 import styled from "styled-components";
 import exIcon from '../../icons/ex.svg';
+import {UrlFix} from "../../utils/UrlFix";
 
 const ThumbsContainer = styled.aside`
   display: flex;
@@ -104,7 +105,7 @@ export const DropzoneJs = (props) => {
     files.map(file => {
       file.arrayBuffer().then(buffer => {
 
-        fetch(`/jsonapi/media/${props.fileType}/field_media_image`, {
+        fetch(UrlFix(`/jsonapi/media/${props.fileType}/field_media_image`), {
           method: 'POST',
           headers: {
             'Accept': 'application/vnd.api+json',
@@ -138,7 +139,7 @@ export const DropzoneJs = (props) => {
       }
     };
 
-    fetch(`/jsonapi/media/${props.fileType}`, {
+    fetch(UrlFix(`/jsonapi/media/${props.fileType}`), {
       method: 'POST',
       headers: {
         'Accept': 'application/vnd.api+json',
@@ -159,7 +160,7 @@ export const DropzoneJs = (props) => {
   }, [files]);
 
   if (csrfToken.length === 0) {
-    fetch('/rest/session/token')
+    fetch(UrlFix('/rest/session/token'))
       .then(response => response.text())
       .then(token => setToken(token))
   }

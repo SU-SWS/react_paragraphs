@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {FormHelperText} from "@material-ui/core";
 import {MediaList} from "./MediaList";
+import {UrlFix} from "../../../utils/UrlFix";
 
 export class MediaLibrary extends Component {
 
@@ -64,7 +65,7 @@ export class MediaLibrary extends Component {
       }
     };
 
-    fetch(`/react-media-library?${jQuery.param(params)}`)
+    fetch(UrlFix(`/react-media-library?${jQuery.param(params)}`))
       .then(response => response.json())
       .then(jsonData => {
         // The ajax response assumes the views button is the only one on the

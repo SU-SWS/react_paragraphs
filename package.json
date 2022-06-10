@@ -45,6 +45,7 @@
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.4",
     "base64-inline-loader": "^2.0",
+    "dotenv-webpack": "^7.1.0",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "html-webpack-plugin": "^5.0",
     "react-hot-loader": "^4.12.8",

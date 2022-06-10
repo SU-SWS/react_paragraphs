@@ -2,7 +2,7 @@ const commonPaths = require('./common-paths');
 
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-
+const Dotenv = require('dotenv-webpack');
 const config = {
   entry: {
     vendor: ['semantic-ui-react']
@@ -38,7 +38,8 @@ const config = {
       favicon: `${commonPaths.projectRoot}/public/favicon.ico`,
       filename: 'index.html',
       inject: true
-    })
+    }),
+    new Dotenv({path: './.env'})
   ]
 };
 
