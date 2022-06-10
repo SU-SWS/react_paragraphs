@@ -59,10 +59,11 @@ const config = {
           {
             loader: 'postcss-loader',
             options: {
-              sourceMap: true,
-              plugins: () => [
-                autoprefixer({})
-              ]
+              postcssOptions: {
+                plugins: () => [require('autoprefixer')({
+                  'browsers': ['> 1%', 'last 2 versions']
+                })],
+              }
             }
           },
           // SASS Loader. Add compile paths to include bourbon.

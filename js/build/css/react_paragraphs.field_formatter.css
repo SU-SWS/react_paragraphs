@@ -1,12 +1,7 @@
 .react-paragraphs-row {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -ms-flex-wrap: nowrap;
-      flex-wrap: nowrap;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between; }
+  flex-wrap: nowrap;
+  justify-content: space-between; }
   .react-paragraphs-row [data-react-columns] {
     width: 100%; }
   .react-paragraphs-row [data-react-columns="1"] {

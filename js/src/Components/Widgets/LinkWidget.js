@@ -27,12 +27,13 @@ export const LinkWidget = ({
   }
 
   const [urlSuggestions, setSuggestions] = useState([]);
-  const [fieldValues, setValues] = useState(initialCondition);
+  const [fieldValues, setValues] = useState(initialCondition)
 
   const alterValues = (values) => {
     const newState = [...fieldValues];
     newState[values.delta].title = values.title;
     newState[values.delta].uri = values.uri;
+    newState[values.delta].options = values.options;
     onFieldChange(newState);
   }
 
@@ -263,6 +264,7 @@ export const LinkWidget = ({
     alterValues({
       title: fieldValues[delta].title,
       uri: getUserEnteredStringAsUri(selectedValue === null ? '' : selectedValue.value),
+      options: fieldValues[delta].options,
       delta: delta
     });
   };
@@ -275,6 +277,7 @@ export const LinkWidget = ({
     alterValues({
       title: fieldValues[delta].title,
       uri: getUserEnteredStringAsUri(e.target.value),
+      options: fieldValues[delta].options,
       delta: delta
     });
   }
@@ -365,6 +368,7 @@ export const LinkWidget = ({
                   required={settings.required}
                   onBlur={(e) => onUriBlur(e, delta)}
                   inputProps={{maxlength: 2048}}
+                  defaultValue={getUriAsDisplayableString(fieldValues[delta].uri)}
                 />
               )}
             />
@@ -384,6 +388,20 @@ export const LinkWidget = ({
                 })}
                 variant="outlined"
                 required={typeof fieldValues[delta].uri !== 'undefined' && fieldValues[delta].uri.length >= 1}
+                fullWidth
+              />
+              <TextField
+                id={`${fieldId}-aria-label-${delta}`}
+                label="Aria-Label Text"
+                value={fieldValues[delta]?.options?.attributes?.['aria-label']}
+                inputProps={{maxlength: 255}}
+                onChange={e => alterValues({
+                  title: fieldValues[delta].title,
+                  uri: fieldValues[delta].uri,
+                  delta: delta,
+                  options:{attributes:{'aria-label': e.target.value}}
+                })}
+                variant="outlined"
                 fullWidth
               />
 
