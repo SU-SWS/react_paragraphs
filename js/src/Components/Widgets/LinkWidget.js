@@ -341,7 +341,6 @@ export const LinkWidget = ({
     }
   }
 
-console.log(urlSuggestions);
   return (
     <FormGroup className="clearfix">
       <FormLabel component="legend">
@@ -355,24 +354,25 @@ console.log(urlSuggestions);
               freeSolo
               id={`${fieldId}-uri-${delta}`}
               options={urlSuggestions}
-              renderOption={option => option.label}
               getOptionLabel={option => typeof option.label !== 'undefined' ? option.label : getUriAsDisplayableString(option)}
               onChange={(e, newValue) => suggestionPicked(e, newValue, delta)}
               value={getUriAsDisplayableString(fieldValues[delta].uri)}
-              renderInput={params => (
+              renderInput={params =>
                 <TextField
                   {...params}
                   fullWidth
                   label="URL"
                   variant="outlined"
-                  helperText={"Start typing the title of a piece of content to select it. You can also enter an internal path such as /foo/bar or an external URL such as http://example.com. Enter <front> to link to the front page."}
+                  helperText="Start typing the title of a piece of content to select it. You can also enter an internal path such as /foo/bar or an external URL such as http://example.com. Enter <front> to link to the front page."
                   onChange={(e) => uriChanged(e.target.value)}
                   required={settings.required}
                   onBlur={(e) => onUriBlur(e, delta)}
-                  inputProps={{maxlength: 2048}}
-                  defaultValue={getUriAsDisplayableString(fieldValues[delta].uri)}
+                  inputProps={{
+                    ...params.inputProps,
+                    maxLength: 2048
+                  }}
                 />
-              )}
+              }
             />
           </FormControl>
 
@@ -383,7 +383,7 @@ console.log(urlSuggestions);
                   id={`${fieldId}-title-${delta}`}
                   label="Link text"
                   value={fieldValues[delta].title}
-                  inputProps={{maxlength: 255}}
+                  inputProps={{maxLength: 255}}
                   onChange={e => alterValues({
                     title: e.target.value,
                     uri: fieldValues[delta].uri,
@@ -395,8 +395,11 @@ console.log(urlSuggestions);
                 />
               </FormControl>
               {settings.help.length > 1 &&
-                <FormHelperText style={{paddingBottom:'10px'}}
-                  dangerouslySetInnerHTML={{__html: settings.help}}/>
+                <FormHelperText
+                  className="pb-[10px]"
+                  style={{paddingBottom:'10px'}}
+                  dangerouslySetInnerHTML={{__html: settings.help}}
+                />
               }
 
               <FormControl style={{paddingBottom: '10px', width: '100%'}}>
@@ -404,7 +407,7 @@ console.log(urlSuggestions);
                   id={`${fieldId}-aria-label-${delta}`}
                   label="Aria-Label Text"
                   value={fieldValues[delta]?.options?.attributes?.['aria-label']}
-                  inputProps={{maxlength: 255}}
+                  inputProps={{maxLength: 255}}
                   onChange={e => alterValues({
                     title: fieldValues[delta].title,
                     uri: fieldValues[delta].uri,

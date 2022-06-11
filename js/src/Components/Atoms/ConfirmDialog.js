@@ -14,7 +14,6 @@ export const ConfirmDialog = ({open, title, dialog, confirmText="Agree", onConfi
         open={open}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-        onEscapeKeyDown={onCancel}
       >
         <DialogTitle id="alert-dialog-title">
           {title}
