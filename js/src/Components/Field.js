@@ -4,6 +4,7 @@ import {Row} from './Row';
 import {Toolbox} from "./Toolbox";
 import {WidgetManager, WidgetContext} from "../Contexts/WidgetManager";
 import {FlexDiv} from "./Atoms/FlexDiv";
+import "../../css/tailwind.css";
 
 export const Field = ({inputId, fieldName, items, tools, itemsPerRow, resizableItems, rowBundle}) => {
   return (

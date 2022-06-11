@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
-import {FormHelperText} from "@material-ui/core";
-import TextField from '@material-ui/core/TextField';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import {FormHelperText} from "@mui/material";
+import TextField from '@mui/material/TextField';
+import FormGroup from '@mui/material/FormGroup';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import Autocomplete from '@mui/material/Autocomplete';
 
 import {UrlFix} from "../../utils/UrlFix";
 
@@ -341,7 +341,7 @@ export const LinkWidget = ({
     }
   }
 
-
+console.log(urlSuggestions);
   return (
     <FormGroup className="clearfix">
       <FormLabel component="legend">
@@ -355,7 +355,7 @@ export const LinkWidget = ({
               freeSolo
               id={`${fieldId}-uri-${delta}`}
               options={urlSuggestions}
-              renderOption={option => <div>{option.label}</div>}
+              renderOption={option => option.label}
               getOptionLabel={option => typeof option.label !== 'undefined' ? option.label : getUriAsDisplayableString(option)}
               onChange={(e, newValue) => suggestionPicked(e, newValue, delta)}
               value={getUriAsDisplayableString(fieldValues[delta].uri)}
@@ -377,40 +377,46 @@ export const LinkWidget = ({
           </FormControl>
 
           {settings.title !== 0 &&
-            <FormControl style={{paddingBottom: '10px', width: '100%'}}>
-              <TextField
-                id={`${fieldId}-title-${delta}`}
-                label="Link text"
-                value={fieldValues[delta].title}
-                inputProps={{maxlength: 255}}
-                onChange={e => alterValues({
-                  title: e.target.value,
-                  uri: fieldValues[delta].uri,
-                  delta: delta
-                })}
-                variant="outlined"
-                required={typeof fieldValues[delta].uri !== 'undefined' && fieldValues[delta].uri.length >= 1}
-                fullWidth
-              />
-              <TextField
-                id={`${fieldId}-aria-label-${delta}`}
-                label="Aria-Label Text"
-                value={fieldValues[delta]?.options?.attributes?.['aria-label']}
-                inputProps={{maxlength: 255}}
-                onChange={e => alterValues({
-                  title: fieldValues[delta].title,
-                  uri: fieldValues[delta].uri,
-                  delta: delta,
-                  options:{attributes:{'aria-label': e.target.value}}
-                })}
-                variant="outlined"
-                fullWidth
-              />
-
+            <>
+              <FormControl style={{paddingBottom: '10px', width: '100%'}}>
+                <TextField
+                  id={`${fieldId}-title-${delta}`}
+                  label="Link text"
+                  value={fieldValues[delta].title}
+                  inputProps={{maxlength: 255}}
+                  onChange={e => alterValues({
+                    title: e.target.value,
+                    uri: fieldValues[delta].uri,
+                    delta: delta
+                  })}
+                  variant="outlined"
+                  required={typeof fieldValues[delta].uri !== 'undefined' && fieldValues[delta].uri.length >= 1}
+                  fullWidth
+                />
+              </FormControl>
               {settings.help.length > 1 &&
-                <FormHelperText dangerouslySetInnerHTML={{__html: settings.help}}/>
+                <FormHelperText style={{paddingBottom:'10px'}}
+                  dangerouslySetInnerHTML={{__html: settings.help}}/>
               }
-            </FormControl>
+
+              <FormControl style={{paddingBottom: '10px', width: '100%'}}>
+                <TextField
+                  id={`${fieldId}-aria-label-${delta}`}
+                  label="Aria-Label Text"
+                  value={fieldValues[delta]?.options?.attributes?.['aria-label']}
+                  inputProps={{maxlength: 255}}
+                  onChange={e => alterValues({
+                    title: fieldValues[delta].title,
+                    uri: fieldValues[delta].uri,
+                    delta: delta,
+                    options: {attributes: {'aria-label': e.target.value}}
+                  })}
+                  variant="outlined"
+                  fullWidth
+                />
+                <FormHelperText>Provide more descriptive text for the link if using common repeated phrases like "Read More"</FormHelperText>
+              </FormControl>
+            </>
           }
 
           {removeLinkButton(delta)}

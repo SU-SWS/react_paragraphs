@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import {WidgetContext} from "../../Contexts/WidgetManager";
 import {RowForm} from "../RowForm";
 import {ConfirmDialog} from "./ConfirmDialog";

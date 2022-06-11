@@ -1,8 +1,9 @@
 const commonPaths = require('./common-paths');
-
+const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+const tailwindcss = require("tailwindcss");
 const config = {
   entry: {
     vendor: ['semantic-ui-react']
@@ -17,6 +18,34 @@ const config = {
         test: /\.(js)$/,
         exclude: /node_modules/,
         use: ['babel-loader']
+      },
+      {
+        test: /\.(css|scss)$/,
+        use: [
+          {
+            loader: 'style-loader'
+          },
+          {
+            loader: 'css-loader'
+          },
+          {
+            loader: 'sass-loader'
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: () => [require('autoprefixer')({
+                  'browsers': ['> 1%', 'last 2 versions']
+                })],
+              }
+            }
+          },
+        ],
+      },
+      {
+        test: /\.(jpe?g|png|ttf|eot|svg|woff(2)?)(\?[a-z0-9=&.]+)?$/,
+        use: 'base64-inline-loader?limit=1000&name=[name].[ext]'
       }
     ]
   },
@@ -39,7 +68,8 @@ const config = {
       filename: 'index.html',
       inject: true
     }),
-    new Dotenv({path: './.env'})
+    new Dotenv({path: './.env'}),
+    tailwindcss
   ]
 };
 

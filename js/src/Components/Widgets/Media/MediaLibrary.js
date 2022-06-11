@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {FormHelperText} from "@material-ui/core";
+import {FormHelperText} from "@mui/material";
 import {MediaList} from "./MediaList";
 import {UrlFix} from "../../../utils/UrlFix";
 

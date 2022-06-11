@@ -1,10 +1,8 @@
 const commonPaths = require('./common-paths');
 
-const webpack = require('webpack');
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const autoprefixer = require('autoprefixer');
-
+const tailwindcss = require('tailwindcss');
 const config = {
   mode: 'production',
   entry: {
@@ -19,24 +17,6 @@ const config = {
   devtool: 'source-map',
   module: {
     rules: [
-      {
-        test: /js\/\.scss$/,
-        use: [
-          {
-            loader: 'style-loader'
-          },
-          {
-            loader: 'css-loader'
-          },
-          {
-            loader: 'sass-loader'
-          }
-        ]
-      },
-      {
-        test: /\.(jpe?g|png|ttf|eot|svg|woff(2)?)(\?[a-z0-9=&.]+)?$/,
-        use: 'base64-inline-loader?limit=1000&name=[name].[ext]'
-      },
       {
         test: /scss\/.*\.s[ac]ss$/,
         use: [

@@ -1,10 +1,10 @@
 import React from 'react';
-import InputLabel from '@material-ui/core/InputLabel';
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from "@material-ui/core/FormControl";
+import InputLabel from '@mui/material/InputLabel';
+// import {makeStyles} from "@mui/styles";
+import FormHelperText from '@mui/material/FormHelperText';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from "@mui/material/FormControl";
 
 export const SelectWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
 
@@ -36,10 +36,9 @@ export const SelectWidget = ({fieldId, defaultValue, onFieldChange, settings}) =
 
     onFieldChange(newFieldValue);
   };
-  const classes = useStyles();
 
   return (
-    <FormControl required={settings.required} variant="outlined"  className={classes.formControl}>
+    <FormControl required={settings.required} variant="outlined">
       <InputLabel id={'label-'+ fieldId} htmlFor={fieldId}>{settings.label}</InputLabel>
       <Select
         id={fieldId}
@@ -70,8 +69,8 @@ export const SelectWidget = ({fieldId, defaultValue, onFieldChange, settings}) =
   )
 };
 
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    width: '100%'
-  },
-}));
+// const useStyles = makeStyles((theme) => ({
+//   formControl: {
+//     width: '100%'
+//   },
+// }));

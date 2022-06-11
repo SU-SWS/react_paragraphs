@@ -1,8 +1,7 @@
 import React, {useState} from "react";
-import {makeStyles} from '@material-ui/core/styles';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Box from '@material-ui/core/Box';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Box from '@mui/material/Box';
 import styled from "styled-components";
 import {Loader} from "./Atoms/Loader";
 import {Behaviors} from "./Behaviors";
@@ -50,23 +49,21 @@ export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, o
     return <div>No fields to edit.</div>
   }
 
-  const classes = useStyles();
   const tabPanelWidth = (hasFormFields && hasBehaviorFields) ? 'calc(100% - 170px)' : '100%';
 
   return (
-    <div className={classes.root}>
+    <div style={{display:'flex',flexGrow:1}}>
 
       {(hasFormFields && hasBehaviorFields) &&
       <Tabs
         orientation="vertical"
         value={tabValue}
         onChange={(e, newValue) => setTabValue(newValue)}
-        className={classes.tabs}
         TabIndicatorProps={{ children: <span/>}}
-        style={{width: '170px'}}
+        style={{width: '170px', backgroundColor:'#e6e5e1', borderRight:'1px solid rgba(0, 0, 0, 0.12)'}}
       >
-        <Tab label="Content" className={classes.tab}/>
-        <Tab label="Style"  className={classes.tab}/>
+        <Tab label="Content" style={{borderBottom: '1px solid #b3b2ad', backgroundColor:'#f2f2f0'}}/>
+        <Tab label="Style" style={{borderBottom: '1px solid #b3b2ad', backgroundColor:'#f2f2f0'}}/>
       </Tabs>
       }
 
@@ -118,24 +115,6 @@ export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, o
   )
 
 }
-
-const useStyles = makeStyles((theme) => (
-  {
-    root: {
-      flexGrow: 1,
-      backgroundColor: theme.palette.background.paper,
-      display: 'flex',
-    },
-    tabs: {
-      borderRight: `1px solid ${theme.palette.divider}`,
-      background: '#e6e5e1'
-    },
-    tab: {
-      borderBottom: '1px solid #b3b2ad',
-      background: '#f2f2f0'
-    }
-  }
-));
 
 const TabPanel = (props) => {
   const {children, value, index, ...other} = props;

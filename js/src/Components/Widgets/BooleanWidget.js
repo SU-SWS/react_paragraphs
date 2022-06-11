@@ -1,7 +1,7 @@
 import React from 'react';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 export const BooleanWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
 

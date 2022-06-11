@@ -13,28 +13,6 @@ const config = {
     filename: '[name].js'
   },
   devtool: 'inline-source-map',
-  module: {
-    rules: [
-      {
-        test: /\.scss$/,
-        use: [
-          {
-            loader: 'style-loader'
-          },
-          {
-            loader: 'css-loader',
-          },
-          {
-            loader: 'sass-loader'
-          }
-        ]
-      },
-      {
-        test: /\.(jpe?g|png|ttf|eot|svg|woff(2)?)(\?[a-z0-9=&.]+)?$/,
-        use: 'base64-inline-loader?limit=1000&name=[name].[ext]'
-      }
-    ]
-  },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new Dotenv({path: './.env.local'})
