@@ -62,7 +62,7 @@ export const Row = ({id, index, isDropDisabled, itemsOrder, items, itemsPerRow, 
               </span>
             </div>
 
-            <div style={{flex: 1}}>
+            <div className="flex-1">
               <Droppable
                 droppableId={id}
                 direction="horizontal"
@@ -116,13 +116,7 @@ export const Row = ({id, index, isDropDisabled, itemsOrder, items, itemsPerRow, 
 
 const HelpTextPlaceholder = ({allowedNumber = 1}) => {
   return (
-    <div style={{
-      width: '100%',
-      textAlign: 'center',
-      padding: '15px',
-      margin: '0 15px',
-      border: '2px dashed #ccc'
-    }}>
+    <div className="w-full text-center p-4 mx-4 border-1 border-dashed border-slate-400/50">
       Drag and drop Paragraph into Row. {allowedNumber} per Row.
     </div>
   )

@@ -46,7 +46,7 @@ export const SelectWidget = ({fieldId, defaultValue, onFieldChange, settings}) =
         value={defaultFieldValue}
         multiple={settings.cardinality !== 1}
         onChange={e => valueChanged(e.target.value)}
-        style={{maxWidth: "400px", marginTop: "10px"}}
+        classes={{select:'max-w-md mt-2.5'}}
         inputProps={{required: settings.required}}
       >
         {settings.required === false && settings.cardinality === 1 &&

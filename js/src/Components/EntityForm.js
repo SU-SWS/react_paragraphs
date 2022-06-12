@@ -2,7 +2,6 @@ import React, {useState} from "react";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import styled from "styled-components";
 import {Loader} from "./Atoms/Loader";
 import {Behaviors} from "./Behaviors";
 import {TextWidget} from "./Widgets/TextWidget";
@@ -52,7 +51,7 @@ export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, o
   const tabPanelWidth = (hasFormFields && hasBehaviorFields) ? 'calc(100% - 170px)' : '100%';
 
   return (
-    <div style={{display:'flex',flexGrow:1}}>
+    <div className="flex flex-grow">
 
       {(hasFormFields && hasBehaviorFields) &&
       <Tabs
@@ -60,10 +59,10 @@ export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, o
         value={tabValue}
         onChange={(e, newValue) => setTabValue(newValue)}
         TabIndicatorProps={{ children: <span/>}}
-        style={{width: '170px', backgroundColor:'#e6e5e1', borderRight:'1px solid rgba(0, 0, 0, 0.12)'}}
+        className="w-44 bg-stone-200 border-0 border-r border-gray-900/50 border-solid"
       >
-        <Tab label="Content" style={{borderBottom: '1px solid #b3b2ad', backgroundColor:'#f2f2f0'}}/>
-        <Tab label="Style" style={{borderBottom: '1px solid #b3b2ad', backgroundColor:'#f2f2f0'}}/>
+        <Tab label="Content" sx={{borderBottom: '1px solid #b3b2ad', backgroundColor:'#f2f2f0'}}/>
+        <Tab label="Style" sx={{borderBottom: '1px solid #b3b2ad', backgroundColor:'#f2f2f0'}}/>
       </Tabs>
       }
 
@@ -76,14 +75,15 @@ export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, o
           if (WidgetName === undefined) {
             console.error('Unable to find widget for type: ' + field.widget_type);
             return (
-              <FieldContainer key={`widget-${fieldName}`}>
+              <div className="mt-20" key={`widget-${fieldName}`}>
                 Unable to provide a form for
                 field {field.label}
-              </FieldContainer>
+              </div>
             )
+
           }
           return (
-            <FieldContainer key={`widget-${fieldName}`}>
+            <div className="mt-20" key={`widget-${fieldName}`}>
               <WidgetName
                 fieldId={fieldName}
                 onFieldChange={onFieldChange.bind(undefined, fieldName)}
@@ -92,7 +92,7 @@ export const EntityForm = ({entityType, bundle, entity, itemId, onFieldChange, o
                 fieldName={fieldName}
                 bundle={bundle}
               />
-            </FieldContainer>
+            </div>
           )
         })}
         {props.footer}
@@ -135,7 +135,3 @@ const TabPanel = (props) => {
     </div>
   );
 }
-
-const FieldContainer = styled.div`
-  margin: 40px 0 0;
-`;

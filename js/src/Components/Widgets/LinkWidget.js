@@ -293,9 +293,9 @@ export const LinkWidget = ({
         <div>
           <button
             type="button"
-            className="button"
+            className="button m-2.5"
             onClick={addAnother}
-            style={{margin: "10px"}}>
+          >
             Add Another Link
           </button>
         </div>
@@ -319,9 +319,9 @@ export const LinkWidget = ({
       return (
         <button
           type="button"
-          className="button"
+          className="button m-2.5"
           onClick={() => removeLink(delta)}
-          style={{margin: "10px"}}>
+          >
           Remove
         </button>
       );
@@ -348,8 +348,8 @@ export const LinkWidget = ({
       </FormLabel>
 
       {fieldValues.map((link, delta) =>
-        <div style={{marginBottom: '20px'}} key={delta}>
-          <FormControl style={{marginBottom: '20px'}}>
+        <div className="mb-5" key={delta}>
+          <FormControl classes={{root: 'mb-5'}}>
             <Autocomplete
               freeSolo
               id={`${fieldId}-uri-${delta}`}
@@ -378,7 +378,7 @@ export const LinkWidget = ({
 
           {settings.title !== 0 &&
             <>
-              <FormControl style={{paddingBottom: '10px', width: '100%'}}>
+              <FormControl classes={{root:'mb-2.5 w-full'}}>
                 <TextField
                   id={`${fieldId}-title-${delta}`}
                   label="Link text"
@@ -396,13 +396,12 @@ export const LinkWidget = ({
               </FormControl>
               {settings.help.length > 1 &&
                 <FormHelperText
-                  className="pb-[10px]"
-                  style={{paddingBottom:'10px'}}
+                  classes={{root: 'pb-2.5'}}
                   dangerouslySetInnerHTML={{__html: settings.help}}
                 />
               }
 
-              <FormControl style={{paddingBottom: '10px', width: '100%'}}>
+              <FormControl classes={{root:'mb-2.5 w-full'}}>
                 <TextField
                   id={`${fieldId}-aria-label-${delta}`}
                   label="Aria-Label Text"

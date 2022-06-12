@@ -5,7 +5,6 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Select from '@mui/material/Select';
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
-import styled from 'styled-components';
 
 export class ViewFieldWidget extends Component {
 
@@ -72,7 +71,7 @@ export class ViewFieldWidget extends Component {
           onChange={e => this.valueChanged('target_id', e.target.value)}
           variant="outlined"
           required={this.props.settings.required}
-          style={{maxWidth: "400px", marginTop: "10px"}}
+          classes={{select: 'max-w-md mt-2.5'}}
         >
           {this.props.settings.required === false && this.props.settings.cardinality === 1 &&
           <MenuItem value="_none">
@@ -87,8 +86,14 @@ export class ViewFieldWidget extends Component {
           )}
         </Select>
 
-        <InputGroupWrapper
-          style={{display: this.state.target_id !== '_none' ? 'block' : 'none'}}>
+        const InputGroupWrapper = styled.div`
+        border: 1px solid #ccc;
+        padding: 20px;
+        margin-top: 10px;
+        `
+
+
+        <div className={`p-5 mt-2.5 border border-solid border-[#ccc] ${this.state.target_id !== '_none' ?'block':'hidden'}`}>
 
           <InputLabel htmlFor={this.props.fieldId + '-display-id'}>
             Display
@@ -101,7 +106,7 @@ export class ViewFieldWidget extends Component {
             onChange={e => this.valueChanged('display_id', e.target.value)}
             variant="outlined"
             required={this.props.settings.required}
-            style={{maxWidth: "400px", marginTop: "10px"}}
+            classes={{select: 'max-w-md mt-2.5'}}
           >
             {this.props.settings.required === false && this.props.settings.cardinality === 1 &&
             <MenuItem value="_none">
@@ -117,7 +122,7 @@ export class ViewFieldWidget extends Component {
           </Select>
 
 
-          <AdvancedOptions>
+          <div className="border-solid border border-[#ccc] p-5 mt-5">
             <a href="#"
                onClick={(e) => {
                  e.preventDefault();
@@ -126,9 +131,8 @@ export class ViewFieldWidget extends Component {
             >
               Advanced Options
             </a>
-            <InputWrapper
-              style={{display: this.state.advancedOpen ? 'block' : 'none'}}>
-              <InputWrapper>
+            <div className={this.state.advancedOpen ? 'block' : 'hidden'}>
+              <div className="mt-2.5">
                 <TextField
                   id={this.props.fieldId + '-arguments'}
                   label="Arguments"
@@ -139,8 +143,8 @@ export class ViewFieldWidget extends Component {
                   inputProps={{maxLength: 254}}
                   fullWidth
                 />
-              </InputWrapper>
-              <InputWrapper>
+              </div>
+              <div className="mt-2.5">
                 <TextField
                   id={this.props.fieldId + '-num-items'}
                   label="Number of items"
@@ -153,28 +157,12 @@ export class ViewFieldWidget extends Component {
                   onChange={e => this.valueChanged('items_to_display', e.target.value)}
                   type='number'
                 />
-              </InputWrapper>
-            </InputWrapper>
-          </AdvancedOptions>
-        </InputGroupWrapper>
+              </div>
+            </div>
+          </div>
+        </div>
       </FormGroup>
     )
   }
 
 }
-
-const AdvancedOptions = styled.div`
-  border: 1px solid #ccc;
-  padding: 20px;
-  margin-top: 20px;
-`;
-
-const InputGroupWrapper = styled.div`
-  border: 1px solid #ccc;
-  padding: 20px;
-  margin-top: 10px;
-`
-
-const InputWrapper = styled.div`
-  margin-top: 10px;
-`;
