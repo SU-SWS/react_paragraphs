@@ -40,7 +40,7 @@ class DefaultPluginTest extends ReactParagraphsFieldsTestBase {
       'weight' => 0,
       'widget_type' => 'foo_bar_baz',
     ];
-    $this->assertArrayEquals($expected, $data);
+    $this->assertEquals($expected, $data);
   }
 
 }

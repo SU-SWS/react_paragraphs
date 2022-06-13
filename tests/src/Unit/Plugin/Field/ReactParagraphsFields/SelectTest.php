@@ -29,7 +29,7 @@ class SelectTest extends ReactParagraphsFieldsTestBase {
       'options' => NULL,
       'default_value' => NULL,
     ];
-    $this->assertArrayEquals($expected, $data);
+    $this->assertEquals($expected, $data);
   }
 
   /**
@@ -51,7 +51,7 @@ class SelectTest extends ReactParagraphsFieldsTestBase {
       'options' => [],
       'default_value' => ['foo'],
     ];
-    $this->assertArrayEquals($expected, $data);
+    $this->assertEquals($expected, $data);
   }
 
   public function getStorageCallback() {

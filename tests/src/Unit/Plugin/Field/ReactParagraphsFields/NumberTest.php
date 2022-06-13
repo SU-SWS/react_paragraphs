@@ -28,7 +28,7 @@ class NumberTest extends ReactParagraphsFieldsTestBase {
       'precision' => NULL,
       'scale' => NULL,
     ];
-    $this->assertArrayEquals($expected, $data);
+    $this->assertEquals($expected, $data);
   }
 
 }

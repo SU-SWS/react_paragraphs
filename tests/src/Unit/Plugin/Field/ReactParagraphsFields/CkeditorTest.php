@@ -44,7 +44,7 @@ class CkeditorTest extends ReactParagraphsFieldsTestBase {
       ],
       'summary' => FALSE,
     ];
-    $this->assertArrayEquals($expected, $data);
+    $this->assertEquals($expected, $data);
   }
 
   /**

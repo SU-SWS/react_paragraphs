@@ -32,7 +32,7 @@ class EntityReferenceTest extends ReactParagraphsFieldTestBase {
 
     $field_element['widget'][0]['target_id']['#type'] = 'entity_autocomplete';
     $data = $plugin->getFieldInfo($field_element, $this->getFieldConfig());
-    $this->assertEqual($data['widget_type'], 'entity_reference_autocomplete');
+    $this->assertEquals($data['widget_type'], 'entity_reference_autocomplete');
     $this->assertCount(1, $data['options']);
   }
 
@@ -46,7 +46,7 @@ class EntityReferenceTest extends ReactParagraphsFieldTestBase {
 
     $field_element['widget']['#type'] = 'select';
     $data = $plugin->getFieldInfo($field_element, $this->getFieldConfig());
-    $this->assertEqual($data['widget_type'], 'entity_reference_autocomplete');
+    $this->assertEquals($data['widget_type'], 'entity_reference_autocomplete');
     $this->assertCount(1, $data['options']);
   }
 

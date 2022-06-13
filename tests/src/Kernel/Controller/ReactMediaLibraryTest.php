@@ -66,7 +66,7 @@ class ReactMediaLibraryTest extends KernelTestBase {
     $response = $controller->mediaLibrary();
     $commands = $response->getCommands();
     $this->assertCount(1, $commands);
-    $this->assertEqual('openDialog', $commands[0]['command']);
+    $this->assertEquals('openDialog', $commands[0]['command']);
   }
 
 }

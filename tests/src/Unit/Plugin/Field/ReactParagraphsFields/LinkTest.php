@@ -50,8 +50,9 @@ class LinkTest extends ReactParagraphsFieldsTestBase {
       'autocomplete' => '/foo-bar',
       'target_type' => 'node',
       'title' => 'Bar Foo',
+      'attributes' => [],
     ];
-    $this->assertArrayEquals($expected, $data);
+    $this->assertEquals($expected, $data);
   }
 
 }

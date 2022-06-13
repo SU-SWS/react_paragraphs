@@ -125,7 +125,7 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
       ],
     ];
 
-    $this->assertEqual('card', $attachments[0]['tools'][0]['id']);
+    $this->assertEquals('card', $attachments[0]['tools'][0]['id']);
     $this->assertNotEmpty($attachments[0]['tools'][0]['icon']);
     unset($attachments[0]['tools'][0]['icon']);
 
@@ -145,7 +145,7 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
 
     $summary = $widget->settingsSummary();
     $this->assertCount(1, $summary);
-    $this->assertEqual(trim((string) $summary[0]), 'Equal Widths');
+    $this->assertEquals(trim((string) $summary[0]), 'Equal Widths');
 
     $value = [];
     $values['container']['value'] = json_encode($value);
@@ -190,7 +190,7 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
     $paragraphs = \Drupal::entityTypeManager()
       ->getStorage('paragraph')
       ->loadByProperties(['uuid' => $paragraph_uuid]);
-    $this->assertEqual(reset($paragraphs)->getBehaviorSetting('foo', 'bar'), 'baz');
+    $this->assertEquals(reset($paragraphs)->getBehaviorSetting('foo', 'bar'), 'baz');
   }
 
   /**
