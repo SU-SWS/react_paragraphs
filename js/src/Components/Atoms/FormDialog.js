@@ -36,7 +36,7 @@ export const FormDialog = ({open, title, formContent, onClose, ...props}) => {
           {props.children}
         </DialogContent>
 
-        <DialogActions sx={{p:'15px'}} classes={{root: 'sticky bottom-0 bg-[#f5f5f2]'}}>
+        <DialogActions sx={{p:'15px'}} classes={{root: 'sticky bottom-0 bg-[#f5f5f2] z-10'}}>
           <input
             ref={submitButton}
             className="button button--primary"

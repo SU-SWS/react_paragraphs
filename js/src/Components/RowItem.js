@@ -20,29 +20,12 @@ const ParagraphWrapper = styled.div`
   flex: ${props => props.itemWidth} 1 0;
   background: ${props => props.isDragging ? '#dafcdf' : '#fff'};
 
-  .img-helper {
-    display: inline-block;
-    height: 100%;
-    vertical-align: middle;
-  }
-
-  img {
-    vertical-align: middle;
-  }
-
   .dropbutton-wrapper {
     position: absolute;
     top: calc(50% - 13px);
     right: 5px;
   }
 `;
-
-const ItemIcon = styled.img`
-  max-height: 35px;
-  max-width: 35px;
-  margin-right: 2px;
-`;
-
 
 export const RowItem = ({item, id, isDraggable, index}) => {
 
@@ -55,8 +38,8 @@ export const RowItem = ({item, id, isDraggable, index}) => {
     const tool = availableTools.find(tool => tool.id === item.entity.type[0].target_id);
     iconSrc = tool?.icon;
 
-    return <ItemIcon
-      className="item-icon"
+    return <img
+      className="max-h-9 max-w-9 mr-0.5 align-middle"
       role="presentation"
       alt=""
       src={iconSrc}
@@ -94,10 +77,11 @@ export const RowItem = ({item, id, isDraggable, index}) => {
               {...provided.draggableProps}
               {...provided.dragHandleProps}
               isDragging={snapshot.isDragging}
-              id={id}
               itemWidth={item.width}
+              id={id}
+              // className={classes}
             >
-              <span className="img-helper"></span>
+              <span className="inline-block h-full align-middle"></span>
               {getItemIcon(widgetContext.tools)}
               {item.admin_title}
 

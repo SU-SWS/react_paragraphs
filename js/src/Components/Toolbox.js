@@ -1,47 +1,11 @@
 import React from 'react';
 import {Droppable, Draggable} from "react-beautiful-dnd";
-import styled from 'styled-components'
 import {WidgetContext} from "../Contexts/WidgetManager";
 import {FlexDiv} from "./Atoms/FlexDiv";
 
-const ToolboxWrapper = styled.div`
-  border: 1px solid #C0C0C0;
-  background: #F0F0EE;
-  padding: 20px;
-  max-height: calc(100vh - 120px);
-  position: sticky;
-  top: 80px;
-  margin: -31px -19px -19px 20px;
-  width: 200px;
-  max-width: 200px;
-  overflow: auto;
-`;
-
-const Toolwrapper = styled.div`
-  background: #fff;
-  margin: 10px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.13);
-  width: 100px;
-  min-height: 75px;
-  text-align: center;
-  font-weight: 600;
-  font-size: 15px;
-  line-height:23px;
-  color: #4d4f53;
-
-  img {
-    max-width: 80px;
-    max-height: 40px;
-    margin: 0 auto 3px;
-    display: block;
-  }
-`;
-
 export const Toolbox = ({tools}) => {
   return (
-    <ToolboxWrapper>
+    <div className="border border-solid border-[#C0C0C0] bg-[#F0F0EE] p-5 min-h-[calc(100vh-120px)] sticky t-[80px] -mt-8 -mr-5 -mb-5 ml-5 w-52 max-w-52 overflow-auto">
       <h3 className="fieldset-legend">Drag and drop Paragraphs into Rows</h3>
       <Droppable
         droppableId="toolbox"
@@ -67,7 +31,7 @@ export const Toolbox = ({tools}) => {
           </div>
         )}
       </Droppable>
-    </ToolboxWrapper>
+    </div>
   )
 };
 
@@ -86,17 +50,22 @@ const Tool = ({weight, id, label, icon}) => {
           index={weight}
         >
           {provided => (
-            <Toolwrapper
+            <div
               ref={provided.innerRef}
               {...provided.draggableProps}
               {...provided.dragHandleProps}
               onDoubleClick={(e) => widgetContext.addToolToBottom(id, e)}
               id={`tool-${id}`}
+              className="bg-white m-2.5 p-2.5 border border-solid border-[#ccc] w-[100px] min-h-[75px] text-center text-slate-600 text-base font-semibold shadow-md"
             >
-              <img src={icon} alt="" role="presentation"/>
+              <img
+                className="max-w-[80px] max-h-[40px] mx-auto mt-1"
+                src={icon}
+                alt=""
+              />
 
               <div className="label">{label}</div>
-            </Toolwrapper>
+            </div>
           )}
         </Draggable>
 

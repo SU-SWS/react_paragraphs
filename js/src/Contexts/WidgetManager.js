@@ -607,6 +607,7 @@ export class WidgetManager extends Component {
         return;
       }
     });
+
     this.triggerFormUpdated();
   }
 

@@ -8,12 +8,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 
 import {UrlFix} from "../../utils/UrlFix";
 
-export const LinkWidget = ({
-                             fieldId,
-                             defaultValue,
-                             onFieldChange,
-                             settings
-                           }) => {
+export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
   let timeout;
   let initialCondition = defaultValue;
 
@@ -25,7 +20,7 @@ export const LinkWidget = ({
     }
   }
   catch (e) {
-    initialCondition = [{uri: '', title: ''}];
+    initialCondition = [{uri: '', title: '', options: {attributes: {}}}];
   }
 
   const [urlSuggestions, setSuggestions] = useState([]);
@@ -35,7 +30,16 @@ export const LinkWidget = ({
     const newState = [...fieldValues];
     newState[values.delta].title = values.title;
     newState[values.delta].uri = values.uri;
-    newState[values.delta].options = values.options;
+    onFieldChange(newState);
+  }
+
+  const attributeChanged = (delta, attributeKey, value) => {
+    const newState = [...fieldValues];
+    const attributes = newState[delta]?.options?.attributes ?? [];
+    attributes[attributeKey] = value;
+    newState[delta].options = {
+      attributes: {...attributes}
+    }
     onFieldChange(newState);
   }
 
@@ -53,8 +57,8 @@ export const LinkWidget = ({
       // want to fetch suggestions that will just be empty anyways. This
       // includes absolute urls, <front> and relative urls.
       if (
-        newUri.substr(0, 1) === '/' ||
-        newUri.substr(0, 1) === '<' ||
+        newUri.substring(0, 1) === '/' ||
+        newUri.substring(0, 1) === '<' ||
         parseUrl(newUri, 'PHP_URL_HOST')
       ) {
         setSuggestions([]);
@@ -182,12 +186,12 @@ export const LinkWidget = ({
       // - '<front>' -> '/'
       // - '<front>#foo' -> '/#foo'
       if (string.indexOf('<front>') === 0) {
-        string = '/' + string.substr(7);
+        string = '/' + string.substring(7);
       }
 
       // This validation in the normal link widget occurs on submit. We'll just
       // force all user entered links to have the first character be valid.
-      if (!['/', '?', '#'].includes(string.substr(0, 1))) {
+      if (!['/', '?', '#'].includes(string.substring(0, 1))) {
         string = '/' + string;
       }
       uri = 'internal:' + string;
@@ -195,7 +199,7 @@ export const LinkWidget = ({
     else if (string.length > 0 && parseUrl(string, 'PHP_URL_HOST') === window.location.host) {
       // Drupal core does not do this. To prevent unwanted domain change issues,
       // force all entered urls of the same domain to be relative links.
-      uri = 'internal:' + uri.substr(uri.indexOf(window.location.host) + window.location.host.length);
+      uri = 'internal:' + uri.substring(uri.indexOf(window.location.host) + window.location.host.length);
     }
 
     return uri;
@@ -240,13 +244,13 @@ export const LinkWidget = ({
       //   https://www.drupal.org/node/2421941
       let path = parseUrl(uri, 'PHP_URL_PATH')
       if (path === '/') {
-        uri_reference = '<front>' + uri_reference.substr(1);
+        uri_reference = '<front>' + uri_reference.substring(1);
       }
 
       displayable_string = uri_reference;
     }
     else if (scheme === 'entity') {
-      const [entity_type, entity_id] = uri.substr(7).split('/', 2);
+      const [entity_type, entity_id] = uri.substring(7).split('/', 2);
 
 
       // Since we can't load the entity directly here, we'll just display the
@@ -266,7 +270,6 @@ export const LinkWidget = ({
     alterValues({
       title: fieldValues[delta].title,
       uri: getUserEnteredStringAsUri(selectedValue === null ? '' : selectedValue.value),
-      options: fieldValues[delta].options,
       delta: delta
     });
   };
@@ -279,7 +282,6 @@ export const LinkWidget = ({
     alterValues({
       title: fieldValues[delta].title,
       uri: getUserEnteredStringAsUri(e.target.value),
-      options: fieldValues[delta].options,
       delta: delta
     });
   }
@@ -343,7 +345,7 @@ export const LinkWidget = ({
 
   return (
     <FormGroup className="clearfix">
-      <FormLabel component="legend">
+      <FormLabel component="legend" sx={{padding: '10px'}}>
         {settings.label}
       </FormLabel>
 
@@ -363,7 +365,7 @@ export const LinkWidget = ({
                   fullWidth
                   label="URL"
                   variant="outlined"
-                  helperText="Start typing the title of a piece of content to select it. You can also enter an internal path such as /foo/bar or an external URL such as http://example.com. Enter <front> to link to the front page."
+                  helperText="Start typing the title of a piece of content to select it. You can also enter an internal path such as /foo/bar or an external URL such as https://example.com. Enter <front> to link to the front page."
                   onChange={(e) => uriChanged(e.target.value)}
                   required={settings.required}
                   onBlur={(e) => onUriBlur(e, delta)}
@@ -401,23 +403,20 @@ export const LinkWidget = ({
                 />
               }
 
-              <FormControl classes={{root:'mb-2.5 w-full'}}>
-                <TextField
-                  id={`${fieldId}-aria-label-${delta}`}
-                  label="Aria-Label Text"
-                  value={fieldValues[delta]?.options?.attributes?.['aria-label']}
-                  inputProps={{maxLength: 255}}
-                  onChange={e => alterValues({
-                    title: fieldValues[delta].title,
-                    uri: fieldValues[delta].uri,
-                    delta: delta,
-                    options: {attributes: {'aria-label': e.target.value}}
-                  })}
-                  variant="outlined"
-                  fullWidth
-                />
-                <FormHelperText>Provide more descriptive text for the link if using common repeated phrases like "Read More"</FormHelperText>
-              </FormControl>
+              {Object.keys(settings.attributes).map(attributeKey =>
+                <FormControl key={`${delta}-${attributeKey}`} classes={{root:'mb-2.5 w-full'}}>
+                  <TextField
+                    id={`${fieldId}-${attributeKey}-${delta}`}
+                    label={settings.attributes[attributeKey].label}
+                    value={fieldValues[delta]?.options?.attributes?.[attributeKey] ?? ''}
+                    inputProps={{maxLength: 255}}
+                    onChange={e => attributeChanged(delta, attributeKey, e.target.value)}
+                    variant="outlined"
+                    fullWidth
+                  />
+                  <FormHelperText>{settings.attributes?.[attributeKey]?.help}</FormHelperText>
+                </FormControl>
+              )}
             </>
           }
 
