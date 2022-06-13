@@ -1,8 +1,7 @@
 const commonPaths = require('./common-paths');
-
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const tailwindcss = require('tailwindcss');
+
 const config = {
   mode: 'production',
   entry: {
@@ -41,7 +40,7 @@ const config = {
             options: {
               postcssOptions: {
                 plugins: () => [require('autoprefixer')({
-                  'browsers': ['> 1%', 'last 2 versions']
+                  browsers: ['> 1%', 'last 2 versions']
                 })],
               }
             }

@@ -37,7 +37,7 @@ class Link extends ReactParagraphsFieldsBase {
     $info['attributes'] = [];
     // Support link_attributes module.
     $attributes = $field_element['widget'][0]['options']['attributes'] ?? [];
-    foreach(Element::children($attributes) as $attribute){
+    foreach (Element::children($attributes) as $attribute) {
       $info['attributes'][$attribute] = [
         'label' => $attributes[$attribute]['#title'],
         'help' => $attributes[$attribute]['#description'],
