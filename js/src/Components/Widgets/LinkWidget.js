@@ -403,6 +403,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
                 />
               }
 
+              {/*Link Attributes modules fields*/}
               {Object.keys(settings.attributes).map(attributeKey =>
                 <FormControl key={`${delta}-${attributeKey}`} sx={{marginBottom:'5px', width: '100%'}}>
                   <TextField
