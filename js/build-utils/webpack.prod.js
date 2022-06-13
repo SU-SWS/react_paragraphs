@@ -41,7 +41,7 @@ const config = {
               postcssOptions: {
                 plugins: () => [require('autoprefixer')({
                   browsers: ['> 1%', 'last 2 versions']
-                })],
+                })]
               }
             }
           },
