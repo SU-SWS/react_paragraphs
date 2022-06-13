@@ -351,7 +351,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
 
       {fieldValues.map((link, delta) =>
         <div className="mb-5" key={delta}>
-          <FormControl classes={{root: 'mb-5'}}>
+          <FormControl sx={{marginBottom: '5px'}}>
             <Autocomplete
               freeSolo
               id={`${fieldId}-uri-${delta}`}
@@ -380,7 +380,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
 
           {settings.title !== 0 &&
             <>
-              <FormControl classes={{root:'mb-2.5 w-full'}}>
+              <FormControl sx={{marginBottom:'5px', width:'100%'}}>
                 <TextField
                   id={`${fieldId}-title-${delta}`}
                   label="Link text"
@@ -398,13 +398,13 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
               </FormControl>
               {settings.help.length > 1 &&
                 <FormHelperText
-                  classes={{root: 'pb-2.5'}}
+                  classes={{root: 'p-2.5'}}
                   dangerouslySetInnerHTML={{__html: settings.help}}
                 />
               }
 
               {Object.keys(settings.attributes).map(attributeKey =>
-                <FormControl key={`${delta}-${attributeKey}`} classes={{root:'mb-2.5 w-full'}}>
+                <FormControl key={`${delta}-${attributeKey}`} sx={{marginBottom:'5px', width: '100%'}}>
                   <TextField
                     id={`${fieldId}-${attributeKey}-${delta}`}
                     label={settings.attributes[attributeKey].label}
