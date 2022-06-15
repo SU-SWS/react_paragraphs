@@ -1,9 +1,4 @@
 import React, {useEffect} from 'react';
-import styled from 'styled-components'
-
-const Container = styled.div`
-
-`;
 
 export const DropButtons = ({buttons, ...props}) => {
 
@@ -21,7 +16,7 @@ export const DropButtons = ({buttons, ...props}) => {
   }, []);
 
   return (
-    <Container ref={wrapperRef}>
+    <div ref={wrapperRef}>
       <div
         className={"dropbutton-wrapper dropbutton-multiple"}
         {...props}
@@ -41,6 +36,6 @@ export const DropButtons = ({buttons, ...props}) => {
           </ul>
         </div>
       </div>
-    </Container>
+    </div>
   )
 };

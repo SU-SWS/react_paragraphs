@@ -1,30 +1,12 @@
 import React, {useEffect, useState} from "react";
-import styled from 'styled-components';
 import {FlexDiv} from "../../Atoms/FlexDiv";
 import {XButton} from "../../Atoms/XButton";
 import {Loader} from "../../Atoms/Loader";
 import {ErrorBoundary} from "../../Atoms/ErrorBoundary";
 import {SortableContainer, SortableElement} from "react-sortable-hoc";
+import {UrlFix} from "../../../utils/UrlFix";
 
-const arrayMove = require('array-move');
-
-const PreviewContainer = styled.div`
-  border: 1px solid #dbdbdb;
-  position: relative;
-  max-width: 200px;
-  margin: 0 10px 10px 0;
-  min-height: 100px;
-  min-width: 100px;
-  z-index: 999;
-  cursor: move;
-`;
-
-const PreviewImageTag = styled.img`
-  height: 180px;
-  object-fit: contain;
-  object-position: center center;
-  max-width: 100%;
-`;
+const {arrayMoveImmutable} = require('array-move');
 
 const SortableItem = SortableElement(({item, delta, onRemove}) => (
   <MediaItem
@@ -56,7 +38,7 @@ const SortableList = SortableContainer(({items, onRemoveItem}) => {
 export const MediaList = ({selectedItems, onRemove, updateOrder}) => {
 
   const onSortEnd = ({oldIndex, newIndex}) => {
-    updateOrder(arrayMove(selectedItems, oldIndex, newIndex));
+    updateOrder(arrayMoveImmutable(selectedItems, oldIndex, newIndex));
   }
 
   return (
@@ -80,7 +62,7 @@ const MediaItem = ({mid, delta, onRemove}) => {
     if (!mediaData) {
       // Fetch the media data. If the content is not json or the page fails, it
       // will just bail.
-      fetch(`/media/${mid}/edit?_format=json`)
+      fetch(UrlFix(`/media/${mid}/edit?_format=json`))
         .then(response => response.json())
         .then(jsonData => {
           if (typeof jsonData.message !== 'undefined') {
@@ -93,11 +75,17 @@ const MediaItem = ({mid, delta, onRemove}) => {
   }, []);
 
   if (!mediaData) {
-    return <PreviewContainer><Loader/></PreviewContainer>
+    return (
+      <div
+        className="relative max-w-[200px] mr-2.5 mb-2.5 min-h-[100px] min-w-[100px] z-[999] cursor-move">
+        <Loader/>
+      </div>
+    )
   }
 
   return (
-    <PreviewContainer>
+    <div
+      className="relative max-w-[200px] mr-2.5 mb-2.5 min-h-[100px] min-w-[100px] z-[999] cursor-move">
       <XButton
         title="Remove Media Item"
         onClick={() => onRemove(delta)}
@@ -107,14 +95,14 @@ const MediaItem = ({mid, delta, onRemove}) => {
       {/* Wrap the preview image in an error handler. */}
       <ErrorBoundary
         errorMessage={
-          <div style={{padding: '20px'}}>
+          <div className="p-5">
             Unable to provide a preview of media.
           </div>
         }
       >
         <PreviewImage mediaData={mediaData}/>
       </ErrorBoundary>
-    </PreviewContainer>
+    </div>
   )
 }
 
@@ -124,14 +112,15 @@ const MediaItem = ({mid, delta, onRemove}) => {
 const PreviewImage = ({mediaData}) => {
   return (
     <>
-      <div style={{background: "#ebebeb", padding: "0 20px"}}>
-        <PreviewImageTag
+      <div className="bg-[#ebebeb] px-5">
+        <img
           src={mediaData.thumbnail[0].url}
           alt=""
           role="presentation"
+          className="h-44 object-contain object-center max-w-full"
         />
       </div>
-      <div style={{padding: "5px"}}>
+      <div className="p-1">
         {mediaData.name[0].value}
       </div>
     </>

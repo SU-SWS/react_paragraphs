@@ -1,6 +1,7 @@
 import React, {Component} from "react";
-import {FormHelperText} from "@material-ui/core";
+import {FormHelperText} from "@mui/material";
 import {MediaList} from "./MediaList";
+import {UrlFix} from "../../../utils/UrlFix";
 
 export class MediaLibrary extends Component {
 
@@ -64,7 +65,7 @@ export class MediaLibrary extends Component {
       }
     };
 
-    fetch(`/react-media-library?${jQuery.param(params)}`)
+    fetch(UrlFix(`/react-media-library?${jQuery.param(params)}`))
       .then(response => response.json())
       .then(jsonData => {
         // The ajax response assumes the views button is the only one on the
@@ -117,10 +118,9 @@ export class MediaLibrary extends Component {
         {(this.props.settings.cardinality === -1 || this.props.settings.cardinality > this.state.selectedMedia.length) &&
         <input
           type="submit"
-          className="button"
+          className="button my-2.5"
           onClick={this.openMediaLibrary}
           value="Add media"
-          style={{margin: "10px 0"}}
         />
         }
 
@@ -137,7 +137,7 @@ export class MediaLibrary extends Component {
           data-media-library-widget-update={this.props.fieldName}
           value="Update Media"
           name={`${this.props.fieldName}-library-update`}
-          style={{display: "none"}}
+          className="hidden"
         />
       </fieldset>
     )

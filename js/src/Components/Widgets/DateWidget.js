@@ -1,6 +1,6 @@
 import React from 'react';
-import TextField from '@material-ui/core/TextField';
-import {FormGroup} from "@material-ui/core";
+import TextField from '@mui/material/TextField';
+import {FormGroup} from "@mui/material";
 
 export const DateWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
 

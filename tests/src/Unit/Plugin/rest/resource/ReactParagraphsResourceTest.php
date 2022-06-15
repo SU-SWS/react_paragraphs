@@ -93,7 +93,7 @@ class ReactParagraphsResourceTest extends UnitTestCase {
    * Test the resource get request.
    */
   public function testGetRequest() {
-    $this->assertArrayEquals([], $this->resource->permissions());
+    $this->assertEquals([], $this->resource->permissions());
     $this->resource->get('paragraph', 'card');
   }
 

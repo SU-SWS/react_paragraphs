@@ -1,7 +1,7 @@
 const buildValidations = require('./js/build-utils/build-validations');
 const commonConfig = require('./js/build-utils/webpack.common');
 
-const webpackMerge = require('webpack-merge');
+const {merge} = require('webpack-merge');
 
 const addons = (/* string | string[] */ addonsArg) => {
   let addons = [...[addonsArg]] // Normalize array of addons (flatten)
@@ -15,8 +15,8 @@ module.exports = env => {
     throw new Error(buildValidations.ERR_NO_ENV_FLAG);
   }
 
-  const envConfig = require(`./js/build-utils/webpack.${env.env}.js`);
-  const mergedConfig = webpackMerge(
+  const envConfig = require(`./js/build-utils/webpack.${process.env.NODE_ENV}.js`);
+  const mergedConfig = merge(
     commonConfig,
     envConfig,
     ...addons(env.addons)

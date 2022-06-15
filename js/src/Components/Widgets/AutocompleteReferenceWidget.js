@@ -1,8 +1,8 @@
 import React from 'react';
-import {FormHelperText} from "@material-ui/core";
-import TextField from '@material-ui/core/TextField';
-import FormGroup from '@material-ui/core/FormGroup';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import {FormHelperText} from "@mui/material";
+import TextField from '@mui/material/TextField';
+import FormGroup from '@mui/material/FormGroup';
+import Autocomplete from '@mui/material/Autocomplete';
 
 export const AutocompleteReferenceWidget = ({defaultValue, fieldId, onFieldChange, settings}) => {
 

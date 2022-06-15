@@ -34,6 +34,14 @@ class LinkTest extends ReactParagraphsFieldsTestBase {
             '#autocomplete_route_name' => 'foo_bar',
             '#autocomplete_route_parameters' => ['target_type' => 'node'],
           ],
+          'options' => [
+            'attributes' => [
+              'class' => [
+                '#title' => 'Foo Bar',
+                '#description' => '',
+              ],
+            ],
+          ],
         ],
       ],
     ];
@@ -50,8 +58,9 @@ class LinkTest extends ReactParagraphsFieldsTestBase {
       'autocomplete' => '/foo-bar',
       'target_type' => 'node',
       'title' => 'Bar Foo',
+      'attributes' => ['class' => ['label' => 'Foo Bar', 'help' => '']],
     ];
-    $this->assertArrayEquals($expected, $data);
+    $this->assertEquals($expected, $data);
   }
 
 }

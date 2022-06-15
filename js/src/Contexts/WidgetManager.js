@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {v4 as uuidv4} from 'uuid';
+import {UrlFix} from "../utils/UrlFix";
 
 export const WidgetContext = React.createContext({});
 
@@ -25,17 +26,12 @@ export class WidgetManager extends Component {
   };
 
   apiUrls = {
-    baseDomain: location.origin + drupalSettings.path.baseUrl,
-    formApi: 'api/react-paragraphs/{entity_type_id}/{bundle}',
-    entityApi: 'entity/{entity_type_id}/{entity_id}',
+    formApi: UrlFix('/api/react-paragraphs/{entity_type_id}/{bundle}'),
+    entityApi: UrlFix('/entity/{entity_type_id}/{entity_id}'),
   };
 
   constructor(props) {
     super(props);
-    // Local development url.
-    if (typeof window.drupalSettings.user === 'undefined' && typeof localBaseDomain !== 'undefined') {
-      this.apiUrls.baseDomain = localBaseDomain;
-    }
 
     // If the form was submitted and rebuilt, we will want to use the existing
     // form data to re-build the UI.
@@ -556,8 +552,7 @@ export class WidgetManager extends Component {
    *   The structured entity form object.
    */
   getEntityForm(entityType, bundle) {
-    let url = this.apiUrls.baseDomain + this.apiUrls.formApi;
-    url = url.replace('{entity_type_id}', entityType).replace('{bundle}', bundle);
+    const url = this.apiUrls.formApi.replace('{entity_type_id}', entityType).replace('{bundle}', bundle);
     if (typeof this.state.cachedForms[`${entityType}-${bundle}`] !== 'undefined') {
       return this.state.cachedForms[`${entityType}-${bundle}`];
     }
@@ -612,6 +607,7 @@ export class WidgetManager extends Component {
         return;
       }
     });
+
     this.triggerFormUpdated();
   }
 
@@ -682,8 +678,7 @@ export class WidgetManager extends Component {
    *   Promise of the entity object.
    */
   loadEntity(entityType, entityId) {
-    const url = this.apiUrls.baseDomain + this.apiUrls.entityApi;
-    return fetch(url.replace('{entity_type_id}', entityType).replace('{entity_id}', entityId))
+    return fetch(this.apiUrls.entityApi.replace('{entity_type_id}', entityType).replace('{entity_id}', entityId))
       .then(response => response.json());
   }
 

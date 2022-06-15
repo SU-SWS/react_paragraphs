@@ -69,7 +69,7 @@ class ReactBehaviorsTest extends KernelTestBase {
     $this->assertArrayHasKey('foo', $element);
     $this->assertArrayHasKey('bar', $element);
     $this->assertArrayHasKey('baz', $element);
-    $this->assertEqual('FOOBARBAZ', $element['bar']['#default_value']);
+    $this->assertEquals('FOOBARBAZ', $element['bar']['#default_value']);
   }
 
   /**
