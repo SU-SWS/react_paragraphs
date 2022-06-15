@@ -1,6 +1,5 @@
 import React from 'react';
 import InputLabel from '@mui/material/InputLabel';
-// import {makeStyles} from "@mui/styles";
 import FormHelperText from '@mui/material/FormHelperText';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -68,9 +67,3 @@ export const SelectWidget = ({fieldId, defaultValue, onFieldChange, settings}) =
     </FormControl>
   )
 };
-
-// const useStyles = makeStyles((theme) => ({
-//   formControl: {
-//     width: '100%'
-//   },
-// }));
