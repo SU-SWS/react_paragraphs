@@ -65,7 +65,7 @@ class View extends ReactParagraphsFieldsBase {
 
       // Sort the display options based on their order in the view settings.
       uasort($displays, function ($a, $b) {
-        return !empty($a['position']) && !empty($b['position']) && $a['position'] > $b['position'];
+        return (!empty($a['position']) && !empty($b['position']) && $a['position'] > $b['position']) ? 1 : -1;
       });
 
       foreach ($displays as $display_id => $display) {

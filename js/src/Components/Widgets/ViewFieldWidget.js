@@ -86,13 +86,6 @@ export class ViewFieldWidget extends Component {
           )}
         </Select>
 
-        const InputGroupWrapper = styled.div`
-        border: 1px solid #ccc;
-        padding: 20px;
-        margin-top: 10px;
-        `
-
-
         <div className={`p-5 mt-2.5 border border-solid border-[#ccc] ${this.state.target_id !== '_none' ?'block':'hidden'}`}>
 
           <InputLabel htmlFor={this.props.fieldId + '-display-id'}>
