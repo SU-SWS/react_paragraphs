@@ -29,7 +29,7 @@ class EntityReferenceTest extends ReactParagraphsFieldsTestBase {
       'widget_type' => 'media_library',
       'target_bundles' => ['image' => 'Image'],
     ];
-    $this->assertArrayEquals($expected, $data);
+    $this->assertEquals($expected, $data);
   }
 
   /**

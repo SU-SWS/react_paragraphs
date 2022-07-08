@@ -1,6 +1,16 @@
 # React Paragraphs
 
 
+8.2.11
+--------------------------------------------------------------------------------
+_Release Date: 2022-07-08_
+
+- Updated uasort to return integers
+- fixed composer namespace to lowercase
+- D8CORE-4972 Support link_attributes module (#114)
+- D8CORE-2353 Make link fields equal width
+
+
 8.x-2.10
 --------------------------------------------------------------------------------
 _Release Date: 2022-05-10_

@@ -1,10 +1,9 @@
 import React from 'react';
-import InputLabel from '@material-ui/core/InputLabel';
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from "@material-ui/core/FormControl";
+import InputLabel from '@mui/material/InputLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from "@mui/material/FormControl";
 
 export const SelectWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
 
@@ -36,10 +35,9 @@ export const SelectWidget = ({fieldId, defaultValue, onFieldChange, settings}) =
 
     onFieldChange(newFieldValue);
   };
-  const classes = useStyles();
 
   return (
-    <FormControl required={settings.required} variant="outlined"  className={classes.formControl}>
+    <FormControl required={settings.required} variant="outlined">
       <InputLabel id={'label-'+ fieldId} htmlFor={fieldId}>{settings.label}</InputLabel>
       <Select
         id={fieldId}
@@ -47,7 +45,7 @@ export const SelectWidget = ({fieldId, defaultValue, onFieldChange, settings}) =
         value={defaultFieldValue}
         multiple={settings.cardinality !== 1}
         onChange={e => valueChanged(e.target.value)}
-        style={{maxWidth: "400px", marginTop: "10px"}}
+        classes={{select:'max-w-md mt-2.5'}}
         inputProps={{required: settings.required}}
       >
         {settings.required === false && settings.cardinality === 1 &&
@@ -69,9 +67,3 @@ export const SelectWidget = ({fieldId, defaultValue, onFieldChange, settings}) =
     </FormControl>
   )
 };
-
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    width: '100%'
-  },
-}));

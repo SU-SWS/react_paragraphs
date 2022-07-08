@@ -88,7 +88,7 @@ abstract class ReactParagraphsFieldsTestBase extends UnitTestCase {
       'weight' => 0,
       'widget_type' => 'foo_bar',
     ];
-    $this->assertArrayEquals($expected, $data);
+    $this->assertEquals($expected, $data);
   }
 
 

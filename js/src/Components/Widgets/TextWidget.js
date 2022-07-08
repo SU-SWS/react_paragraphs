@@ -1,6 +1,6 @@
 import React from 'react';
-import TextField from '@material-ui/core/TextField';
-import FormGroup from '@material-ui/core/FormGroup';
+import TextField from '@mui/material/TextField';
+import FormGroup from '@mui/material/FormGroup';
 
 export const TextWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
 

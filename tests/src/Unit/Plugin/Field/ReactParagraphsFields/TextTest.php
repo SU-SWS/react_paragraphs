@@ -27,7 +27,7 @@ class TextTest extends ReactParagraphsFieldsTestBase {
       'text_type' => 'text',
       'max_length' => 0
     ];
-    $this->assertArrayEquals($expected, $data);
+    $this->assertEquals($expected, $data);
   }
 
   /**
@@ -48,7 +48,7 @@ class TextTest extends ReactParagraphsFieldsTestBase {
       'text_type' => 'email',
       'max_length' => 0
     ];
-    $this->assertArrayEquals($expected, $data);
+    $this->assertEquals($expected, $data);
   }
 
   /**
@@ -69,7 +69,7 @@ class TextTest extends ReactParagraphsFieldsTestBase {
       'text_type' => 'textarea',
       'max_length' => 0
     ];
-    $this->assertArrayEquals($expected, $data);
+    $this->assertEquals($expected, $data);
   }
 
 }

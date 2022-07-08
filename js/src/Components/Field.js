@@ -4,6 +4,7 @@ import {Row} from './Row';
 import {Toolbox} from "./Toolbox";
 import {WidgetManager, WidgetContext} from "../Contexts/WidgetManager";
 import {FlexDiv} from "./Atoms/FlexDiv";
+import "../../css/tailwind.css";
 
 export const Field = ({inputId, fieldName, items, tools, itemsPerRow, resizableItems, rowBundle}) => {
   return (
@@ -24,11 +25,7 @@ export const Field = ({inputId, fieldName, items, tools, itemsPerRow, resizableI
               onDragEnd={widgetContext.onDragEnd}
               onDragUpdate={widgetContext.onDragUpdate}
             >
-              <div style={{
-                width: 'calc(100% - 200px)',
-                minHeight: '300px',
-                marginTop: '20px'
-              }}>
+              <div className="min-h-[300px] mt-5" style={{width: 'calc(100% - 200px)'}}>
                 <Droppable
                   droppableId="rows"
                   type="row"
@@ -57,9 +54,8 @@ export const Field = ({inputId, fieldName, items, tools, itemsPerRow, resizableI
 
                 <button
                   type="button"
-                  className="button"
+                  className="button mt-7.5"
                   onClick={widgetContext.addRow}
-                  style={{marginTop: '30px'}}
                 >
                   Add New Row
                 </button>

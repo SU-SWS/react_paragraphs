@@ -1,9 +1,8 @@
 import React from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import {makeStyles} from "@material-ui/core/styles";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 
 export const FormDialog = ({open, title, formContent, onClose, ...props}) => {
   let submitButton = React.createRef();
@@ -17,17 +16,6 @@ export const FormDialog = ({open, title, formContent, onClose, ...props}) => {
     onClose();
   };
 
-  const onBackdropClick = () => {
-    submitButton.current.click();
-  };
-
-  const onEntered = () => {
-    // Remove the tab index because it breaks when there is a tab index and
-    // the media browser is open.
-    dialogRef.current.removeAttribute('tabindex');
-  };
-
-  const classes = useStyles();
 
   return (
     <Dialog
@@ -35,54 +23,27 @@ export const FormDialog = ({open, title, formContent, onClose, ...props}) => {
       fullWidth
       open={open}
       aria-labelledby="max-width-dialog-title"
-      onBackdropClick={onBackdropClick}
-      onEscapeKeyDown={onBackdropClick}
       style={{zIndex: 900}}
-      onEntered={onEntered}
+      onClose={() => submitButton.current.click()}
       TransitionProps={{ref: dialogRef}}
-      classes={{ paper: classes.dialogPaper }}
+      classes={{ paper: 'h-[80vh]'}}
     >
-      <DialogTitle style={{
-        background: '#6b6b6b',
-        color: '#fff',
-        position: 'sticky',
-        top: 0,
-        zIndex: 1000
-      }}>
+      <DialogTitle classes={{root: 'bg-[#6b6b6b] text-white sticky top-0 z-[1000]'}}>
         {title}
       </DialogTitle>
-      <form onSubmit={onFormSubmit} style={{flex: '1 1 auto', display: 'flex', flexDirection: 'column'}}>
-        <DialogContent classes={{root: classes.root}}>
+      <form onSubmit={onFormSubmit} className="flex flex-1 flex-col">
+        <DialogContent sx={{p: false}}>
           {props.children}
         </DialogContent>
 
-        <DialogActions style={{
-          position: 'sticky',
-          bottom: 0,
-          background: '#f5f5f2',
-          padding: '15px'
-        }}>
+        <DialogActions sx={{p:'15px'}} classes={{root: 'sticky bottom-0 bg-[#f5f5f2] z-10'}}>
           <input
             ref={submitButton}
             className="button button--primary"
             type="submit"
             value="Continue"/>
         </DialogActions>
-
       </form>
     </Dialog>
   )
 };
-
-const useStyles = makeStyles(() => (
-  {
-    root:{
-      padding: '0',
-      '&:first-child': {padding: 0}
-    },
-    dialogPaper: {
-      minHeight: '80vh',
-      maxHeight: '80vh',
-    },
-  }
-));

@@ -1,17 +1,14 @@
 import React, {useState} from 'react';
-import {FormHelperText} from "@material-ui/core";
-import TextField from '@material-ui/core/TextField';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import {FormHelperText} from "@mui/material";
+import TextField from '@mui/material/TextField';
+import FormGroup from '@mui/material/FormGroup';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import Autocomplete from '@mui/material/Autocomplete';
 
-export const LinkWidget = ({
-                             fieldId,
-                             defaultValue,
-                             onFieldChange,
-                             settings
-                           }) => {
+import {UrlFix} from "../../utils/UrlFix";
+
+export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => {
   let timeout;
   let initialCondition = defaultValue;
 
@@ -23,16 +20,26 @@ export const LinkWidget = ({
     }
   }
   catch (e) {
-    initialCondition = [{uri: '', title: ''}];
+    initialCondition = [{uri: '', title: '', options: {attributes: {}}}];
   }
 
   const [urlSuggestions, setSuggestions] = useState([]);
-  const [fieldValues, setValues] = useState(initialCondition);
+  const [fieldValues, setValues] = useState(initialCondition)
 
   const alterValues = (values) => {
     const newState = [...fieldValues];
     newState[values.delta].title = values.title;
     newState[values.delta].uri = values.uri;
+    onFieldChange(newState);
+  }
+
+  const attributeChanged = (delta, attributeKey, value) => {
+    const newState = [...fieldValues];
+    const attributes = newState[delta]?.options?.attributes ?? [];
+    attributes[attributeKey] = value;
+    newState[delta].options = {
+      attributes: {...attributes}
+    }
     onFieldChange(newState);
   }
 
@@ -50,14 +57,14 @@ export const LinkWidget = ({
       // want to fetch suggestions that will just be empty anyways. This
       // includes absolute urls, <front> and relative urls.
       if (
-        newUri.substr(0, 1) === '/' ||
-        newUri.substr(0, 1) === '<' ||
+        newUri.substring(0, 1) === '/' ||
+        newUri.substring(0, 1) === '<' ||
         parseUrl(newUri, 'PHP_URL_HOST')
       ) {
         setSuggestions([]);
         return;
       }
-      fetch(`${settings.autocomplete}?q=${newUri}`)
+      fetch(UrlFix(`${settings.autocomplete}?q=${newUri}`))
         .then(response => response.json())
         .then(suggestionResults => setSuggestions(suggestionResults));
 
@@ -179,12 +186,12 @@ export const LinkWidget = ({
       // - '<front>' -> '/'
       // - '<front>#foo' -> '/#foo'
       if (string.indexOf('<front>') === 0) {
-        string = '/' + string.substr(7);
+        string = '/' + string.substring(7);
       }
 
       // This validation in the normal link widget occurs on submit. We'll just
       // force all user entered links to have the first character be valid.
-      if (!['/', '?', '#'].includes(string.substr(0, 1))) {
+      if (!['/', '?', '#'].includes(string.substring(0, 1))) {
         string = '/' + string;
       }
       uri = 'internal:' + string;
@@ -192,7 +199,7 @@ export const LinkWidget = ({
     else if (string.length > 0 && parseUrl(string, 'PHP_URL_HOST') === window.location.host) {
       // Drupal core does not do this. To prevent unwanted domain change issues,
       // force all entered urls of the same domain to be relative links.
-      uri = 'internal:' + uri.substr(uri.indexOf(window.location.host) + window.location.host.length);
+      uri = 'internal:' + uri.substring(uri.indexOf(window.location.host) + window.location.host.length);
     }
 
     return uri;
@@ -237,13 +244,13 @@ export const LinkWidget = ({
       //   https://www.drupal.org/node/2421941
       let path = parseUrl(uri, 'PHP_URL_PATH')
       if (path === '/') {
-        uri_reference = '<front>' + uri_reference.substr(1);
+        uri_reference = '<front>' + uri_reference.substring(1);
       }
 
       displayable_string = uri_reference;
     }
     else if (scheme === 'entity') {
-      const [entity_type, entity_id] = uri.substr(7).split('/', 2);
+      const [entity_type, entity_id] = uri.substring(7).split('/', 2);
 
 
       // Since we can't load the entity directly here, we'll just display the
@@ -288,9 +295,9 @@ export const LinkWidget = ({
         <div>
           <button
             type="button"
-            className="button"
+            className="button m-2.5"
             onClick={addAnother}
-            style={{margin: "10px"}}>
+          >
             Add Another Link
           </button>
         </div>
@@ -314,9 +321,9 @@ export const LinkWidget = ({
       return (
         <button
           type="button"
-          className="button"
+          className="button m-2.5"
           onClick={() => removeLink(delta)}
-          style={{margin: "10px"}}>
+          >
           Remove
         </button>
       );
@@ -336,59 +343,82 @@ export const LinkWidget = ({
     }
   }
 
-
   return (
     <FormGroup className="clearfix">
-      <FormLabel component="legend">
+      <FormLabel component="legend" sx={{padding: '10px'}}>
         {settings.label}
       </FormLabel>
 
       {fieldValues.map((link, delta) =>
-        <div style={{marginBottom: '20px'}} key={delta}>
-          <FormControl style={{marginBottom: '20px'}}>
+        <div className="mb-5" key={delta}>
+          <FormControl sx={{marginBottom: '5px'}}>
             <Autocomplete
               freeSolo
               id={`${fieldId}-uri-${delta}`}
               options={urlSuggestions}
-              renderOption={option => <div>{option.label}</div>}
               getOptionLabel={option => typeof option.label !== 'undefined' ? option.label : getUriAsDisplayableString(option)}
               onChange={(e, newValue) => suggestionPicked(e, newValue, delta)}
               value={getUriAsDisplayableString(fieldValues[delta].uri)}
-              renderInput={params => (
+              renderInput={params =>
                 <TextField
                   {...params}
                   fullWidth
                   label="URL"
                   variant="outlined"
-                  helperText={"Start typing the title of a piece of content to select it. You can also enter an internal path such as /foo/bar or an external URL such as http://example.com. Enter <front> to link to the front page."}
+                  helperText="Start typing the title of a piece of content to select it. You can also enter an internal path such as /foo/bar or an external URL such as https://example.com. Enter <front> to link to the front page."
                   onChange={(e) => uriChanged(e.target.value)}
                   required={settings.required}
                   onBlur={(e) => onUriBlur(e, delta)}
+                  inputProps={{
+                    ...params.inputProps,
+                    maxLength: 2048
+                  }}
                 />
-              )}
+              }
             />
           </FormControl>
 
           {settings.title !== 0 &&
-            <FormControl style={{paddingBottom: '10px'}}>
-              <TextField
-                id={`${fieldId}-title-${delta}`}
-                label="Link text"
-                value={fieldValues[delta].title}
-                onChange={e => alterValues({
-                  title: e.target.value,
-                  uri: fieldValues[delta].uri,
-                  delta: delta
-                })}
-                variant="outlined"
-                required={typeof fieldValues[delta].uri !== 'undefined' && fieldValues[delta].uri.length >= 1}
-                fullWidth
-              />
-
+            <>
+              <FormControl sx={{marginBottom:'5px', width:'100%'}}>
+                <TextField
+                  id={`${fieldId}-title-${delta}`}
+                  label="Link text"
+                  value={fieldValues[delta].title}
+                  inputProps={{maxLength: 255}}
+                  onChange={e => alterValues({
+                    title: e.target.value,
+                    uri: fieldValues[delta].uri,
+                    delta: delta
+                  })}
+                  variant="outlined"
+                  required={typeof fieldValues[delta].uri !== 'undefined' && fieldValues[delta].uri.length >= 1}
+                  fullWidth
+                />
+              </FormControl>
               {settings.help.length > 1 &&
-                <FormHelperText dangerouslySetInnerHTML={{__html: settings.help}}/>
+                <FormHelperText
+                  classes={{root: 'p-2.5'}}
+                  dangerouslySetInnerHTML={{__html: settings.help}}
+                />
               }
-            </FormControl>
+
+              {/*Link Attributes modules fields*/}
+              {Object.keys(settings.attributes).map(attributeKey =>
+                <FormControl key={`${delta}-${attributeKey}`} sx={{marginBottom:'5px', width: '100%'}}>
+                  <TextField
+                    id={`${fieldId}-${attributeKey}-${delta}`}
+                    label={settings.attributes[attributeKey].label}
+                    value={fieldValues[delta]?.options?.attributes?.[attributeKey] ?? ''}
+                    inputProps={{maxLength: 255}}
+                    onChange={e => attributeChanged(delta, attributeKey, e.target.value)}
+                    variant="outlined"
+                    fullWidth
+                  />
+                  <FormHelperText>{settings.attributes?.[attributeKey]?.help}</FormHelperText>
+                </FormControl>
+              )}
+            </>
           }
 
           {removeLinkButton(delta)}

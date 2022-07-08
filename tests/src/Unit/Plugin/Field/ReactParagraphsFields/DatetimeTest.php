@@ -29,7 +29,7 @@ class DatetimeTest extends ReactParagraphsFieldsTestBase {
       'widget_type' => 'foo_bar',
       'type' => 'date_time',
     ];
-    $this->assertArrayEquals($expected, $data);
+    $this->assertEquals($expected, $data);
   }
 
 }
