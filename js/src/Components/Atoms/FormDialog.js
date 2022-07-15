@@ -19,7 +19,7 @@ export const FormDialog = ({open, title, formContent, onClose, ...props}) => {
 
   return (
     <Dialog
-      maxWidth='md'
+      maxWidth='xl'
       fullWidth
       open={open}
       aria-labelledby="max-width-dialog-title"
