@@ -89,7 +89,7 @@ export class MediaLibrary extends Component {
         document.getElementsByClassName('media-library-view')[0].getElementsByClassName('media-library-select button')[0].setAttribute("id", "edit-submit-modal");
 
         setTimeout(function () {
-          Drupal.attachBehaviors(jQuery('#drupal-modal').parent());
+          Drupal.attachBehaviors(document.getElementById('drupal-modal'));
         }, 200);
 
       })
