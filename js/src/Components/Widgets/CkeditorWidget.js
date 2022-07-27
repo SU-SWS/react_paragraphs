@@ -3,7 +3,6 @@ import FormGroup from '@mui/material/FormGroup';
 import InputLabel from '@mui/material/InputLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import TextField from '@mui/material/TextField';
-import styled from 'styled-components';
 
 // Disable eslint error on global Drupal //
 /* global Drupal b:writable */
