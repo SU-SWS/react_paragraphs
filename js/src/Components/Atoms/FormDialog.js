@@ -34,14 +34,14 @@ export const FormDialog = ({open, title, onClose, ...props}) => {
         {title}
       </DialogTitle>
 
-      <DialogContent sx={{p: false}}>
+      <DialogContent classes={{root: 'flex flex-col'}} sx={{p: false}}>
         <form onSubmit={onFormSubmit} className="flex flex-1 flex-col">
-
-          {props.children}
-
+          <div className="grow">
+            {props.children}
+          </div>
           <DialogActions
             sx={{p: '15px'}}
-            classes={{root: 'sticky bottom-0 bg-[#f5f5f2] z-10'}}
+            classes={{root: 'flex-none sticky bottom-0 bg-[#f5f5f2] z-10'}}
           >
             <input
               ref={submitButton}
