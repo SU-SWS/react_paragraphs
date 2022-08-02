@@ -17,7 +17,7 @@
         }
     ],
     "require": {
-        "drupal/core": "^^9.4 || ^10",
+        "drupal/core": "^8.8 || ^9.0",
         "drupal/paragraphs": "^1.1"
     },
     "autoload-dev": {
