@@ -22,6 +22,7 @@ jobs:
           m_max_size: '1000'
           l_max_size: '3000'
           fail_if_xl: 'false'
+          message_if_xl: ''
       - uses: banyan/auto-label@1.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
