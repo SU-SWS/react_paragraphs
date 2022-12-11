@@ -1,7 +1,7 @@
 name: React Paragraphs
 description: 'React based paragraphs fields'
 type: module
-core_version_requirement: '^9.4 || ^10'
+core_version_requirement: ^9.4 || ^10
 version: 8.x-2.15-dev
 package: Paragraphs
 dependencies:
