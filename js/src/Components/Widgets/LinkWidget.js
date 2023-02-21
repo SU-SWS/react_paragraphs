@@ -20,7 +20,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     }
   }
   catch (e) {
-    initialCondition = [{uri: '', title: '', options: {attributes: {}}}];
+    initialCondition = [{uri: '', title: '', options: {}}];
   }
 
   const [urlSuggestions, setSuggestions] = useState([]);
@@ -30,17 +30,31 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     const newState = [...fieldValues];
     newState[values.delta].title = values.title;
     newState[values.delta].uri = values.uri;
+    newState[values.delta].options = cleanOptions(newState[values.delta].options);
     onFieldChange(newState);
   }
 
   const attributeChanged = (delta, attributeKey, value) => {
     const newState = [...fieldValues];
-    const attributes = newState[delta]?.options?.attributes ?? [];
+    const attributes = newState[delta]?.options?.attributes ?? {};
     attributes[attributeKey] = value;
     newState[delta].options = {
       attributes: {...attributes}
     }
+    newState[delta].options = cleanOptions(newState[delta].options);
     onFieldChange(newState);
+  }
+
+  const cleanOptions = (options) => {
+    if (options.hasOwnProperty('attributes')) {
+      delete options.attributes.content;
+      delete options.attributes.headers;
+
+      if (Object.keys(options.attributes).length === 0) {
+        delete options.attributes;
+      }
+    }
+    return options;
   }
 
   /**

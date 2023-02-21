@@ -143,6 +143,7 @@ class EntityReference extends ReactParagraphsFieldsBase implements ContainerFact
     // Do a simple query to load all entity IDs without loading the entities.
     // Using the getQuery it will also do access checks for the current user.
     $entity_ids = $entity_storage->getQuery()
+      ->accessCheck()
       ->condition($bundle_key, $handler_settings['target_bundles'], 'IN')
       ->execute();
 
