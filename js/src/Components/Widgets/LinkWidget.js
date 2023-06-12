@@ -45,7 +45,7 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
     onFieldChange(newState);
   }
 
-  const cleanOptions = (options) => {
+  const cleanOptions = (options = {}) => {
     if (options.hasOwnProperty('attributes')) {
       delete options.attributes.content;
       delete options.attributes.headers;
