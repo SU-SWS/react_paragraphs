@@ -251,9 +251,7 @@ export class CkeditorWidget extends Component {
           </div>
         </div>
 
-        {this.props.settings.help.length > 1 &&
-          <FormHelperText dangerouslySetInnerHTML={{__html: this.props.settings.help}}/>
-        }
+        <FormHelperText dangerouslySetInnerHTML={{__html: this.props.settings.help}}/>
       </FormGroup>
     )
   }

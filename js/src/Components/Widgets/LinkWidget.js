@@ -410,12 +410,10 @@ export const LinkWidget = ({fieldId, defaultValue, onFieldChange, settings}) => 
                   fullWidth
                 />
               </FormControl>
-              {settings.help.length > 1 &&
-                <FormHelperText
-                  classes={{root: 'p-2.5'}}
-                  dangerouslySetInnerHTML={{__html: settings.help}}
-                />
-              }
+              <FormHelperText
+                classes={{root: 'p-2.5'}}
+                dangerouslySetInnerHTML={{__html: settings.help}}
+              />
 
               {/*Link Attributes modules fields*/}
               {Object.keys(settings.attributes).map(attributeKey =>

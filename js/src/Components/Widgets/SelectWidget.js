@@ -61,9 +61,7 @@ export const SelectWidget = ({fieldId, defaultValue, onFieldChange, settings}) =
         )}
 
       </Select>
-      {settings.help.length > 0 &&
       <FormHelperText dangerouslySetInnerHTML={{__html: settings.help}}/>
-      }
     </FormControl>
   )
 };

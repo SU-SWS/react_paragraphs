@@ -74,9 +74,7 @@ export const AutocompleteReferenceWidget = ({defaultValue, fieldId, onFieldChang
         )}
       />
 
-      {settings.help.length > 0 &&
       <FormHelperText dangerouslySetInnerHTML={{__html: settings.help}}/>
-      }
     </FormGroup>
   )
 }
