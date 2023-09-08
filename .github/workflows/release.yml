@@ -16,7 +16,7 @@ jobs:
         uses: K-Phoen/semver-release-action@master
         with:
           release_strategy: none
-          release_branch: main
+          release_branch: 8.x
           tag_format: "%major%.%minor%.%patch%"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -32,12 +32,3 @@ jobs:
           commit: ${{ github.sha }}
           generateReleaseNotes: true
           makeLatest: true
-      - uses: actions/checkout@v3
-        with:
-          ref: '9.x'
-          fetch-depth: 0
-      - name: Back to Dev
-        if: ${{ steps.tag.outputs.tag }}
-        run: |
-          composer global require su-sws/stanford-caravan:dev-8.x-3.x
-          ~/.composer/vendor/bin/sws-caravan back-to-dev ${{ steps.tag.outputs.tag }} ${{ github.workspace }} main

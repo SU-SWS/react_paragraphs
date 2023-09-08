@@ -20,7 +20,7 @@ class DefaultPluginTest extends ReactParagraphsFieldsTestBase {
   /**
    * {@inheritDoc}
    */
-  protected function setUp(): void {
+  public function setup(): void {
     parent::setUp();
     $this->plugin = DefaultPlugin::create($this->container, [], 'default', []);
     $this->fieldStorage->method('getType')->willReturn('foo_bar_baz');

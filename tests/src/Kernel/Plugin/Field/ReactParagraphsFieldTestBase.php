@@ -38,7 +38,6 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
     'filter',
     'file',
     'text',
-    'hal',
     'serialization',
     'field_ui',
   ];
@@ -52,7 +51,7 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
   /**
    * {@inheritDoc}
    */
-  protected function setUp(): void {
+  public function setup(): void {
     parent::setUp();
     $this->installEntitySchema('node');
     $this->installEntitySchema('user');
@@ -71,6 +70,10 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
     $this->createParagraphRow();
     $this->createNodeType();
 
+    DateFormat::create([
+      'id' => 'fallback',
+      'pattern' => 'D, m/d/Y - H:i',
+    ])->save();
     DateFormat::create([
       'id' => 'short',
       'label' => 'short',

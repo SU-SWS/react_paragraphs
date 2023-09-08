@@ -28,7 +28,7 @@ class ParagraphsRowTypeListBuilderTest extends UnitTestCase {
   /**
    * {@inheritDoc}
    */
-  protected function setUp(): void {
+  public function setup(): void {
     parent::setUp();
     $container = new ContainerBuilder();
     $entity_storage = $this->createMock(EntityStorageInterface::class);

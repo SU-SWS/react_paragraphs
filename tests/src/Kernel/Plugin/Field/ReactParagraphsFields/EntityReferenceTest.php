@@ -17,7 +17,7 @@ class EntityReferenceTest extends ReactParagraphsFieldTestBase {
   /**
    * {@inheritDoc}
    */
-  protected function setUp(): void {
+  public function setup(): void {
     parent::setUp();
     Node::create(['type' => 'page', 'title' => 'Foo'])->save();
   }

@@ -35,7 +35,7 @@ class ReactParagraphsResourceTest extends UnitTestCase {
   /**
    * {@inheritDoc}
    */
-  protected function setUp(): void {
+  public function setup(): void {
     parent::setUp();
     $logger_channel = $this->createMock(LoggerChannelInterface::class);
 

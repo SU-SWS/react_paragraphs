@@ -13,7 +13,7 @@ use Drupal\views\ViewEntityInterface;
  */
 class ViewTest extends ReactParagraphsFieldsTestBase {
 
-  protected function setUp(): void {
+  public function setup(): void {
     parent::setUp();
     $this->fieldConfig->method('getSetting')->willReturn([
       'block' => 'block',
