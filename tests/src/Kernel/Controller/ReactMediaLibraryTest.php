@@ -32,7 +32,7 @@ class ReactMediaLibraryTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp(): void {
+  public function setup(): void {
     parent::setUp();
     $this->installEntitySchema('media');
     $this->installEntitySchema('user_role');

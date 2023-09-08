@@ -40,7 +40,7 @@ abstract class ReactParagraphsFieldsTestBase extends UnitTestCase {
   /**
    * {@inheritDoc}
    */
-  protected function setUp(): void {
+  public function setup(): void {
     parent::setUp();
 
     $self = new \ReflectionClass(get_class($this));

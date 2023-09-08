@@ -19,7 +19,7 @@ class CkeditorTest extends ReactParagraphsFieldsTestBase {
   /**
    * {@inheritDoc}
    */
-  protected function setUp(): void {
+  public function setup(): void {
     parent::setUp();
     $this->plugin = TestCkeditor::create($this->container, [], 'foo_bar', []);
   }
