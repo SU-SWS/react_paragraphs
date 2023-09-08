@@ -52,10 +52,10 @@ class ReactMediaLibrary extends ControllerBase {
 
     $media_state = MediaLibraryState::create(
       $query->get('media_library_opener_id'),
-      $query->get('media_library_allowed_types', []),
+      json_decode($query->get('media_library_allowed_types', ''), TRUE),
       $query->get('media_library_selected_type'),
       $query->get('media_library_remaining'),
-      $query->get('media_library_opener_parameters', [])
+      json_decode($query->get('media_library_opener_parameters', ''), TRUE)
     );
 
     $form_state->setTriggeringElement(['#media_library_state' => $media_state]);

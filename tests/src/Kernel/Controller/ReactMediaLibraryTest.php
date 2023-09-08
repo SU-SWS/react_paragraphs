@@ -42,15 +42,15 @@ class ReactMediaLibraryTest extends KernelTestBase {
 
     $current_request = new Request([
       'media_library_opener_id' => 'media_library.opener.field_widget',
-      'media_library_allowed_types' => ['image'],
+      'media_library_allowed_types' => json_encode(['image']),
       'media_library_selected_type' => 'image',
       'media_library_remaining' => 1,
-      'media_library_opener_parameters' => [
+      'media_library_opener_parameters' => json_encode([
         'field_widget_id' => '',
         'entity_type_id' => 'paragraph',
         'bundle' => '',
         'field_name' => '',
-      ],
+      ]),
     ]);
 
     $request_stack = $this->createMock(RequestStack::class);
