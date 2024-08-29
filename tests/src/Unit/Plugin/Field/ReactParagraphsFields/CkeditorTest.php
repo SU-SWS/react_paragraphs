@@ -53,7 +53,7 @@ class CkeditorTest extends ReactParagraphsFieldsTestBase {
    * @return \PHPUnit\Framework\MockObject\MockObject
    *   Mocked object.
    */
-  public function getStorageCallback() {
+  public function getStorageCallback($type) {
     $filter = $this->createMock(FilterFormatInterface::class);
     $filter->method('label')->willReturn('Foo Bar');
 

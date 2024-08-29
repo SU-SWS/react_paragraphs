@@ -64,7 +64,7 @@ class EntityReferenceTest extends ReactParagraphsFieldTestBase {
     $field_config->method('getFieldStorageDefinition')->willReturn($field_storage);
 
     $field_config->method('getSetting')
-      ->will($this->returnCallback([$this,'getSettingCallback']));
+      ->willReturnCallback([$this,'getSettingCallback']);
     return $field_config;
   }
 

@@ -35,7 +35,7 @@ class EntityReferenceTest extends ReactParagraphsFieldsTestBase {
   /**
    * Entity type manager get storage callback.
    */
-  public function getStorageCallback() {
+  public function getStorageCallback($type) {
     $media_type = $this->createMock(MediaTypeInterface::class);
     $media_type->method('label')->willReturn('Image');
 

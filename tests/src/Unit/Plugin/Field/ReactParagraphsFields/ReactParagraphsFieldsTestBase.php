@@ -52,7 +52,7 @@ abstract class ReactParagraphsFieldsTestBase extends UnitTestCase {
 
     $entity_type_manager = $this->createMock(EntityTypeManagerInterface::class);
     $entity_type_manager->method('getStorage')
-      ->will($this->returnCallback([$this, 'getStorageCallback']));
+      ->willReturnCallback([$this, 'getStorageCallback']);
 
     $this->container->set('entity_type.manager', $entity_type_manager);
     $this->container->set('current_user', $this->createMock(AccountProxyInterface::class));
@@ -91,5 +91,6 @@ abstract class ReactParagraphsFieldsTestBase extends UnitTestCase {
     $this->assertEquals($expected, $data);
   }
 
+  public function getStorageCallback($type) {}
 
 }

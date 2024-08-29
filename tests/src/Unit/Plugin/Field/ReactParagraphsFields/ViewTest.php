@@ -58,7 +58,7 @@ class ViewTest extends ReactParagraphsFieldsTestBase {
   /**
    * Get View storage callback.
    */
-  public function getStorageCallback() {
+  public function getStorageCallback($type) {
     $displays = [
       'master' => [
         'display_plugin' => 'master',

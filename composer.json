@@ -4,6 +4,7 @@
     "type": "drupal-custom-module",
     "license": "GPL-2.0-or-later",
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "authors": [
         {
             "name": "Mike Decker",
@@ -17,7 +18,7 @@
         }
     ],
     "require": {
-        "drupal/core": "^9.0 || ^10.0",
+        "drupal/core": "^9 || ^10 || ^11",
         "drupal/paragraphs": "^1.1"
     },
     "autoload-dev": {
