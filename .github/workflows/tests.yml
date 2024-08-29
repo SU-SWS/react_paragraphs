@@ -1,14 +1,17 @@
 name: PHPUnit and Acceptance Tests
 on: [push]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   phpunit:
     name: PHPUnit Coverage Tests
     runs-on: ubuntu-latest
     container:
-      image: pookmish/drupal8ci:latest
+      image: pookmish/drupal8ci:php8.3
     services:
       mysql:
-        image: mysql:5.7
+        image: mysql:8.0
         env:
           MYSQL_DATABASE: drupal
           MYSQL_USER: drupal
@@ -18,7 +21,7 @@ jobs:
           - 33306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: project
       - name: Build project
@@ -26,9 +29,41 @@ jobs:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
         run: |
           composer global require su-sws/stanford-caravan:10.x-dev
-          ~/.composer/vendor/bin/sws-caravan phpunit /var/www/html --extension-dir=$GITHUB_WORKSPACE/project --with-coverage
+          ~/.config/composer/vendor/bin/sws-caravan phpunit /var/www/html --extension-dir=$GITHUB_WORKSPACE/project --with-coverage
       - name: Save Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: unit-tests-results
+          path: /var/www/html/artifacts
+  phpunit_d11:
+    name: PHPUnit Coverage Tests Drupal 11
+    runs-on: ubuntu-latest
+    container:
+      image: pookmish/drupal8ci:php8.3
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: drupal
+          MYSQL_USER: drupal
+          MYSQL_PASSWORD: drupal
+          MYSQL_ROOT_PASSWORD: drupal
+        ports:
+          - 33306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: project
+      - name: Build project
+        env:
+          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+        run: |
+          composer global require su-sws/stanford-caravan:11.x-dev
+          ~/.config/composer/vendor/bin/sws-caravan phpunit /var/www/html --extension-dir=$GITHUB_WORKSPACE/project --with-coverage
+      - name: Save Test Results
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: unit-tests-results
@@ -46,7 +81,7 @@ jobs:
 #      options: '--network-alias drupal8ci'
 #    services:
 #      mysql:
-#        image: mysql:5.7
+#        image: mysql:8.0
 #        env:
 #          MYSQL_DATABASE: drupal
 #          MYSQL_USER: drupal
@@ -56,15 +91,15 @@ jobs:
 #          - 33306:3306
 #        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 #    steps:
-#      - uses: actions/checkout@v3
+#      - uses: actions/checkout@v4
 #        with:
 #          path: project
 #      - name: Run tests
 #        run: |
-#          composer global require su-sws/stanford-caravan:10.x-dev
-#          ~/.composer/vendor/bin/sws-caravan codeception /var/www/html --extension-dir=$GITHUB_WORKSPACE/project --suites=acceptance
+#          composer global require su-sws/stanford-caravan:11.x-dev
+#          ~/.config/composer/vendor/bin/sws-caravan codeception /var/www/html --extension-dir=$GITHUB_WORKSPACE/project --suites=acceptance
 #      - name: Save Test Results
-#        uses: actions/upload-artifact@v3
+#        uses: actions/upload-artifact@v4
 #        if: always()
 #        with:
 #          name: acceptance-tests-results
@@ -85,7 +120,7 @@ jobs:
 #        image: selenium/standalone-chrome
 #        options: '--shm-size="2g"'
 #      mysql:
-#        image: mysql:5.7
+#        image: mysql:8.0
 #        env:
 #          MYSQL_DATABASE: drupal
 #          MYSQL_USER: drupal
@@ -95,15 +130,15 @@ jobs:
 #          - 33306:3306
 #        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 #    steps:
-#      - uses: actions/checkout@v3
+#      - uses: actions/checkout@v4
 #        with:
 #          path: project
 #      - name: Run tests
 #        run: |
-#          composer global require su-sws/stanford-caravan:10.x-dev
-#          ~/.composer/vendor/bin/sws-caravan codeception /var/www/html --extension-dir=$GITHUB_WORKSPACE/project --suites=functional
+#          composer global require su-sws/stanford-caravan:11.x-dev
+#          ~/.config/composer/vendor/bin/sws-caravan codeception /var/www/html --extension-dir=$GITHUB_WORKSPACE/project --suites=functional
 #      - name: Save Test Results
-#        uses: actions/upload-artifact@v3
+#        uses: actions/upload-artifact@v4
 #        if: always()
 #        with:
 #          name: functional-tests-results
