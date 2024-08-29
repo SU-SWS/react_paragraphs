@@ -47,7 +47,7 @@ class ReactParagraphsResourceTest extends UnitTestCase {
 
     $entity_type_manager = $this->createMock(EntityTypeManagerInterface::class);
     $entity_type_manager->method('getDefinition')->willReturn($entity_definition);
-    $entity_type_manager->method('getStorage')->will($this->returnCallback([$this, 'getEntityStorageCallback']));
+    $entity_type_manager->method('getStorage')->willReturnCallback([$this, 'getEntityStorageCallback']);
 
     $form = [
       'field_foo' => [],
@@ -113,7 +113,7 @@ class ReactParagraphsResourceTest extends UnitTestCase {
     $paragraph->method('access')->willReturnReference($this->entityAccess);
 
     $entity_storage->method('create')->willReturn($paragraph);
-    $entity_storage->method('load')->will($this->returnCallback([$this, 'loadEntityCallback']));
+    $entity_storage->method('load')->willReturnCallback([$this, 'loadEntityCallback']);
 
     return $entity_storage;
   }

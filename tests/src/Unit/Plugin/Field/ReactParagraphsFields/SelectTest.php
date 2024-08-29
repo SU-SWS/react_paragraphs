@@ -54,7 +54,7 @@ class SelectTest extends ReactParagraphsFieldsTestBase {
     $this->assertEquals($expected, $data);
   }
 
-  public function getStorageCallback() {
+  public function getStorageCallback($type) {
     $webform_storage = $this->createMock(TestWebformEntityStorageInterface::class);
     $webform_storage->method('getOptions')->willReturn([]);
     return $webform_storage;

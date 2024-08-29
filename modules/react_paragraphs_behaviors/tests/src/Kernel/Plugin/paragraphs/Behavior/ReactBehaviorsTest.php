@@ -62,7 +62,7 @@ class ReactBehaviorsTest extends KernelTestBase {
     $form_state = new FormState();
     $paragraph = $this->createMock(ParagraphInterface::class);
     $paragraph->method('getBehaviorSetting')
-      ->will($this->returnCallback([$this, 'getBehaviorSettingCallback']));
+      ->willReturnCallback([$this, 'getBehaviorSettingCallback']);
     $element = $this->paragraphType->getEnabledBehaviorPlugins()['react_paragraphs:first']
       ->buildBehaviorForm($paragraph, $form, $form_state);
 
