@@ -30,7 +30,6 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
     'system',
     'react_paragraphs',
     'field',
-    'paragraphs',
     'entity_reference_revisions',
     'editor',
     'node',
@@ -53,6 +52,7 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
    */
   public function setup(): void {
     parent::setUp();
+    $this->container->get('module_installer')->install(['paragraphs']);
     $this->installEntitySchema('node');
     $this->installEntitySchema('user');
     $this->installEntitySchema('field_storage_config');
