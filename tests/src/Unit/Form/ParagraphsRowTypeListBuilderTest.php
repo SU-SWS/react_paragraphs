@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\react_paragraphs\Unit\Form;
 
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -52,9 +53,13 @@ class ParagraphsRowTypeListBuilderTest extends UnitTestCase {
   public function testListBuilder() {
     $this->assertCount(3, $this->builder->buildHeader());
 
+    $access = $this->createMock(AccessResultInterface::class);
+    $access->method('isAllowed')->willReturn(TRUE);
+
     $entity = $this->createMock(EntityInterface::class);
     $entity->method('label')->willReturn('Foo');
     $entity->method('id')->willReturn(1);
+    $entity->method('access')->willReturn($access);
 
     $this->assertCount(3, $this->builder->buildRow($entity));
   }
