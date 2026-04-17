@@ -30,7 +30,6 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
     'system',
     'react_paragraphs',
     'field',
-    'paragraphs',
     'entity_reference_revisions',
     'editor',
     'node',

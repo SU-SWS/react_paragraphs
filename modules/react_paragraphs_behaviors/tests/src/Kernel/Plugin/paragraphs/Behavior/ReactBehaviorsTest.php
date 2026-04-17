@@ -28,7 +28,6 @@ class ReactBehaviorsTest extends KernelTestBase {
     'system',
     'react_paragraphs_behaviors',
     'test_react_paragraphs_behaviors',
-    'paragraphs',
     'file',
     'user',
   ];
@@ -37,6 +36,7 @@ class ReactBehaviorsTest extends KernelTestBase {
    */
   public function setup(): void {
     parent::setUp();
+    $this->container->get('module_installer')->install(['paragraphs']);
     $this->installEntitySchema('file');
     ParagraphsType::create([
       'id' => 'card',

@@ -19,7 +19,6 @@ abstract class ParagraphRowFormTestBase extends KernelTestBase {
   protected static $modules = [
     'system',
     'react_paragraphs',
-    'paragraphs',
     'file',
     'user',
   ];
@@ -36,6 +35,7 @@ abstract class ParagraphRowFormTestBase extends KernelTestBase {
    */
   public function setup(): void {
     parent::setUp();
+    $this->container->get('module_installer')->install(['paragraphs']);
     $this->installEntitySchema('user');
     $this->installEntitySchema('paragraph_row');
     $this->installEntitySchema('file');
