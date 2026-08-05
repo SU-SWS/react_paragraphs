@@ -3,5 +3,3 @@ type: module
 description: 'Provides behavior plugin interface for paragraphs and rows.'
 core_version_requirement: ^9.4 || ^10 || ^11
 package: 'Custom'
-dependencies:
-  - react_paragraphs:react_paragraphs
