@@ -1,153 +1,38 @@
-name: PHPUnit and Acceptance Tests
-on: [push]
+# The tests run in the shared stanford-caravan workflow; see "GitHub Actions"
+# in the stanford-caravan README for its inputs.
+name: Tests
+on:
+  push:
+  workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Let every push to a release branch finish, so each merge gets a result.
+  cancel-in-progress: ${{ !endsWith(github.ref, '.x') }}
+permissions:
+  contents: read
 jobs:
-  phpunit:
-    name: PHPUnit Coverage Tests
-    strategy:
-      fail-fast: false
-      matrix:
-        php_version: [ 8.3, 8.4, 8.5 ]
-    runs-on: ubuntu-latest
-    container:
-      image: pookmish/drupal8ci:php${{ matrix.php_version }}
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_DATABASE: drupal
-          MYSQL_USER: drupal
-          MYSQL_PASSWORD: drupal
-          MYSQL_ROOT_PASSWORD: drupal
-        ports:
-          - 33306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+  tests:
+    name: Tests
+    uses: SU-SWS/stanford-caravan/.github/workflows/drupal-tests.yml@12.x
+    with:
+      php-versions: '["8.4", "8.5"]'
+      # No Codeception tests.
+      codeception-suites: '[]'
+      # Code quality: fail, warn (report without failing) or off. Switch to
+      # fail once the module is clean.
+      phpcs: warn
+      phpstan: warn
+    secrets: inherit
+
+  # Make this the required status check.
+  all-tests-pass:
+    name: All Tests Pass
+    if: always()
+    needs: [tests]
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
-        with:
-          path: project
-      - name: Build project
-        env:
-          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+      - env:
+          RESULT: ${{ needs.tests.result }}
         run: |
-          composer global require su-sws/stanford-caravan:10.x-dev
-          ~/.config/composer/vendor/bin/sws-caravan phpunit /var/www/html --extension-dir=$GITHUB_WORKSPACE/project --with-coverage
-      - name: Save Test Results
-        uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: unit-tests-results
-          path: /var/www/html/artifacts
-  phpunit_d11:
-    name: PHPUnit Coverage Tests Drupal 11
-    strategy:
-      fail-fast: false
-      matrix:
-        php_version: [ 8.3, 8.4, 8.5 ]
-    runs-on: ubuntu-latest
-    container:
-      image: pookmish/drupal8ci:php${{ matrix.php_version }}
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_DATABASE: drupal
-          MYSQL_USER: drupal
-          MYSQL_PASSWORD: drupal
-          MYSQL_ROOT_PASSWORD: drupal
-        ports:
-          - 33306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          path: project
-      - name: Build project
-        env:
-          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
-        run: |
-          composer global require su-sws/stanford-caravan:11.x-dev
-          ~/.config/composer/vendor/bin/sws-caravan phpunit /var/www/html --extension-dir=$GITHUB_WORKSPACE/project --with-coverage
-      - name: Save Test Results
-        uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: unit-tests-results
-          path: /var/www/html/artifacts
-#  acceptance:
-#    name: Codeception Acceptance Tests
-#    runs-on: ubuntu-latest
-#    env:
-#      DRUPAL_DATABASE_NAME: drupal
-#      DRUPAL_DATABASE_USERNAME: drupal
-#      DRUPAL_DATABASE_PASSWORD: drupal
-#      DRUPAL_DATABASE_HOST: mysql
-#    container:
-#      image: pookmish/drupal8ci:latest
-#      options: '--network-alias drupal8ci'
-#    services:
-#      mysql:
-#        image: mysql:8.0
-#        env:
-#          MYSQL_DATABASE: drupal
-#          MYSQL_USER: drupal
-#          MYSQL_PASSWORD: drupal
-#          MYSQL_ROOT_PASSWORD: drupal
-#        ports:
-#          - 33306:3306
-#        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-#    steps:
-#      - uses: actions/checkout@v6
-#        with:
-#          path: project
-#      - name: Run tests
-#        run: |
-#          composer global require su-sws/stanford-caravan:11.x-dev
-#          ~/.config/composer/vendor/bin/sws-caravan codeception /var/www/html --extension-dir=$GITHUB_WORKSPACE/project --suites=acceptance
-#      - name: Save Test Results
-#        uses: actions/upload-artifact@v7
-#        if: always()
-#        with:
-#          name: acceptance-tests-results
-#          path: /var/www/html/artifacts
-#  functional:
-#    name: Codeception Functional Tests
-#    runs-on: ubuntu-latest
-#    env:
-#      DRUPAL_DATABASE_NAME: drupal
-#      DRUPAL_DATABASE_USERNAME: drupal
-#      DRUPAL_DATABASE_PASSWORD: drupal
-#      DRUPAL_DATABASE_HOST: mysql
-#    container:
-#      image: pookmish/drupal8ci:latest
-#      options: '--network-alias=drupal8ci'
-#    services:
-#      selenium:
-#        image: selenium/standalone-chrome
-#        options: '--shm-size="2g"'
-#      mysql:
-#        image: mysql:8.0
-#        env:
-#          MYSQL_DATABASE: drupal
-#          MYSQL_USER: drupal
-#          MYSQL_PASSWORD: drupal
-#          MYSQL_ROOT_PASSWORD: drupal
-#        ports:
-#          - 33306:3306
-#        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-#    steps:
-#      - uses: actions/checkout@v6
-#        with:
-#          path: project
-#      - name: Run tests
-#        run: |
-#          composer global require su-sws/stanford-caravan:11.x-dev
-#          ~/.config/composer/vendor/bin/sws-caravan codeception /var/www/html --extension-dir=$GITHUB_WORKSPACE/project --suites=functional
-#      - name: Save Test Results
-#        uses: actions/upload-artifact@v7
-#        if: always()
-#        with:
-#          name: functional-tests-results
-#          path: /var/www/html/artifacts
+          echo "Tests: $RESULT"
+          [ "$RESULT" = "success" ]
