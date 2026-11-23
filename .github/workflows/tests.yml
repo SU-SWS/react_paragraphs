@@ -20,8 +20,8 @@ jobs:
       codeception-suites: '[]'
       # Code quality: fail, warn (report without failing) or off. Switch to
       # fail once the module is clean.
-      phpcs: warn
-      phpstan: warn
+      phpcs: fail
+      phpstan: fail
     secrets: inherit
 
   # Make this the required status check.

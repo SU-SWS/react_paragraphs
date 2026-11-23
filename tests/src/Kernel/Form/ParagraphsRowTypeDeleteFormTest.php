@@ -1,13 +1,12 @@
 <?php
 
-
 namespace Drupal\Tests\react_paragraphs\Kernel\Form;
 
 use Drupal\Core\Form\FormState;
 use Drupal\react_paragraphs\Entity\ParagraphsRowType;
 
 /**
- * Class ParagraphsRowTypeFormTest
+ * Tests the paragraph row type delete form.
  *
  * @group react_paragraphs
  * @coversDefaultClass \Drupal\react_paragraphs\Form\ParagraphsRowTypeForm

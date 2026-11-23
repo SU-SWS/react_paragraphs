@@ -43,7 +43,7 @@ class Ckeditor extends ReactParagraphsFieldsBase {
   /**
    * {@inheritDoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, AccountProxyInterface $current_user) {
+  final public function __construct(array $configuration, $plugin_id, $plugin_definition, AccountProxyInterface $current_user) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->currentUser = $current_user;
   }

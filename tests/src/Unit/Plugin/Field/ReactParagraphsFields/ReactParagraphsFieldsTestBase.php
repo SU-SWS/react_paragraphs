@@ -11,28 +11,36 @@ use Drupal\field\FieldStorageConfigInterface;
 use Drupal\Tests\UnitTestCase;
 
 /**
- * Class ReactParagraphsFieldsTestBase
+ * Base class that creates the plugin named in a test's coversDefaultClass.
  *
  * @group react_paragraphs
  */
 abstract class ReactParagraphsFieldsTestBase extends UnitTestCase {
 
   /**
+   * The field plugin under test.
+   *
    * @var \Drupal\react_paragraphs\ReactParagraphsFieldsInterface
    */
   protected $plugin;
 
   /**
+   * Container with mocked services.
+   *
    * @var \Drupal\Core\DependencyInjection\ContainerBuilder
    */
   protected $container;
 
   /**
+   * Mocked field config.
+   *
    * @var \PHPUnit\Framework\MockObject\MockObject
    */
   protected $fieldConfig;
 
   /**
+   * Mocked field storage config.
+   *
    * @var \PHPUnit\Framework\MockObject\MockObject
    */
   protected $fieldStorage;
@@ -74,7 +82,7 @@ abstract class ReactParagraphsFieldsTestBase extends UnitTestCase {
     $this->fieldConfig->method('getFieldStorageDefinition')->willReturn($this->fieldStorage);
   }
 
-    /**
+  /**
    * Test the field plugin.
    */
   public function testPlugin() {
@@ -91,6 +99,12 @@ abstract class ReactParagraphsFieldsTestBase extends UnitTestCase {
     $this->assertEquals($expected, $data);
   }
 
+  /**
+   * Entity type manager get storage callback, overridden by tests that need it.
+   *
+   * @param string $type
+   *   Entity type id.
+   */
   public function getStorageCallback($type) {}
 
 }

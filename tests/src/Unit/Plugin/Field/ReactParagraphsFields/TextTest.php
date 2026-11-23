@@ -3,7 +3,7 @@
 namespace Drupal\Tests\react_paragraphs\Unit\Plugin\Field\ReactParagraphsFields;
 
 /**
- * Class BooleanTest
+ * Tests the React field data for plain text fields.
  *
  * @group react_paragraphs
  * @coversDefaultClass \Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields\Text
@@ -25,7 +25,7 @@ class TextTest extends ReactParagraphsFieldsTestBase {
       'widget_type' => 'foo_bar',
       'formatted' => FALSE,
       'text_type' => 'text',
-      'max_length' => 0
+      'max_length' => 0,
     ];
     $this->assertEquals($expected, $data);
   }
@@ -46,13 +46,13 @@ class TextTest extends ReactParagraphsFieldsTestBase {
       'widget_type' => 'foo_bar',
       'formatted' => FALSE,
       'text_type' => 'email',
-      'max_length' => 0
+      'max_length' => 0,
     ];
     $this->assertEquals($expected, $data);
   }
 
   /**
-   * Test the long text areas..
+   * Test the long text areas.
    */
   public function testTextArea() {
     $this->fieldConfig->method('getType')->willReturn('string_long');
@@ -67,7 +67,7 @@ class TextTest extends ReactParagraphsFieldsTestBase {
       'widget_type' => 'foo_bar',
       'formatted' => FALSE,
       'text_type' => 'textarea',
-      'max_length' => 0
+      'max_length' => 0,
     ];
     $this->assertEquals($expected, $data);
   }

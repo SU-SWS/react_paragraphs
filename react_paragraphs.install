@@ -102,7 +102,7 @@ function _react_paragraphs_update_8201_get_storage_config($name, $default = NULL
 }
 
 /**
- * Create displays for the new paragraph rows..
+ * Create displays for the new paragraph rows.
  *
  * @param string $bundle
  *   Paragraph row bundle id.

@@ -4,4 +4,3 @@ entity.paragraphs_row_type.collection:
   route_name: entity.paragraphs_row_type.collection
   description: 'List Paragraphs Row type (bundles)'
   parent: system.admin_structure
-

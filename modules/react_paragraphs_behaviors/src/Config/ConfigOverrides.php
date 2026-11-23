@@ -7,7 +7,7 @@ use Drupal\Core\Config\ConfigFactoryOverrideInterface;
 use Drupal\Core\Config\StorageInterface;
 
 /**
- * Class ConfigOverrides.
+ * Enables applicable React behavior plugins on paragraph and row types.
  *
  * @package Drupal\react_behaviors\Config
  */

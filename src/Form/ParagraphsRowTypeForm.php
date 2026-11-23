@@ -7,7 +7,7 @@ use Drupal\field_ui\FieldUI;
 use Drupal\paragraphs\Form\ParagraphsTypeForm;
 
 /**
- * Class ParagraphsRowTypeForm.
+ * Add and edit form for paragraph row types.
  */
 class ParagraphsRowTypeForm extends ParagraphsTypeForm {
 
@@ -25,7 +25,7 @@ class ParagraphsRowTypeForm extends ParagraphsTypeForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    parent::save($form, $form_state);
+    $status = parent::save($form, $form_state);
     /** @var \Drupal\Core\Url $redirect */
     $redirect = $form_state->getRedirect();
 
@@ -41,6 +41,7 @@ class ParagraphsRowTypeForm extends ParagraphsTypeForm {
         $form_state->setRedirectUrl($route_info);
         break;
     }
+    return $status;
   }
 
 }

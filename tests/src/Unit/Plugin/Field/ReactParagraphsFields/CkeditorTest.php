@@ -3,13 +3,12 @@
 namespace Drupal\Tests\react_paragraphs\Unit\Plugin\Field\ReactParagraphsFields;
 
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\field\FieldConfigInterface;
-use Drupal\field\FieldStorageConfigInterface;
 use Drupal\filter\FilterFormatInterface;
 use Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields\Ckeditor;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class BooleanTest
+ * Tests the React field data for formatted text fields.
  *
  * @group react_paragraphs
  * @coversDefaultClass \Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields\Ckeditor
@@ -29,7 +28,7 @@ class CkeditorTest extends ReactParagraphsFieldsTestBase {
    */
   public function testPlugin() {
     $this->fieldConfig->method('getThirdPartySettings')
-      ->willReturn(['foo_bar' => 'foo_bar',]);
+      ->willReturn(['foo_bar' => 'foo_bar']);
     $data = $this->plugin->getFieldInfo([], $this->fieldConfig);
 
     $expected = [
@@ -69,17 +68,32 @@ class CkeditorTest extends ReactParagraphsFieldsTestBase {
 }
 
 /**
- * {@inheritDoc}
+ * Test plugin that loads filter formats from the mocked entity storage.
  */
 class TestCkeditor extends Ckeditor {
+
+  /**
+   * Filter format entity storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $filterFormatStorage;
+
+  /**
+   * {@inheritDoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->filterFormatStorage = $container->get('entity_type.manager')
+      ->getStorage('filter_format');
+    return $instance;
+  }
 
   /**
    * {@inheritDoc}
    */
   protected function getFilterFormats() {
-    return \Drupal::entityTypeManager()
-      ->getStorage('filter_format')
-      ->loadMultiple();
+    return $this->filterFormatStorage->loadMultiple();
   }
 
 }

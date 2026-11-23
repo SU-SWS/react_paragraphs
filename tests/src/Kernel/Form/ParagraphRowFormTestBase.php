@@ -2,12 +2,11 @@
 
 namespace Drupal\Tests\react_paragraphs\Kernel\Form;
 
-use Drupal\Core\Form\FormState;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\react_paragraphs\Entity\ParagraphsRowType;
 
 /**
- * Class ParagraphRowFormTestBase.
+ * Base class for paragraph row type form tests that creates a row type.
  *
  * @package Drupal\Tests\react_paragraphs\Kernel\Form
  */

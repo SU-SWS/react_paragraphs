@@ -13,7 +13,7 @@ use Drupal\react_paragraphs\ParagraphsRowTypeListBuilder;
 use Drupal\Tests\UnitTestCase;
 
 /**
- * Class ParagraphsRowTypeListBuilderTest.
+ * Tests the header and rows built by the paragraph row type list builder.
  *
  * @group react_paragraphs
  */
@@ -50,6 +50,9 @@ class ParagraphsRowTypeListBuilderTest extends UnitTestCase {
     $this->builder = ParagraphsRowTypeListBuilder::createInstance(\Drupal::getContainer(), $entity_type);
   }
 
+  /**
+   * The list builder returns a header and a row for a row type.
+   */
   public function testListBuilder() {
     $this->assertCount(3, $this->builder->buildHeader());
 

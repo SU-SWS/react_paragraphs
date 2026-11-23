@@ -2,18 +2,13 @@
 
 namespace Drupal\Tests\react_paragraphs\Kernel\Plugin\Field;
 
-use Drupal\field\Entity\FieldConfig;
-use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\file\Entity\File;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\paragraphs\Entity\ParagraphsType;
 use Drupal\react_paragraphs\Entity\ParagraphRow;
-use Drupal\search\Entity\SearchPage;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 
 /**
- * Class ReactParagraphsFieldCronTest
+ * Tests search reindexing of nodes with React paragraphs fields.
  *
  * @group react_paragraphs
  */
@@ -22,10 +17,15 @@ class ReactParagraphsFieldCronTest extends ReactParagraphsFieldTestBase {
   use UserCreationTrait;
 
   /**
+   * Node with paragraph rows that is indexed.
+   *
    * @var \Drupal\node\NodeInterface
    */
   protected $node;
 
+  /**
+   * Marking a node with paragraph rows for reindexing does not fail.
+   */
   public function testIndexing() {
     \Drupal::service('module_installer')->install(['search']);
 
@@ -59,7 +59,7 @@ class ReactParagraphsFieldCronTest extends ReactParagraphsFieldTestBase {
         'data' => '',
       ])
       ->execute();
-    node_reindex_node_search($this->node->id());
+    \Drupal::service('search.index')->markForReindex('node_search', $this->node->id());
   }
 
 }

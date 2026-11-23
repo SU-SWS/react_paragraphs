@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Drupal\Tests\react_paragraphs_behaviors\Kernel\Plugin\paragraphs\Behavior;
 
 use Drupal\Core\Form\FormState;
@@ -9,7 +8,7 @@ use Drupal\paragraphs\Entity\ParagraphsType;
 use Drupal\paragraphs\ParagraphInterface;
 
 /**
- * Class ReactBehaviorsTests
+ * Tests the React behaviors paragraphs plugin form and config overrides.
  *
  * @group react_paragraphs
  * @coversDefaultClass \Drupal\react_paragraphs_behaviors\Plugin\paragraphs\Behavior\ReactBehaviors
@@ -17,6 +16,8 @@ use Drupal\paragraphs\ParagraphInterface;
 class ReactBehaviorsTest extends KernelTestBase {
 
   /**
+   * Paragraph type used in the tests.
+   *
    * @var \Drupal\paragraphs\ParagraphsTypeInterface
    */
   protected $paragraphType;
@@ -31,6 +32,7 @@ class ReactBehaviorsTest extends KernelTestBase {
     'file',
     'user',
   ];
+
   /**
    * {@inheritDoc}
    */

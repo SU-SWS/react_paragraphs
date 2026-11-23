@@ -11,6 +11,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\field\FieldConfigInterface;
 use Drupal\react_paragraphs\Plugin\rest\resource\ReactParagraphsResource;
 use Drupal\react_paragraphs\ReactParagraphsFieldsInterface;
@@ -18,7 +19,7 @@ use Drupal\react_paragraphs\ReactParagraphsFieldsManager;
 use Drupal\Tests\UnitTestCase;
 
 /**
- * Class ReactParagraphsResourceTest.
+ * Tests the React paragraphs REST resource responses.
  *
  * @group react_paragraphs
  * @coversDefaultClass \Drupal\react_paragraphs\Plugin\rest\resource\ReactParagraphsResource
@@ -26,10 +27,17 @@ use Drupal\Tests\UnitTestCase;
 class ReactParagraphsResourceTest extends UnitTestCase {
 
   /**
+   * The resource under test.
+   *
    * @var \Drupal\react_paragraphs\Plugin\rest\resource\ReactParagraphsResource
    */
   protected $resource;
 
+  /**
+   * Whether the mocked entity grants access.
+   *
+   * @var bool
+   */
   protected $entityAccess = TRUE;
 
   /**
@@ -76,6 +84,7 @@ class ReactParagraphsResourceTest extends UnitTestCase {
     $container->set('entity.form_builder', $form_builder);
     $container->set('plugin.manager.react_paragraphs_fields', $plugin_manager);
     $container->set('module_handler', $module_handler);
+    $container->set('current_user', $this->createMock(AccountInterface::class));
 
     $this->resource = ReactParagraphsResource::create($container, [], '', []);
   }

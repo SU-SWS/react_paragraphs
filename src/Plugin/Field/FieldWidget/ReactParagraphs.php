@@ -364,7 +364,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     $entity = $storage->create($entity_values);
     $this->setBehaviorSettings($entity, $field_data['behavior_settings'] ?? []);
 
-    // TODO: Handle validation.
+    // @todo Handle validation.
     $entity->validate();
     return $entity;
   }

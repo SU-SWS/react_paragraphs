@@ -5,5 +5,7 @@ react_paragraphs.media_library_ui:
   options:
     _admin_route: TRUE
   requirements:
+    # Open so the widget can load the dialog; the media library view applies
+    # its own access checks.
     _access: 'TRUE'
 #    _custom_access: 'media_library.ui_builder:checkAccess'

@@ -8,7 +8,7 @@ use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Viewfield Plugin.
+ * Provides React widget data for viewfield fields.
  *
  * @ReactParagraphsFields(
  *   id = "viewfield",
@@ -41,7 +41,7 @@ class View extends ReactParagraphsFieldsBase {
   /**
    * {@inheritDoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
+  final public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
   }

@@ -78,7 +78,7 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
   /**
    * {@inheritdoc}
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, SelectionPluginManagerInterface $selection_manager, EntityTypeManagerInterface $entity_type_manager, EditorManager $editor_manager, EntityFieldManagerInterface $field_manager, AccountProxyInterface $current_user) {
+  final public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, SelectionPluginManagerInterface $selection_manager, EntityTypeManagerInterface $entity_type_manager, EditorManager $editor_manager, EntityFieldManagerInterface $field_manager, AccountProxyInterface $current_user) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
     $this->selectionManager = $selection_manager;
     $this->entityTypeManager = $entity_type_manager;
