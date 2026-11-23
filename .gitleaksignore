@@ -1,0 +1,5 @@
+# Findings that gitleaks should not report, one fingerprint per line.
+#
+# Only add a fingerprint here once the credential has been rotated or confirmed
+# to be a false positive, and note why. Fingerprints are printed in the scan
+# output as <commit>:<file>:<rule>:<line>.

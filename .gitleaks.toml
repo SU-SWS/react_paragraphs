@@ -1,0 +1,81 @@
+# Gitleaks configuration for secret scanning.
+#
+# Extends the default gitleaks rules with patterns for credentials written as
+# plain strings in code, which the defaults don't catch. For example, a Guzzle
+# request with `'auth' => ['api', 'some-password']`.
+#
+# To ignore a finding that has been rotated or is a false positive, add its
+# fingerprint (printed in the scan report) to `.gitleaksignore`.
+#
+# @see https://github.com/gitleaks/gitleaks#configuration
+
+title = "react_paragraphs gitleaks config"
+
+[extend]
+useDefault = true
+
+# Guzzle / HTTP basic auth with literal strings:
+#   'auth' => ['username', 'password']
+[[rules]]
+id = "http-basic-auth-literal"
+description = "Hardcoded HTTP basic auth credentials"
+regex = '''['"]auth['"]\s*=>\s*\[\s*['"][^'"$\s]+['"]\s*,\s*['"]([^'"$\s]{4,})['"]'''
+secretGroup = 1
+keywords = ["auth"]
+
+# Password-like keys assigned a literal string in PHP, YAML or JS:
+#   'password' => 'secret', $password = 'secret', client_secret: 'secret'
+[[rules]]
+id = "hardcoded-password"
+description = "Hardcoded password or client secret"
+regex = '''(?i)['"]?\b(?:password|passwd|pass|pwd|client_?secret|api_?secret|secret_?key|api_?key)['"]?\s*(?:=>|=|:)\s*['"]([^'"$\s{}\[\]]{6,})['"]'''
+secretGroup = 1
+entropy = 2.5
+keywords = ["pass", "pwd", "secret", "api_key", "apikey"]
+
+  # Values that are placeholders or references, not secrets.
+  [[rules.allowlists]]
+  regexTarget = "secret"
+  regexes = [
+    '''^\[.*\]$''',
+    '''(?i)^(?:password|changeme|example|placeholder|your[_-]?password|xxx+|\*+)$''',
+    '''^%.*%$''',
+  ]
+
+  # Sample values from Drupal core's settings.php documentation, SimpleSAMLphp's
+  # example config and the CI database. Matched by value rather than by file so
+  # real credentials added to a settings.php are still caught.
+  [[rules.allowlists]]
+  regexTarget = "secret"
+  regexes = [
+    '''^(?:sql_?password|secretpassword|drupal)$''',
+  ]
+
+# Credentials embedded in a url: https://user:password@host
+[[rules]]
+id = "url-embedded-credentials"
+description = "Credentials embedded in a url"
+regex = '''[a-z][a-z0-9+.-]*://[^/\s:@'"]+:([^/\s:@'"$]{4,})@[^/\s'"]+'''
+secretGroup = 1
+keywords = ["://"]
+
+  # Documentation examples, such as Drupal's proxy settings sample.
+  [[rules.allowlists]]
+  regexTarget = "match"
+  regexes = [
+    '''@(?:[\w-]+\.)*example\.(?:com|org|net)\b''',
+    '''@localhost\b''',
+  ]
+
+# Paths that only contain fixture data or third-party code.
+[[allowlists]]
+description = "Test fixtures, dependencies and generated files"
+paths = [
+  '''(^|/)tests?/''',
+  '''(^|/)vendor/''',
+  '''(^|/)node_modules/''',
+  '''\.lock$''',
+  '''(^|/)package-lock\.json$''',
+  '''\.min\.(js|css)$''',
+  '''\.(png|jpe?g|gif|svg|ico|woff2?|ttf|eot|pdf)$''',
+]
