@@ -3,20 +3,16 @@
 namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 
 use Drupal\field\FieldConfigInterface;
+use Drupal\react_paragraphs\Attribute\ReactParagraphsFields;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 
 /**
  * Number field plugin.
- *
- * @ReactParagraphsFields(
- *   id = "number",
- *   field_types = {
- *     "decimal",
- *     "float",
- *     "integer"
- *   }
- * )
  */
+#[ReactParagraphsFields(
+  id: 'number',
+  field_types: ['decimal', 'float', 'integer'],
+)]
 class Number extends ReactParagraphsFieldsBase {
 
   /**

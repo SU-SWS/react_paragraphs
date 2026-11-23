@@ -88,7 +88,7 @@ class ReactParagraphs extends ReactParagraphsWidgetBase {
     $element_id = Html::getUniqueId('react-' . $this->fieldDefinition->getName());
 
     // Get all the attachments for any CKEditor fields that could exist.
-    $attachments = $this->editorManager->getAttachments(array_keys(filter_formats($this->currentUser)));
+    $attachments = $this->editorManager->getAttachments(array_keys($this->filterFormatRepository->getFormatsForAccount($this->currentUser)));
     $attachments['library'][] = 'react_paragraphs/field_widget';
 
     // Set the javascript settings to be picked up by react.

@@ -2,23 +2,20 @@
 
 namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 
-use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\field\FieldConfigInterface;
 use Drupal\filter\FilterFormatInterface;
+use Drupal\filter\FilterFormatRepositoryInterface;
+use Drupal\react_paragraphs\Attribute\ReactParagraphsFields;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Ckeditor field plugin.
- *
- * @ReactParagraphsFields(
- *   id = "ckeditor",
- *   field_types = {
- *     "text_long",
- *     "text_with_summary"
- *   }
- * )
  */
+#[ReactParagraphsFields(
+  id: 'ckeditor',
+  field_types: ['text_long', 'text_with_summary'],
+)]
 class Ckeditor extends ReactParagraphsFieldsBase {
 
   /**
@@ -29,23 +26,20 @@ class Ckeditor extends ReactParagraphsFieldsBase {
   protected $currentUser;
 
   /**
-   * {@inheritDoc}
+   * Filter format repository.
+   *
+   * @var \Drupal\filter\FilterFormatRepositoryInterface
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('current_user')
-    );
-  }
+  protected $filterFormatRepository;
 
   /**
    * {@inheritDoc}
    */
-  final public function __construct(array $configuration, $plugin_id, $plugin_definition, AccountProxyInterface $current_user) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->currentUser = $current_user;
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->currentUser = $container->get('current_user');
+    $instance->filterFormatRepository = $container->get(FilterFormatRepositoryInterface::class);
+    return $instance;
   }
 
   /**
@@ -74,12 +68,9 @@ class Ckeditor extends ReactParagraphsFieldsBase {
    *
    * @return \Drupal\filter\FilterFormatInterface[]
    *   Keyed array of filter formats.
-   *
-   * @codeCoverageIgnore
-   *   Ignore for unit tests since filter_formats is not defined.
    */
   protected function getFilterFormats() {
-    return filter_formats($this->currentUser);
+    return $this->filterFormatRepository->getFormatsForAccount($this->currentUser);
   }
 
 }

@@ -5,6 +5,7 @@ namespace Drupal\react_paragraphs;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
+use Drupal\react_paragraphs\Attribute\ReactParagraphsFields;
 
 /**
  * Provides an ReactParagraphsFields plugin manager.
@@ -31,7 +32,9 @@ class ReactParagraphsFieldsManager extends DefaultPluginManager {
       'Plugin/Field/ReactParagraphsFields',
       $namespaces,
       $module_handler,
-      'Drupal\react_paragraphs\ReactParagraphsFieldsInterface',
+      ReactParagraphsFieldsInterface::class,
+      ReactParagraphsFields::class,
+      // Plugins in other modules may still use the annotation.
       'Drupal\react_paragraphs\Annotation\ReactParagraphsFields'
     );
     $this->alterInfo('react_paragraphs_fields_info');

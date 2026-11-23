@@ -2,24 +2,19 @@
 
 namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 
-use Drupal\Core\Database\Connection;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\field\FieldConfigInterface;
+use Drupal\react_paragraphs\Attribute\ReactParagraphsFields;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Entity reference field plugin.
- *
- * @ReactParagraphsFields(
- *   id = "entity_reference",
- *   field_types = {
- *     "entity_reference",
- *     "entity_reference_revisions"
- *   }
- * )
  */
+#[ReactParagraphsFields(
+  id: 'entity_reference',
+  field_types: ['entity_reference', 'entity_reference_revisions'],
+)]
 class EntityReference extends ReactParagraphsFieldsBase implements ContainerFactoryPluginInterface {
 
   /**
@@ -40,22 +35,10 @@ class EntityReference extends ReactParagraphsFieldsBase implements ContainerFact
    * {@inheritDoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('entity_type.manager'),
-      $container->get('database')
-    );
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  final public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, Connection $database) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->entityTypeManager = $entity_type_manager;
-    $this->database = $database;
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->database = $container->get('database');
+    return $instance;
   }
 
   /**

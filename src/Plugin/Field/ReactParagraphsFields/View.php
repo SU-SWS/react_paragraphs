@@ -2,21 +2,18 @@
 
 namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\field\FieldConfigInterface;
+use Drupal\react_paragraphs\Attribute\ReactParagraphsFields;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides React widget data for viewfield fields.
- *
- * @ReactParagraphsFields(
- *   id = "viewfield",
- *   field_types = {
- *     "viewfield"
- *   }
- * )
  */
+#[ReactParagraphsFields(
+  id: 'viewfield',
+  field_types: ['viewfield'],
+)]
 class View extends ReactParagraphsFieldsBase {
 
   /**
@@ -30,20 +27,9 @@ class View extends ReactParagraphsFieldsBase {
    * {@inheritDoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('entity_type.manager')
-    );
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  final public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->entityTypeManager = $entity_type_manager;
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    return $instance;
   }
 
   /**

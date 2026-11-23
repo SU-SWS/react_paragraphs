@@ -11,6 +11,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\editor\Plugin\EditorManager;
 use Drupal\field\FieldConfigInterface;
+use Drupal\filter\FilterFormatRepositoryInterface;
 use Drupal\paragraphs\ParagraphsTypeInterface;
 use Drupal\paragraphs\Plugin\EntityReferenceSelection\ParagraphSelection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -58,6 +59,13 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
   protected $currentUser;
 
   /**
+   * Filter format repository.
+   *
+   * @var \Drupal\filter\FilterFormatRepositoryInterface
+   */
+  protected $filterFormatRepository;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -71,20 +79,22 @@ abstract class ReactParagraphsWidgetBase extends WidgetBase implements Container
       $container->get('entity_type.manager'),
       $container->get('plugin.manager.editor'),
       $container->get('entity_field.manager'),
-      $container->get('current_user')
+      $container->get('current_user'),
+      $container->get(FilterFormatRepositoryInterface::class)
     );
   }
 
   /**
    * {@inheritdoc}
    */
-  final public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, SelectionPluginManagerInterface $selection_manager, EntityTypeManagerInterface $entity_type_manager, EditorManager $editor_manager, EntityFieldManagerInterface $field_manager, AccountProxyInterface $current_user) {
+  final public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, SelectionPluginManagerInterface $selection_manager, EntityTypeManagerInterface $entity_type_manager, EditorManager $editor_manager, EntityFieldManagerInterface $field_manager, AccountProxyInterface $current_user, FilterFormatRepositoryInterface $filter_format_repository) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
     $this->selectionManager = $selection_manager;
     $this->entityTypeManager = $entity_type_manager;
     $this->editorManager = $editor_manager;
     $this->fieldManager = $field_manager;
     $this->currentUser = $current_user;
+    $this->filterFormatRepository = $filter_format_repository;
   }
 
   /**

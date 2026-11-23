@@ -5,5 +5,8 @@ react_paragraphs.media_library_ui:
   options:
     _admin_route: TRUE
   requirements:
+    # No access check here. Core's media_library.ui_builder:checkAccess (below)
+    # reads a hashed media library state from the request, and this route's
+    # controller builds the state from unhashed query parameters instead.
     _access: 'TRUE'
 #    _custom_access: 'media_library.ui_builder:checkAccess'
