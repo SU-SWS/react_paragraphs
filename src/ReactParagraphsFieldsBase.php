@@ -8,7 +8,12 @@ use Drupal\field\FieldConfigInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class ReactParagraphsFieldsBase
+ * Base class for plugins that describe form fields to the React widget.
+ *
+ * Subclasses set their extra services in create() rather than overriding the
+ * constructor.
+ *
+ * @phpstan-consistent-constructor
  *
  * @package Drupal\react_paragraphs
  */

@@ -2,23 +2,19 @@
 
 namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 
-use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\field\FieldConfigInterface;
+use Drupal\react_paragraphs\Attribute\ReactParagraphsFields;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 
 /**
  * Link field plugin.
- *
- * @ReactParagraphsFields(
- *   id = "link",
- *   field_types = {
- *     "link"
- *   }
- * )
  */
+#[ReactParagraphsFields(
+  id: 'link',
+  field_types: ['link'],
+)]
 class Link extends ReactParagraphsFieldsBase {
 
   /**

@@ -11,13 +11,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Class ReactMediaLibrary.
+ * Opens the media library dialog for the React paragraphs widget.
  *
  * @package Drupal\react_paragraphs\Controller
  */
 class ReactMediaLibrary extends ControllerBase {
 
   /**
+   * The current request.
+   *
    * @var \Symfony\Component\HttpFoundation\Request|null
    */
   protected $request;
@@ -32,7 +34,7 @@ class ReactMediaLibrary extends ControllerBase {
   /**
    * {@inheritDoc}
    */
-  public function __construct(RequestStack $request_stack) {
+  final public function __construct(RequestStack $request_stack) {
     $this->request = $request_stack->getCurrentRequest();
   }
 

@@ -11,7 +11,7 @@ use Drupal\Tests\react_paragraphs\Kernel\Plugin\Field\ReactParagraphsFieldTestBa
 use Drupal\Tests\user\Traits\UserCreationTrait;
 
 /**
- * Class ReactParagraphsFieldTestBase.
+ * Tests the React paragraphs field widget form element and value handling.
  *
  * @group react_paragraphs
  * @coversDefaultClass \Drupal\react_paragraphs\Plugin\Field\FieldWidget\ReactParagraphs
@@ -21,6 +21,8 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
   use UserCreationTrait;
 
   /**
+   * Node with paragraph rows used by the widget.
+   *
    * @var \Drupal\node\NodeInterface
    */
   protected $node;
@@ -161,7 +163,7 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
   /**
    * Behaviors in the react data will be saved to the entity.
    */
-  public function testBehaviorSubmission(){
+  public function testBehaviorSubmission() {
     $config = [
       'field_definition' => $this->fieldConfig,
       'settings' => [],
@@ -181,7 +183,6 @@ class ReactParagraphsWidgetTest extends ReactParagraphsFieldTestBase {
         ],
       ],
     ];
-
 
     $values['container']['value'] = json_encode($value);
     $widget->massageFormValues($values, $form, $form_state);

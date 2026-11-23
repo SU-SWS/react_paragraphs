@@ -2,15 +2,10 @@
 
 namespace Drupal\Tests\react_paragraphs\Unit\Plugin\Field\ReactParagraphsFields;
 
-use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\field\FieldConfigInterface;
-use Drupal\field\FieldStorageConfigInterface;
-use Drupal\filter\FilterFormatInterface;
-use Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields\Ckeditor;
 use Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields\DefaultPlugin;
 
 /**
- * Class DefaultPluginTest.
+ * Tests the React field data from the fallback default plugin.
  *
  * @group react_paragraphs
  * @coversDefaultClass \Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields\DefaultPlugin

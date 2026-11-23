@@ -3,21 +3,16 @@
 namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 
 use Drupal\field\FieldConfigInterface;
+use Drupal\react_paragraphs\Attribute\ReactParagraphsFields;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 
 /**
  * Text field plugin.
- *
- * @ReactParagraphsFields(
- *   id = "text",
- *   field_types = {
- *     "text",
- *     "string",
- *     "string_long",
- *     "email"
- *   }
- * )
  */
+#[ReactParagraphsFields(
+  id: 'text',
+  field_types: ['text', 'string', 'string_long', 'email'],
+)]
 class Text extends ReactParagraphsFieldsBase {
 
   /**

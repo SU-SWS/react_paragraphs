@@ -12,8 +12,6 @@ use Drupal\Field\Entity\FieldConfig;
 /**
  * Alter the info before being sent to the react widget.
  *
- * @codeCoverageIgnore
- *
  * @param array $info
  *   The array of data being passed to the react widget.
  * @param array $field_element
@@ -22,6 +20,8 @@ use Drupal\Field\Entity\FieldConfig;
  *   The field configuration object.
  *
  * @see \Drupal\react_paragraphs\Plugin\rest\resource\ReactParagraphsResource::get
+ *
+ * @codeCoverageIgnore
  */
 function hook_react_paragraphs_form_field_data_alter(array &$info, array $field_element, FieldConfig $field_config) {
 

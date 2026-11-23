@@ -6,13 +6,16 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\views\ViewEntityInterface;
 
 /**
- * Class BooleanTest
+ * Tests the React field data for viewfield fields.
  *
  * @group react_paragraphs
  * @coversDefaultClass \Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields\View
  */
 class ViewTest extends ReactParagraphsFieldsTestBase {
 
+  /**
+   * Sets allowed display types on the mocked field config.
+   */
   public function setup(): void {
     parent::setUp();
     $this->fieldConfig->method('getSetting')->willReturn([

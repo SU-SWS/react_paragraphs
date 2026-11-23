@@ -8,7 +8,7 @@ use Drupal\react_paragraphs_behaviors\ReactBehaviorsPluginManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class ReactBehaviorsDeriver.
+ * Derives one paragraphs behavior plugin per React behavior definition.
  *
  * @package Drupal\react_paragraphs_behaviors\Plugin\Derivative
  */
@@ -25,18 +25,16 @@ class ReactBehaviorsDeriver extends DeriverBase implements ContainerDeriverInter
    * {@inheritDoc}
    */
   public static function create(ContainerInterface $container, $base_plugin_id) {
-    return new static($base_plugin_id, $container->get('plugin.manager.react_behaviors'));
+    return new static($container->get('plugin.manager.react_behaviors'));
   }
 
   /**
    * ReactBehaviorsDeriver constructor.
    *
-   * @param string $base_plugin_id
-   *   Base plugin id.
    * @param \Drupal\react_paragraphs_behaviors\ReactBehaviorsPluginManagerInterface $behaviors_manager
    *   Behavior plugin manager service.
    */
-  public function __construct($base_plugin_id, ReactBehaviorsPluginManagerInterface $behaviors_manager) {
+  final public function __construct(ReactBehaviorsPluginManagerInterface $behaviors_manager) {
     $this->behaviorsManager = $behaviors_manager;
   }
 

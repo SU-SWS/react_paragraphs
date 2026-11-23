@@ -8,7 +8,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
- * Class ParagraphsRowAccessControlHandler.
+ * Access control handler for paragraph rows that allows every operation.
  *
  * @package Drupal\react_paragraphs
  */

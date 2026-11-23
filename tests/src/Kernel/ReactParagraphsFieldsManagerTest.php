@@ -5,7 +5,7 @@ namespace Drupal\Tests\react_paragraphs\Kernel;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
- * Class ReactParagraphsFieldsManagerTest.
+ * Tests discovery of React paragraphs field plugins.
  *
  * @group react_paragraphs
  * @coversDefaultClass \Drupal\react_paragraphs\ReactParagraphsFieldsManager

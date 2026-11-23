@@ -5,7 +5,7 @@ namespace Drupal\Tests\react_paragraphs\Unit\Plugin\Field\ReactParagraphsFields;
 use Drupal\Core\Routing\UrlGeneratorInterface;
 
 /**
- * Class BooleanTest
+ * Tests the React field data for link fields.
  *
  * @group react_paragraphs
  * @coversDefaultClass \Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields\Link

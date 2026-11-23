@@ -8,31 +8,40 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\field\FieldConfigInterface;
 use Drupal\field\FieldStorageConfigInterface;
+use Drupal\filter\FilterFormatRepositoryInterface;
 use Drupal\Tests\UnitTestCase;
 
 /**
- * Class ReactParagraphsFieldsTestBase
+ * Base class that creates the plugin named in a test's coversDefaultClass.
  *
  * @group react_paragraphs
  */
 abstract class ReactParagraphsFieldsTestBase extends UnitTestCase {
 
   /**
+   * The field plugin under test.
+   *
    * @var \Drupal\react_paragraphs\ReactParagraphsFieldsInterface
    */
   protected $plugin;
 
   /**
+   * Container with mocked services.
+   *
    * @var \Drupal\Core\DependencyInjection\ContainerBuilder
    */
   protected $container;
 
   /**
+   * Mocked field config.
+   *
    * @var \PHPUnit\Framework\MockObject\MockObject
    */
   protected $fieldConfig;
 
   /**
+   * Mocked field storage config.
+   *
    * @var \PHPUnit\Framework\MockObject\MockObject
    */
   protected $fieldStorage;
@@ -59,6 +68,7 @@ abstract class ReactParagraphsFieldsTestBase extends UnitTestCase {
 
     $database = $this->createMock(Connection::class);
     $this->container->set('database', $database);
+    $this->container->set(FilterFormatRepositoryInterface::class, $this->getFilterFormatRepository());
 
     $this->plugin = $class::create($this->container, [], 'foo_bar', []);
     \Drupal::setContainer($this->container);
@@ -74,7 +84,7 @@ abstract class ReactParagraphsFieldsTestBase extends UnitTestCase {
     $this->fieldConfig->method('getFieldStorageDefinition')->willReturn($this->fieldStorage);
   }
 
-    /**
+  /**
    * Test the field plugin.
    */
   public function testPlugin() {
@@ -91,6 +101,22 @@ abstract class ReactParagraphsFieldsTestBase extends UnitTestCase {
     $this->assertEquals($expected, $data);
   }
 
+  /**
+   * Entity type manager get storage callback, overridden by tests that need it.
+   *
+   * @param string $type
+   *   Entity type id.
+   */
   public function getStorageCallback($type) {}
+
+  /**
+   * Get the mocked filter format repository.
+   *
+   * @return \PHPUnit\Framework\MockObject\MockObject
+   *   Mocked filter format repository.
+   */
+  protected function getFilterFormatRepository() {
+    return $this->createMock(FilterFormatRepositoryInterface::class);
+  }
 
 }

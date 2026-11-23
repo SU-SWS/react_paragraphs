@@ -3,19 +3,16 @@
 namespace Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields;
 
 use Drupal\field\FieldConfigInterface;
+use Drupal\react_paragraphs\Attribute\ReactParagraphsFields;
 use Drupal\react_paragraphs\ReactParagraphsFieldsBase;
 
 /**
  * Datetime and daterange field plugin.
- *
- * @ReactParagraphsFields(
- *   id = "datetime",
- *   field_types = {
- *     "datetime",
- *     "daterange"
- *   }
- * )
  */
+#[ReactParagraphsFields(
+  id: 'datetime',
+  field_types: ['datetime', 'daterange'],
+)]
 class Datetime extends ReactParagraphsFieldsBase {
 
   /**

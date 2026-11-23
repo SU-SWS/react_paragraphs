@@ -6,7 +6,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\media\MediaTypeInterface;
 
 /**
- * Class BooleanTest
+ * Tests the React field data for entity reference fields.
  *
  * @group react_paragraphs
  * @coversDefaultClass \Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields\EntityReference

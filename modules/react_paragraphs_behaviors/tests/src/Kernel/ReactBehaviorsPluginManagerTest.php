@@ -6,7 +6,7 @@ use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
- * Class ReactBehaviorsPluginManagerTest
+ * Tests discovery of React behavior plugin definitions.
  *
  * @group react_paragraphs
  * @coversDefaultClass \Drupal\react_paragraphs_behaviors\ReactBehaviorsPluginManager

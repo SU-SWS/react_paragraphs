@@ -5,7 +5,7 @@ namespace Drupal\Tests\react_paragraphs\Kernel\Form;
 use Drupal\Core\Form\FormState;
 
 /**
- * Class ParagraphsRowTypeFormTest
+ * Tests the paragraph row type edit form and its redirects.
  *
  * @group react_paragraphs
  * @coversDefaultClass \Drupal\react_paragraphs\Form\ParagraphsRowTypeForm

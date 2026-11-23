@@ -8,7 +8,7 @@ use Drupal\node\Entity\Node;
 use Drupal\Tests\react_paragraphs\Kernel\Plugin\Field\ReactParagraphsFieldTestBase;
 
 /**
- * Class EntityReferenceTest
+ * Tests the React field data for entity reference widgets.
  *
  * @package Drupal\Tests\react_paragraphs\Kernel\Plugin\Field\ReactParagraphsFields
  */
@@ -56,7 +56,7 @@ class EntityReferenceTest extends ReactParagraphsFieldTestBase {
    * @return \Drupal\field\FieldConfigInterface
    *   Mocked entity.
    */
-  protected function getFieldConfig(){
+  protected function getFieldConfig() {
     $field_storage = $this->createMock(FieldStorageConfigInterface::class);
     $field_storage->method('getCardinality')->willReturn(1);
 
@@ -64,7 +64,7 @@ class EntityReferenceTest extends ReactParagraphsFieldTestBase {
     $field_config->method('getFieldStorageDefinition')->willReturn($field_storage);
 
     $field_config->method('getSetting')
-      ->willReturnCallback([$this,'getSettingCallback']);
+      ->willReturnCallback([$this, 'getSettingCallback']);
     return $field_config;
   }
 

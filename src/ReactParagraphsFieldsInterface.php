@@ -6,11 +6,11 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\field\FieldConfigInterface;
 
 /**
- * Interface ReactParagraphsFieldsInterface
+ * Interface for plugins that describe form fields to the React widget.
  *
  * @package Drupal\react_paragraphs
  */
-interface ReactParagraphsFieldsInterface extends PluginInspectionInterface{
+interface ReactParagraphsFieldsInterface extends PluginInspectionInterface {
 
   /**
    * Get the data to pass to the react UI.

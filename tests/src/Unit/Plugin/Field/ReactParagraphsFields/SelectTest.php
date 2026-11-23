@@ -5,7 +5,7 @@ namespace Drupal\Tests\react_paragraphs\Unit\Plugin\Field\ReactParagraphsFields;
 use Drupal\Core\Entity\EntityStorageInterface;
 
 /**
- * Class BooleanTest
+ * Tests the React field data for list (select) fields.
  *
  * @group react_paragraphs
  * @coversDefaultClass \Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields\Select
@@ -54,6 +54,15 @@ class SelectTest extends ReactParagraphsFieldsTestBase {
     $this->assertEquals($expected, $data);
   }
 
+  /**
+   * Entity type manager get storage callback.
+   *
+   * @param string $type
+   *   Entity type id.
+   *
+   * @return \PHPUnit\Framework\MockObject\MockObject
+   *   Mocked webform storage.
+   */
   public function getStorageCallback($type) {
     $webform_storage = $this->createMock(TestWebformEntityStorageInterface::class);
     $webform_storage->method('getOptions')->willReturn([]);
@@ -62,8 +71,14 @@ class SelectTest extends ReactParagraphsFieldsTestBase {
 
 }
 
+/**
+ * Webform storage interface with the getOptions() method for mocking.
+ */
 interface TestWebformEntityStorageInterface extends EntityStorageInterface {
 
+  /**
+   * Gets the webform options.
+   */
   public function getOptions();
 
 }

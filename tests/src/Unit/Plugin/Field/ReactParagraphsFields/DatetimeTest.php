@@ -2,11 +2,8 @@
 
 namespace Drupal\Tests\react_paragraphs\Unit\Plugin\Field\ReactParagraphsFields;
 
-use Drupal\field\FieldConfigInterface;
-use Drupal\field\FieldStorageConfigInterface;
-
 /**
- * Class BooleanTest
+ * Tests the React field data for date fields.
  *
  * @group react_paragraphs
  * @coversDefaultClass \Drupal\react_paragraphs\Plugin\Field\ReactParagraphsFields\Datetime

@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\field\FieldConfigInterface;
 use Drupal\react_paragraphs\ReactParagraphsFieldsManager;
 use Drupal\rest\Plugin\ResourceBase;
@@ -15,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- * Provides a Demo Resource
+ * Provides the form field data the React paragraphs widget needs per bundle.
  *
  * @RestResource(
  *   id = "react_paragraphs",
@@ -56,6 +57,13 @@ class ReactParagraphsResource extends ResourceBase {
   protected $reactFieldsPluginManager;
 
   /**
+   * Current user account.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $currentUser;
+
+  /**
    * {@inheritDoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -68,19 +76,21 @@ class ReactParagraphsResource extends ResourceBase {
       $container->get('entity_type.manager'),
       $container->get('entity.form_builder'),
       $container->get('plugin.manager.react_paragraphs_fields'),
-      $container->get('module_handler')
+      $container->get('module_handler'),
+      $container->get('current_user')
     );
   }
 
   /**
    * {@inheritDoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, array $serializer_formats, LoggerInterface $logger, EntityTypeManagerInterface $entity_type_manager, EntityFormBuilderInterface $form_builder, ReactParagraphsFieldsManager $field_manager, ModuleHandlerInterface $module_handler) {
+  final public function __construct(array $configuration, $plugin_id, $plugin_definition, array $serializer_formats, LoggerInterface $logger, EntityTypeManagerInterface $entity_type_manager, EntityFormBuilderInterface $form_builder, ReactParagraphsFieldsManager $field_manager, ModuleHandlerInterface $module_handler, AccountInterface $current_user) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger);
     $this->entityTypeManager = $entity_type_manager;
     $this->formBuilder = $form_builder;
     $this->reactFieldsPluginManager = $field_manager;
     $this->moduleHandler = $module_handler;
+    $this->currentUser = $current_user;
   }
 
   /**
@@ -149,7 +159,7 @@ class ReactParagraphsResource extends ResourceBase {
       $paragraphs_type = $empty_entity->getParagraphType();
       if (
         $paragraphs_type &&
-        \Drupal::currentUser()->hasPermission('edit behavior plugin settings')
+        $this->currentUser->hasPermission('edit behavior plugin settings')
       ) {
         foreach ($paragraphs_type->getEnabledBehaviorPlugins() as $plugin_id => $plugin) {
           $data['behavior_plugins'][$plugin_id] = [];

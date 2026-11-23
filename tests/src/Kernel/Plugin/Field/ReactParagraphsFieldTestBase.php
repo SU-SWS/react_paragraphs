@@ -12,12 +12,11 @@ use Drupal\file\Entity\File;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\node\Entity\NodeType;
 use Drupal\paragraphs\Entity\ParagraphsType;
-use Drupal\react_paragraphs\Entity\ParagraphRow;
 use Drupal\react_paragraphs\Entity\ParagraphsRowType;
 use Drupal\user\Entity\Role;
 
 /**
- * Class ReactParagraphsFieldTestBase
+ * Base class that sets up a node type with a React paragraphs field.
  *
  * @package Drupal\Tests\react_paragraphs\Kernel\Plugin\Field\FieldWidget
  */
@@ -41,11 +40,33 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
     'field_ui',
   ];
 
+  /**
+   * Node type with the React paragraphs field.
+   *
+   * @var \Drupal\node\NodeTypeInterface
+   */
   protected $nodeType;
 
+  /**
+   * Paragraph row type referenced by the node field.
+   *
+   * @var \Drupal\react_paragraphs\Entity\ParagraphsRowTypeInterface
+   */
   protected $rowType;
 
+  /**
+   * Card paragraph type that rows can contain.
+   *
+   * @var \Drupal\paragraphs\ParagraphsTypeInterface
+   */
   protected $paragraphType;
+
+  /**
+   * The node field that references paragraph rows.
+   *
+   * @var \Drupal\field\FieldConfigInterface
+   */
+  protected $fieldConfig;
 
   /**
    * {@inheritDoc}
@@ -86,6 +107,9 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
     ])->save();
   }
 
+  /**
+   * Creates the card paragraph type with a text field and an icon.
+   */
   protected function createParagraphTypes() {
     \Drupal::service('file_system')
       ->copy($this->root . '/core/misc/druplicon.png', 'public://example.jpg');
@@ -114,6 +138,9 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
     ])->save();
   }
 
+  /**
+   * Creates the row type with a field that references paragraphs.
+   */
   protected function createParagraphRow() {
     $this->rowType = ParagraphsRowType::create([
       'id' => 'row',
@@ -138,6 +165,9 @@ abstract class ReactParagraphsFieldTestBase extends KernelTestBase {
     $fieldConfig->save();
   }
 
+  /**
+   * Creates the page node type with a React paragraphs field and displays.
+   */
   protected function createNodeType() {
     $this->nodeType = NodeType::create(['type' => 'page', 'name' => 'Page']);
     $this->nodeType->save();
